@@ -10,6 +10,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+
+const inviteSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  cell: z.string().optional()
+});
+
+type InviteFormData = z.infer<typeof inviteSchema>;
 
 interface Invite {
   id: string;
@@ -31,11 +44,14 @@ const InvitesSection = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    cell: "",
+  const form = useForm<InviteFormData>({
+    resolver: zodResolver(inviteSchema),
+    defaultValues: {
+      email: "",
+      firstName: "",
+      lastName: "",
+      cell: ""
+    }
   });
 
   useEffect(() => {
@@ -83,14 +99,7 @@ const InvitesSection = () => {
     fetchInvites();
   }, [user?.id]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const onSubmit = async (data: InviteFormData) => {
     if (!user?.id) return;
 
     try {
@@ -110,10 +119,10 @@ const InvitesSection = () => {
         .insert([
           {
             player_id: playerData.id,
-            email: formData.email,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            cell: formData.cell,
+            email: data.email,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            cell: data.cell,
             status: "unsent",
             type: "requested",
           },
@@ -128,12 +137,11 @@ const InvitesSection = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
-          to: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          to: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
         }),
       });
 
@@ -145,12 +153,12 @@ const InvitesSection = () => {
       setInvites((prev) => [invite, ...prev]);
       
       // Reset form and close dialog
-      setFormData({ email: "", firstName: "", lastName: "", cell: "" });
+      form.reset();
       setIsOpen(false);
       
       toast({
         title: "Invite sent successfully",
-        description: `An invitation has been sent to ${formData.email}`,
+        description: `An invitation has been sent to ${data.email}`,
       });
     } catch (err) {
       console.error("Error creating invite:", err);
@@ -219,48 +227,65 @@ const InvitesSection = () => {
             <DialogHeader>
               <DialogTitle>Send New Invite</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Input
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
                   name="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Input
+                <FormField
+                  control={form.control}
                   name="firstName"
-                  placeholder="First Name"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Input
+                <FormField
+                  control={form.control}
                   name="lastName"
-                  placeholder="Last Name"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Last Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Input
+                <FormField
+                  control={form.control}
                   name="cell"
-                  type="tel"
-                  placeholder="Cell Phone"
-                  value={formData.cell}
-                  onChange={handleInputChange}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cell Phone (Optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Cell Phone" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <Button type="submit" className="w-full">
-                Send Invite
-              </Button>
-            </form>
+                <Button type="submit" className="w-full">
+                  Send Invite
+                </Button>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
