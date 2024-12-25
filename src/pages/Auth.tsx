@@ -4,7 +4,7 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Shield, GameController, DollarSign, Users } from "lucide-react";
+import { Shield, DollarSign, Users } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Auth = () => {
 
   const features = [
     {
-      icon: <GameController className="w-8 h-8" />,
+      icon: <Shield className="w-8 h-8" />,
       title: "Play Games",
       description: "Join gaming events at local stores and conventions",
     },
