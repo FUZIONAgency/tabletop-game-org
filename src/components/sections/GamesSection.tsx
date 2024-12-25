@@ -5,18 +5,18 @@ const GamesSection = () => {
     <div className="grid md:grid-cols-3 gap-8">
       {[
         {
-          title: "Local Retail",
-          description: "Play at participating stores",
+          title: "Retailers",
+          description: "Play at your local retailer",
           icon: Gamepad,
         },
         {
           title: "Conventions",
-          description: "Join gaming events",
+          description: "Host games at conventions",
           icon: Gamepad,
         },
         {
           title: "Online",
-          description: "Play from anywhere",
+          description: "Host online games",
           icon: Gamepad,
         },
       ].map((item, index) => (
