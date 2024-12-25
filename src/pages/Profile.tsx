@@ -8,6 +8,19 @@ import Section from "@/components/Section";
 const Profile = () => {
   const { user } = useAuth();
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   const { data: player } = useQuery({
     queryKey: ["player", user?.id],
     queryFn: async () => {
@@ -29,7 +42,7 @@ const Profile = () => {
       className="bg-background"
     >
       <div className="grid gap-8 md:grid-cols-2">
-        <ProfileCard profile={user} />
+        <ProfileCard profile={profile} />
         <PlayerCard player={player} userEmail={user?.email ?? ""} onSuccess={() => {}} />
       </div>
     </Section>
