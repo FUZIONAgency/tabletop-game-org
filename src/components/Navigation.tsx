@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserPlus, Dices, DollarSign, Menu, ChevronDown } from "lucide-react";
+import { UserPlus, Dices, DollarSign, Menu, ShieldCheck } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
@@ -11,7 +11,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
-    ...(user ? [{ id: "qualify", icon: ChevronDown, label: "Qualify" }] : []),
+    ...(user ? [{ id: "qualify", icon: ShieldCheck, label: "Qualify" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Dices, label: "Play Games" },
     { id: "recruiting", icon: UserPlus, label: "Recruit" },
