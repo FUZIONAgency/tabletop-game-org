@@ -14,12 +14,19 @@ import {
   Tent,
   Package,
   Users,
+  LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProfileMenu = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   const menuItems = [
     { label: "My Profile", icon: User, path: "/profile" },
@@ -29,6 +36,7 @@ const ProfileMenu = () => {
     { label: "My Conventions", icon: Tent, path: "/conventions" },
     { label: "My Products", icon: Package, path: "/products" },
     { label: "My Team", icon: Users, path: "/team" },
+    { label: "Logout", icon: LogOut, onClick: handleLogout },
   ];
 
   return (
@@ -46,7 +54,7 @@ const ProfileMenu = () => {
           <DropdownMenuItem
             key={item.label}
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => navigate(item.path)}
+            onClick={item.onClick || (() => navigate(item.path))}
           >
             <item.icon className="h-4 w-4" />
             {item.label}
