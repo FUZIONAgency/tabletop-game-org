@@ -125,6 +125,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="text-yellow-500 hover:bg-yellow-100"
                   onClick={() => toggleExpand(campaign.id)}
                 >
                   {expandedCampaigns.includes(campaign.id) ? (
