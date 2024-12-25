@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Trees, UserPlus2 } from "lucide-react";
+import { Trees, Plus } from "lucide-react";
 import { Card } from "../ui/card";
 
 interface NetworkNode {
@@ -27,12 +27,12 @@ const NetworkSection = () => {
             children: [
               {
                 id: "left",
-                alias: "Left Team",
+                alias: "New Invite",
                 children: [],
               },
               {
                 id: "right",
-                alias: "Right Team",
+                alias: "New Invite",
                 children: [],
               },
             ],
@@ -49,7 +49,14 @@ const NetworkSection = () => {
     return (
       <div key={node.id} className="flex flex-col items-center relative">
         <Card className="p-4 mb-4 w-32 text-center relative z-10 bg-white">
-          <p className="font-medium">{node.alias}</p>
+          {node.id === "left" || node.id === "right" ? (
+            <a href="#" className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
+              <Plus className="h-4 w-4" />
+              {node.alias}
+            </a>
+          ) : (
+            <p className="font-medium">{node.alias}</p>
+          )}
         </Card>
         {node.children.length > 0 && (
           <>
