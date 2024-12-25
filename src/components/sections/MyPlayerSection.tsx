@@ -5,6 +5,7 @@ import { User, MapPin, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CreatePlayerForm } from "@/components/forms/CreatePlayerForm";
 
 interface PlayerData {
   id: string;
@@ -81,8 +82,11 @@ const MyPlayerSection = () => {
         <CardHeader>
           <CardTitle className="text-center">No Player Profile Found</CardTitle>
         </CardHeader>
-        <CardContent className="text-center text-muted-foreground">
-          Your email is not associated with any player profile.
+        <CardContent className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            Your email is not associated with any player profile.
+          </p>
+          {user?.email && <CreatePlayerForm email={user.email} />}
         </CardContent>
       </Card>
     );
