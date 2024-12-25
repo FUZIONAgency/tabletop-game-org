@@ -61,7 +61,7 @@ const Index = () => {
       {/* Rewards Section */}
       <Section
         id="rewards"
-        title="Earn While You Play"
+        title="Get Paid to Play"
         subtitle="REWARDS"
         className="bg-white"
       >

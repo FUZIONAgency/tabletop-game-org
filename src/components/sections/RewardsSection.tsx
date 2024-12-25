@@ -12,13 +12,14 @@ const RewardsSection = () => {
         />
       </div>
       <div className="space-y-6">
-        <h3 className="text-2xl font-semibold">Multiple Revenue Streams</h3>
+        <h3 className="text-2xl font-semibold">There are Many Ways to Earn</h3>
         <ul className="space-y-4">
           {[
-            "Commission on product sales",
-            "Recruitment bonuses",
-            "Team performance rewards",
-            "Gaming achievement bonuses",
+            "Commissions on Product Sales",
+            "Recruitment Override Commissions",
+            "Convention Rewards",
+            "Retailer Incentives",
+            "Paid Online Games",
           ].map((item, index) => (
             <li key={index} className="flex items-center">
               <DollarSign className="w-5 h-5 mr-2 text-gold" />
