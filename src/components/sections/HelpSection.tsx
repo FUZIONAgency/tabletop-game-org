@@ -5,10 +5,9 @@ const HelpSection = () => {
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center">
       <div className="space-y-6 order-2 md:order-1">
-        <h3 className="text-2xl font-semibold">24/7 Support</h3>
+        <h3 className="text-2xl font-semibold">Send Invites</h3>
         <p className="text-gray-600">
-          Our dedicated support team is always ready to assist you with any
-          questions about gaming, rewards, or business opportunities.
+          You can invite friends to help you run games and operate conventions.
         </p>
         <Button variant="outline">
           <HelpCircle className="mr-2 h-4 w-4" /> Get Help
