@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Mail, UserPlus } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Skeleton } from "../ui/skeleton";
 
 interface Invite {
   id: string;
@@ -18,33 +20,54 @@ interface Invite {
 
 const InvitesSection = () => {
   const [invites, setInvites] = useState<Invite[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchInvites = async () => {
-      const { data: playerData } = await supabase
-        .from("players")
-        .select("id")
-        .eq("auth_id", user?.id)
-        .single();
+      if (!user?.id) return;
 
-      if (playerData) {
-        const { data: invitesData } = await supabase
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data: playerData, error: playerError } = await supabase
+          .from("players")
+          .select("id")
+          .eq("auth_id", user.id)
+          .maybeSingle();
+
+        if (playerError) {
+          throw playerError;
+        }
+
+        if (!playerData) {
+          setInvites([]);
+          return;
+        }
+
+        const { data: invitesData, error: invitesError } = await supabase
           .from("invites")
           .select("*")
           .eq("player_id", playerData.id)
           .order("created_at", { ascending: false });
 
-        if (invitesData) {
-          setInvites(invitesData);
+        if (invitesError) {
+          throw invitesError;
         }
+
+        setInvites(invitesData || []);
+      } catch (err) {
+        console.error("Error fetching invites:", err);
+        setError("Failed to load invites. Please try again later.");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (user) {
-      fetchInvites();
-    }
-  }, [user]);
+    fetchInvites();
+  }, [user?.id]);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -58,6 +81,32 @@ const InvitesSection = () => {
     };
     return colors[status] || "bg-gray-500";
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 mt-16">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-16">
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 mt-16">
