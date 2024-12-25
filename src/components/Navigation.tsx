@@ -45,7 +45,11 @@ const Navigation = () => {
           <Link
             key={id}
             to={href}
-            className="flex items-center space-x-2 text-gray-600 hover:text-black transition-colors p-2"
+            className={`flex items-center space-x-2 transition-colors p-2 ${
+              scrolled
+                ? "text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                : "text-gray-600 hover:text-black dark:text-gray-200 dark:hover:text-white"
+            }`}
           >
             <Icon className="w-4 h-4" />
             <span>{label}</span>
@@ -54,7 +58,11 @@ const Navigation = () => {
           <button
             key={id}
             onClick={() => scrollToSection(id)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-black transition-colors w-full p-2"
+            className={`flex items-center space-x-2 transition-colors w-full p-2 ${
+              scrolled
+                ? "text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                : "text-gray-600 hover:text-black dark:text-gray-200 dark:hover:text-white"
+            }`}
           >
             <Icon className="w-4 h-4" />
             <span>{label}</span>
@@ -68,7 +76,7 @@ const Navigation = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-md shadow-md"
+          ? "bg-white/80 backdrop-blur-md shadow-md dark:bg-gray-900/80"
           : "bg-transparent"
       }`}
     >
@@ -76,7 +84,11 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           <Link 
             to="/" 
-            className="text-xl font-bold hover:text-gray-700 transition-colors"
+            className={`text-xl font-bold transition-colors ${
+              scrolled
+                ? "hover:text-gray-700 dark:text-white dark:hover:text-gray-200"
+                : "text-gray-800 hover:text-black dark:text-white dark:hover:text-gray-200"
+            }`}
           >
             Adventure Trade
           </Link>
@@ -96,7 +108,15 @@ const Navigation = () => {
             </div>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={`h-10 w-10 ${
+                    scrolled
+                      ? "text-gray-800 dark:text-white"
+                      : "text-gray-800 dark:text-white"
+                  }`}
+                >
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
