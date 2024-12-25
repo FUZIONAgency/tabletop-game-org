@@ -14,7 +14,7 @@ const Navigation = () => {
     ...(user ? [{ id: "network", icon: Network, label: "Your Network", href: "/network" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Dices, label: "Play Games" },
-    { id: "recruiting", icon: UserPlus, label: "Build Your Team" },
+    { id: "recruiting", icon: UserPlus, label: "Recruit" },
     { id: "rewards", icon: DollarSign, label: "Get Paid" },
   ];
 
