@@ -3,22 +3,25 @@ import { useAuth } from "@/contexts/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const MyRetailers = () => {
   const { user } = useAuth();
 
-  const { data: retailers, isLoading } = useQuery({
+  const { data: retailers, isLoading, error } = useQuery({
     queryKey: ['my-retailers', user?.id],
     queryFn: async () => {
-      const { data: playerData } = await supabase
+      const { data: playerData, error: playerError } = await supabase
         .from('players')
         .select('id')
         .eq('auth_id', user?.id)
-        .single();
+        .maybeSingle();
 
+      if (playerError) throw playerError;
       if (!playerData) return [];
 
-      const { data } = await supabase
+      const { data, error: retailersError } = await supabase
         .from('player_retailers')
         .select(`
           retailer:retailers (
@@ -33,6 +36,7 @@ const MyRetailers = () => {
         `)
         .eq('player_id', playerData.id);
 
+      if (retailersError) throw retailersError;
       return data?.map(pr => pr.retailer) || [];
     },
     enabled: !!user,
@@ -44,6 +48,15 @@ const MyRetailers = () => {
       <main className="flex-grow bg-white">
         <div className="container mx-auto px-4 pt-24 pb-12">
           <h1 className="text-3xl font-bold mb-8">My Retailers</h1>
+          
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                There was an error loading your retailers. Please try again later.
+              </AlertDescription>
+            </Alert>
+          )}
           
           {isLoading ? (
             <div className="space-y-4">
