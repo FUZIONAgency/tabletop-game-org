@@ -11,7 +11,6 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
-    ...(user ? [{ id: "network", icon: Network, label: "Your Network", href: "/network" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Dices, label: "Play Games" },
     { id: "recruiting", icon: UserPlus, label: "Recruit" },

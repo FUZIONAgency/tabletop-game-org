@@ -35,7 +35,7 @@ const ProfileMenu = () => {
     { label: "My Tournaments", icon: Trophy, path: "/tournaments" },
     { label: "My Conventions", icon: Tent, path: "/conventions" },
     { label: "My Products", icon: Package, path: "/products" },
-    { label: "My Team", icon: Users, path: "/team" },
+    { label: "My Team", icon: Users, path: "/network" },
     { label: "Logout", icon: LogOut, onClick: handleLogout },
   ];
 
