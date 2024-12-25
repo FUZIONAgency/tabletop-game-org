@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UserPlus, Dices, DollarSign, Menu, ShieldCheck } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 const Navigation = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { id: "qualify", icon: ShieldCheck, label: "Qualify", subtitle: "Become certified on each game system" },
@@ -19,7 +20,7 @@ const Navigation = () => {
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
-      window.location.href = `/#${id}`;
+      navigate('/', { state: { scrollTo: id } });
       return;
     }
     const element = document.getElementById(id);

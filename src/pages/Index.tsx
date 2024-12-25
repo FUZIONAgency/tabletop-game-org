@@ -8,9 +8,24 @@ import RewardsSection from "@/components/sections/RewardsSection";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
 import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const Index = () => {
   const { isLoading, role, user } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Handle scroll to section after navigation
+    if (location.state?.scrollTo) {
+      const element = document.getElementById(location.state.scrollTo);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+  }, [location.state]);
 
   if (isLoading) {
     return (
