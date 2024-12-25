@@ -90,7 +90,7 @@ const Navigation = () => {
                 : "text-white hover:text-gray-200"
             }`}
           >
-            Adventure Trade
+            Try My Game
           </Link>
 
           {/* Desktop Navigation */}
