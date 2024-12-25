@@ -602,6 +602,48 @@ export type Database = {
           },
         ]
       }
+      player_relationships: {
+        Row: {
+          created_at: string | null
+          downline_id: string
+          id: string
+          status: string | null
+          updated_at: string | null
+          upline_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          downline_id: string
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          upline_id: string
+        }
+        Update: {
+          created_at?: string | null
+          downline_id?: string
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+          upline_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_relationships_downline_id_fkey"
+            columns: ["downline_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_relationships_upline_id_fkey"
+            columns: ["upline_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_retailers: {
         Row: {
           created_at: string | null
