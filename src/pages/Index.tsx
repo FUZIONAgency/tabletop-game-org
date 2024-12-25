@@ -3,7 +3,7 @@ import HeroSection from "@/components/sections/HeroSection";
 import Section from "@/components/Section";
 import SignUpSection from "@/components/sections/SignUpSection";
 import GamesSection from "@/components/sections/GamesSection";
-import HelpSection from "@/components/sections/HelpSection";
+import RecruitingSection from "@/components/sections/RecruitingSection";
 import RewardsSection from "@/components/sections/RewardsSection";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
 import { useAuth } from "@/contexts/auth";
@@ -61,14 +61,14 @@ const Index = () => {
         <GamesSection />
       </Section>
 
-      {/* Help Section */}
+      {/* Recruiting Section */}
       <Section
-        id="help"
-        title="We're Here to Help"
-        subtitle="SUPPORT"
+        id="recruiting"
+        title="Build Your Team"
+        subtitle="RECRUITING"
         className="bg-white"
       >
-        <HelpSection />
+        <RecruitingSection />
       </Section>
 
       {/* Rewards Section */}
