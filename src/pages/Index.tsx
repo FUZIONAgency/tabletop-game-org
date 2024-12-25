@@ -35,7 +35,7 @@ const Index = () => {
         subtitle="QUALIFICATION"
         className="bg-gray-50"
       >
-        <MyPlayerSection />
+        {user ? <MyPlayerSection /> : <SignUpSection />}
       </Section>
 
       {/* Games Section */}
