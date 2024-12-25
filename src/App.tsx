@@ -7,6 +7,9 @@ import MyRetailers from "./pages/MyRetailers";
 import MyConventions from "./pages/MyConventions";
 import { useAuth } from "./contexts/auth";
 import { Skeleton } from "./components/ui/skeleton";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -36,45 +39,47 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/auth" element={<Auth />} />
-          <Route
-            path="/network"
-            element={
-              <ProtectedRoute>
-                <Network />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/retailers"
-            element={
-              <ProtectedRoute>
-                <MyRetailers />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/conventions"
-            element={
-              <ProtectedRoute>
-                <MyConventions />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AuthProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/network"
+              element={
+                <ProtectedRoute>
+                  <Network />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/retailers"
+              element={
+                <ProtectedRoute>
+                  <MyRetailers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/conventions"
+              element={
+                <ProtectedRoute>
+                  <MyConventions />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
+      </Router>
+    </QueryClientProvider>
   );
 };
 
