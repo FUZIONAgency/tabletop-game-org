@@ -13,7 +13,7 @@ const Navigation = () => {
   const navItems = [
     ...(user ? [{ id: "qualify", icon: ShieldCheck, label: "Qualify" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
-    { id: "games", icon: Dices, label: "Play Games" },
+    { id: "games", icon: Dices, label: "Play" },
     { id: "recruiting", icon: UserPlus, label: "Recruit" },
     { id: "rewards", icon: DollarSign, label: "Get Paid" },
   ];
