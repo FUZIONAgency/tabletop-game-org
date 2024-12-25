@@ -9,6 +9,7 @@ import MyConventions from "./pages/MyConventions";
 import MyProducts from "./pages/MyProducts";
 import Profile from "./pages/Profile";
 import OnlineGames from "./pages/play/Online";
+import RetailerGames from "./pages/play/RetailerGames";
 import AuthProvider from "./contexts/auth/AuthContext";
 import Navigation from "./components/Navigation";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -34,6 +35,7 @@ function App() {
             <Route path="/my-products" element={<MyProducts />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/play/online" element={<OnlineGames />} />
+            <Route path="/play/retailer-games" element={<RetailerGames />} />
           </Routes>
           <Toaster />
         </AuthProvider>
