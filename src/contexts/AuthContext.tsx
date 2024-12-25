@@ -9,13 +9,24 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({
+const initialContext: AuthContextType = {
   user: null,
   role: null,
   isLoading: true,
-});
+};
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthContext = createContext<AuthContextType>(initialContext);
+
+// Export the hook separately from its definition to maintain consistent exports
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,12 +92,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+}
