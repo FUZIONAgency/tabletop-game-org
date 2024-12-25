@@ -1,72 +1,15 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import HeroSection from "@/components/sections/HeroSection";
 import Section from "@/components/Section";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Gamepad, HelpCircle, DollarSign } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
-  const { role } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fadeIn");
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    document.querySelectorAll("section").forEach((section) => {
-      observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
-
   return (
     <div className="bg-white">
-      <div className="flex justify-end p-4">
-        <Button variant="outline" onClick={handleSignOut}>
-          Sign Out
-        </Button>
-      </div>
       <Navigation />
+      <HeroSection />
       
-      {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-8 animate-fadeIn">
-            Play Games. Earn Rewards.
-            <br />
-            Build Your Future.
-          </h1>
-          <p className="text-xl md:text-2xl mb-4 animate-fadeIn opacity-90">
-            Join our community of gamers and entrepreneurs
-          </p>
-          <p className="text-lg mb-12 animate-fadeIn opacity-75">
-            Current Role: {role}
-          </p>
-          <Button
-            size="lg"
-            className="bg-gold hover:bg-gold/90 text-black animate-fadeIn"
-          >
-            Get Started Now
-          </Button>
-        </div>
-      </section>
-
       {/* Sign Up Section */}
       <Section
         id="signup"

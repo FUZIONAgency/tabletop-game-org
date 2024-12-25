@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { UserPlus, Gamepad, HelpCircle, DollarSign } from "lucide-react";
+import ProfileMenu from "./ProfileMenu";
 
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -29,8 +30,8 @@ const Navigation = () => {
     >
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          <div className="text-xl font-bold">GameRewards</div>
-          <div className="hidden md:flex space-x-8">
+          <div className="text-xl font-bold">Adventure Trade</div>
+          <div className="hidden md:flex items-center space-x-8">
             {[
               { id: "signup", icon: UserPlus, label: "Sign Up" },
               { id: "games", icon: Gamepad, label: "Play Games" },
@@ -46,6 +47,9 @@ const Navigation = () => {
                 <span>{label}</span>
               </button>
             ))}
+            <div className="ml-4">
+              <ProfileMenu />
+            </div>
           </div>
         </div>
       </div>
