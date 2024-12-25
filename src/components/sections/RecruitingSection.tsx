@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const RecruitingSection = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center">
       <div className="space-y-6 order-2 md:order-1">
@@ -9,7 +12,7 @@ const RecruitingSection = () => {
         <p className="text-gray-600">
           You can invite friends to help you run games and operate conventions.
         </p>
-        <Button variant="outline">
+        <Button variant="outline" onClick={() => navigate("/network")}>
           <UserPlus className="mr-2 h-4 w-4" /> Invite Friends
         </Button>
       </div>
