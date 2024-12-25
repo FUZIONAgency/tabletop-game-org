@@ -39,15 +39,17 @@ const Index = () => {
         </Section>
       )}
 
-      {/* Sign Up Section */}
-      <Section
-        id="signup"
-        title="Join Our Gaming Community"
-        subtitle="SIGN UP"
-        className="bg-white"
-      >
-        <SignUpSection />
-      </Section>
+      {/* Sign Up Section - Only show when not logged in */}
+      {!user && (
+        <Section
+          id="signup"
+          title="Join Our Gaming Community"
+          subtitle="SIGN UP"
+          className="bg-white"
+        >
+          <SignUpSection />
+        </Section>
+      )}
 
       {/* Games Section */}
       <Section

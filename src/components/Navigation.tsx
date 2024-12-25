@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { UserPlus, Gamepad, HelpCircle, DollarSign } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/auth";
 
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +22,13 @@ const Navigation = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const navItems = [
+    ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
+    { id: "games", icon: Gamepad, label: "Play Games" },
+    { id: "help", icon: HelpCircle, label: "Find Help" },
+    { id: "rewards", icon: DollarSign, label: "Get Paid" },
+  ];
 
   return (
     <nav
@@ -38,12 +47,7 @@ const Navigation = () => {
             Adventure Trade
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            {[
-              { id: "signup", icon: UserPlus, label: "Sign Up" },
-              { id: "games", icon: Gamepad, label: "Play Games" },
-              { id: "help", icon: HelpCircle, label: "Find Help" },
-              { id: "rewards", icon: DollarSign, label: "Get Paid" },
-            ].map(({ id, icon: Icon, label }) => (
+            {navItems.map(({ id, icon: Icon, label }) => (
               <button
                 key={id}
                 onClick={() => scrollToSection(id)}
