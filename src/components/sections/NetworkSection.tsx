@@ -19,7 +19,7 @@ const NetworkSection = () => {
       // This is a placeholder - implement actual network fetching logic
       const mockNetwork = {
         id: "sponsor",
-        alias: "Link a Sponsor",
+        alias: "Request a Sponsor",
         children: [
           {
             id: "root",
