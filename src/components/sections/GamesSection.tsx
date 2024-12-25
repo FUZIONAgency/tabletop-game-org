@@ -21,7 +21,7 @@ const GamesSection = () => {
       title: "Online",
       description: "Host online games",
       icon: Dices,
-      route: "/games"
+      route: "/play/online"
     }
   ];
 
