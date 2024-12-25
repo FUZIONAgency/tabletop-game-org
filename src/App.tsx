@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./contexts/auth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import SignUp from "./pages/SignUp";
 import { useAuth } from "./contexts/auth";
 import { Skeleton } from "./components/ui/skeleton";
 
@@ -45,6 +46,7 @@ const App = () => {
             }
           />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
       </AuthProvider>
     </Router>
