@@ -10,6 +10,7 @@ const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,8 +47,8 @@ const Navigation = () => {
             key={id}
             to={href}
             className={`flex items-center space-x-2 transition-colors p-2 ${
-              scrolled
-                ? "text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+              scrolled || !isHomePage
+                ? "text-gray-300 hover:text-white"
                 : "text-white hover:text-[#C8C8C9]"
             }`}
           >
@@ -59,8 +60,8 @@ const Navigation = () => {
             key={id}
             onClick={() => scrollToSection(id)}
             className={`flex items-center space-x-2 transition-colors w-full p-2 ${
-              scrolled
-                ? "text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+              scrolled || !isHomePage
+                ? "text-gray-300 hover:text-white"
                 : "text-white hover:text-[#C8C8C9]"
             }`}
           >
@@ -75,9 +76,11 @@ const Navigation = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-md shadow-md dark:bg-gray-900/80"
-          : "bg-transparent"
+        isHomePage
+          ? scrolled
+            ? "bg-white/80 backdrop-blur-md shadow-md dark:bg-gray-900/80"
+            : "bg-transparent"
+          : "bg-black"
       }`}
     >
       <div className="container mx-auto px-6">
@@ -85,9 +88,9 @@ const Navigation = () => {
           <Link 
             to="/" 
             className={`text-xl font-bold transition-colors ${
-              scrolled
-                ? "text-gray-800 hover:text-gray-700 dark:text-white dark:hover:text-gray-200"
-                : "text-white hover:text-gray-200"
+              isHomePage && !scrolled
+                ? "text-white hover:text-gray-200"
+                : "text-white hover:text-gray-300"
             }`}
           >
             TabletopGame.org
@@ -112,8 +115,8 @@ const Navigation = () => {
                   variant="ghost" 
                   size="icon" 
                   className={`h-10 w-10 ${
-                    scrolled
-                      ? "text-gray-800 dark:text-white"
+                    isHomePage && !scrolled
+                      ? "text-white"
                       : "text-white"
                   }`}
                 >
