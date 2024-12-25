@@ -6,8 +6,6 @@ import GamesSection from "@/components/sections/GamesSection";
 import RecruitingSection from "@/components/sections/RecruitingSection";
 import RewardsSection from "@/components/sections/RewardsSection";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
-import NetworkSection from "@/components/sections/NetworkSection";
-import InvitesSection from "@/components/sections/InvitesSection";
 import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -38,19 +36,6 @@ const Index = () => {
           className="bg-gray-50"
         >
           <MyPlayerSection />
-        </Section>
-      )}
-
-      {/* Network Section - Only show when logged in */}
-      {user && (
-        <Section
-          id="network"
-          title="Your Network"
-          subtitle="NETWORK"
-          className="bg-white"
-        >
-          <NetworkSection />
-          <InvitesSection />
         </Section>
       )}
 

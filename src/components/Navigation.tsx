@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { UserPlus, Gamepad, HelpCircle, DollarSign } from "lucide-react";
+import { UserPlus, Gamepad, HelpCircle, DollarSign, Network } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +18,10 @@ const Navigation = () => {
   }, []);
 
   const scrollToSection = (id: string) => {
+    if (location.pathname !== '/') {
+      window.location.href = `/#${id}`;
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -24,6 +29,7 @@ const Navigation = () => {
   };
 
   const navItems = [
+    ...(user ? [{ id: "network", icon: Network, label: "Your Network", href: "/network" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Gamepad, label: "Play Games" },
     { id: "help", icon: HelpCircle, label: "Find Help" },
@@ -47,15 +53,26 @@ const Navigation = () => {
             Adventure Trade
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map(({ id, icon: Icon, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollToSection(id)}
-                className="flex items-center space-x-2 text-gray-600 hover:text-black transition-colors"
-              >
-                <Icon className="w-4 h-4" />
-                <span>{label}</span>
-              </button>
+            {navItems.map(({ id, icon: Icon, label, href }) => (
+              href ? (
+                <Link
+                  key={id}
+                  to={href}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-black transition-colors"
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{label}</span>
+                </Link>
+              ) : (
+                <button
+                  key={id}
+                  onClick={() => scrollToSection(id)}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-black transition-colors"
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{label}</span>
+                </button>
+              )
             ))}
             <div className="ml-4">
               <ProfileMenu />

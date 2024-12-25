@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./contexts/auth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Network from "./pages/Network";
 import { useAuth } from "./contexts/auth";
 import { Skeleton } from "./components/ui/skeleton";
 
@@ -45,6 +46,14 @@ const App = () => {
             }
           />
           <Route path="/auth" element={<Auth />} />
+          <Route
+            path="/network"
+            element={
+              <ProtectedRoute>
+                <Network />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </Router>
