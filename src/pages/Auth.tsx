@@ -39,10 +39,10 @@ const Auth = () => {
       {/* Left side - Features */}
       <div className="w-full max-w-xl p-8 space-y-8 text-white animate-fadeIn">
         <h1 className="text-4xl md:text-5xl font-bold text-gold">
-          Join TabletopGame.org Gaming
+          TabletopGame.org
         </h1>
         <p className="text-xl text-gray-300">
-          Your gateway to gaming success and rewards
+          Become a tabletop professional
         </p>
         <div className="grid gap-6 mt-8">
           {features.map((feature, index) => (
