@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserPlus, Dices, Network, DollarSign, Menu } from "lucide-react";
+import { UserPlus, Dices, DollarSign, Menu, ChevronDown } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
@@ -15,6 +15,7 @@ const Navigation = () => {
     { id: "games", icon: Dices, label: "Play Games" },
     { id: "recruiting", icon: UserPlus, label: "Recruit" },
     { id: "rewards", icon: DollarSign, label: "Get Paid" },
+    ...(user ? [{ id: "qualify", icon: ChevronDown, label: "Qualify" }] : []),
   ];
 
   const scrollToSection = (id: string) => {
@@ -30,26 +31,15 @@ const Navigation = () => {
 
   const NavLinks = () => (
     <>
-      {navItems.map(({ id, icon: Icon, label, href }) => (
-        href ? (
-          <Link
-            key={id}
-            to={href}
-            className="flex items-center space-x-2 transition-colors p-2 text-white hover:text-gold"
-          >
-            <Icon className="w-4 h-4" />
-            <span>{label}</span>
-          </Link>
-        ) : (
-          <button
-            key={id}
-            onClick={() => scrollToSection(id)}
-            className="flex items-center space-x-2 transition-colors w-full p-2 text-white hover:text-gold"
-          >
-            <Icon className="w-4 h-4" />
-            <span>{label}</span>
-          </button>
-        )
+      {navItems.map(({ id, icon: Icon, label }) => (
+        <button
+          key={id}
+          onClick={() => scrollToSection(id)}
+          className="flex items-center space-x-2 transition-colors w-full p-2 text-white hover:text-gold"
+        >
+          <Icon className="w-4 h-4" />
+          <span>{label}</span>
+        </button>
       ))}
     </>
   );

@@ -30,16 +30,15 @@ const Index = () => {
       
       {user && (
         <Section
-          id="my-player"
-          title="My Player Profile"
-          subtitle="PROFILE"
+          id="qualify"
+          title="Get Certified"
+          subtitle="QUALIFICATION"
           className="bg-gray-50"
         >
           <MyPlayerSection />
         </Section>
       )}
 
-      {/* Sign Up Section - Only show when not logged in */}
       {!user && (
         <Section
           id="signup"
