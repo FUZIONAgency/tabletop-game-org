@@ -5,22 +5,14 @@ import SignUpSection from "@/components/sections/SignUpSection";
 import GamesSection from "@/components/sections/GamesSection";
 import HelpSection from "@/components/sections/HelpSection";
 import RewardsSection from "@/components/sections/RewardsSection";
+import MyPlayerSection from "@/components/sections/MyPlayerSection";
 import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect } from "react";
 
 const Index = () => {
   const { isLoading, role, user } = useAuth();
 
-  useEffect(() => {
-    console.log("Index component mounted");
-    console.log("Auth loading state:", isLoading);
-    console.log("Current role:", role);
-    console.log("Current user:", user?.id);
-  }, [isLoading, role, user]);
-
   if (isLoading) {
-    console.log("Rendering loading skeleton...");
     return (
       <div className="min-h-screen bg-white p-6 space-y-8">
         <Skeleton className="h-16 w-full" />
@@ -31,12 +23,22 @@ const Index = () => {
     );
   }
 
-  console.log("Rendering full content...");
   return (
     <div className="bg-white">
       <Navigation />
       <HeroSection />
       
+      {user && (
+        <Section
+          id="my-player"
+          title="My Player Profile"
+          subtitle="PROFILE"
+          className="bg-gray-50"
+        >
+          <MyPlayerSection />
+        </Section>
+      )}
+
       {/* Sign Up Section */}
       <Section
         id="signup"
