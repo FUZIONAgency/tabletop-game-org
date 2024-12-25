@@ -1,6 +1,7 @@
 import { useAuth } from "@/contexts/auth";
 import { ProfileCard } from "@/components/sections/player/ProfileCard";
 import { PlayerCard } from "@/components/sections/player/PlayerCard";
+import { AuthUserCard } from "@/components/sections/auth/AuthUserCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Section from "@/components/Section";
@@ -41,7 +42,10 @@ const Profile = () => {
       subtitle="Account Information"
       className="bg-background"
     >
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-3">
+        <div className="w-full">
+          <AuthUserCard userId={user?.id} />
+        </div>
         <div className="w-full">
           <ProfileCard profile={profile} />
         </div>
