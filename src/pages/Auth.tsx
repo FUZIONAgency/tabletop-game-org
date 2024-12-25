@@ -5,16 +5,57 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth";
 import { Shield, DollarSign, Users, GraduationCap, Dices } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
       navigate("/");
     }
-  }, [user, navigate]);
+
+    // Listen for auth state changes and errors
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        // Handle sign out
+      } else if (event === "PASSWORD_RECOVERY") {
+        // Handle password recovery
+      } else if (event === "SIGNED_IN") {
+        // Handle successful sign in
+      } else if (!session && event === "INITIAL_SESSION") {
+        // Handle invalid credentials or other auth errors
+        const authError = (session as any)?.error?.message;
+        if (authError?.includes("Invalid login credentials")) {
+          toast({
+            title: "Login Failed",
+            description: "The email or password you entered is incorrect. Please try again.",
+            variant: "destructive",
+          });
+        } else if (authError?.includes("Email not confirmed")) {
+          toast({
+            title: "Email Not Verified",
+            description: "Please check your email and click the confirmation link to verify your account.",
+            variant: "destructive",
+          });
+        } else if (authError) {
+          toast({
+            title: "Authentication Error",
+            description: authError,
+            variant: "destructive",
+          });
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, navigate, toast]);
 
   const features = [
     {
@@ -107,6 +148,7 @@ const Auth = () => {
               },
             }}
             providers={[]}
+            redirectTo={window.location.origin}
           />
         </div>
       </div>

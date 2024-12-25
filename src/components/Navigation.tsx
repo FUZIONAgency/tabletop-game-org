@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserPlus, Dices, DollarSign, Menu, ShieldCheck } from "lucide-react";
+import { UserPlus, Dices, DollarSign, Menu, ShieldCheck, LogIn } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
@@ -59,14 +59,37 @@ const Navigation = () => {
           <div className="hidden md:flex items-center space-x-8">
             <NavLinks />
             <div className="ml-4">
-              <ProfileMenu />
+              {user ? (
+                <ProfileMenu />
+              ) : (
+                <Button
+                  variant="ghost"
+                  className="text-white hover:text-gold"
+                  onClick={() => navigate('/auth')}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+              )}
             </div>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              <ProfileMenu />
+              {user ? (
+                <ProfileMenu />
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-gold"
+                  onClick={() => navigate('/auth')}
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span className="sr-only">Login</span>
+                </Button>
+              )}
             </div>
             <Sheet>
               <SheetTrigger asChild>
