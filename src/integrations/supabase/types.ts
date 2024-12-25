@@ -681,6 +681,51 @@ export type Database = {
           },
         ]
       }
+      player_sessions: {
+        Row: {
+          attendance_status: string
+          created_at: string
+          id: string
+          payment_status: string
+          player_id: string
+          session_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          attendance_status?: string
+          created_at?: string
+          id?: string
+          payment_status?: string
+          player_id: string
+          session_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          attendance_status?: string
+          created_at?: string
+          id?: string
+          payment_status?: string
+          player_id?: string
+          session_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_sessions_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_sessions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           alias: string
