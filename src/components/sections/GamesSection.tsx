@@ -1,4 +1,4 @@
-import { Gamepad } from "lucide-react";
+import { Store, Award, Dice } from "lucide-react";
 
 const GamesSection = () => {
   return (
@@ -7,17 +7,17 @@ const GamesSection = () => {
         {
           title: "Retailers",
           description: "Play at your local retailer",
-          icon: Gamepad,
+          icon: Store,
         },
         {
           title: "Conventions",
           description: "Host games at conventions",
-          icon: Gamepad,
+          icon: Award,
         },
         {
           title: "Online",
           description: "Host online games",
-          icon: Gamepad,
+          icon: Dice,
         },
       ].map((item, index) => (
         <div
