@@ -457,9 +457,9 @@ export type Database = {
           id: string
           is_opt_out: boolean | null
           last_name: string | null
-          player_id: string
           status: string
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           cell?: string | null
@@ -472,9 +472,9 @@ export type Database = {
           id?: string
           is_opt_out?: boolean | null
           last_name?: string | null
-          player_id: string
           status?: string
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           cell?: string | null
@@ -487,19 +487,11 @@ export type Database = {
           id?: string
           is_opt_out?: boolean | null
           last_name?: string | null
-          player_id?: string
           status?: string
           updated_at?: string | null
+          user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "invites_player_id_fkey"
-            columns: ["player_id"]
-            isOneToOne: false
-            referencedRelation: "players"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       link_types: {
         Row: {

@@ -26,7 +26,6 @@ const InvitesSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [playerId, setPlayerId] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -37,27 +36,10 @@ const InvitesSection = () => {
         setIsLoading(true);
         setError(null);
 
-        const { data: playerData, error: playerError } = await supabase
-          .from("players")
-          .select("id")
-          .eq("auth_id", user.id)
-          .maybeSingle();
-
-        if (playerError) {
-          throw playerError;
-        }
-
-        if (!playerData) {
-          setInvites([]);
-          return;
-        }
-
-        setPlayerId(playerData.id);
-
         const { data: invitesData, error: invitesError } = await supabase
           .from("invites")
           .select("*")
-          .eq("player_id", playerData.id)
+          .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
         if (invitesError) {
@@ -113,26 +95,23 @@ const InvitesSection = () => {
           <Mail className="h-5 w-5" />
           <h3 className="text-xl font-semibold">Your Invites</h3>
         </div>
-        {playerId && (
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                New Invite
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Send New Invite</DialogTitle>
-              </DialogHeader>
-              <InviteForm
-                playerId={playerId}
-                onInviteCreated={handleInviteCreated}
-                onClose={() => setIsOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        )}
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <UserPlus className="h-4 w-4" />
+              New Invite
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Send New Invite</DialogTitle>
+            </DialogHeader>
+            <InviteForm
+              onInviteCreated={handleInviteCreated}
+              onClose={() => setIsOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       <InviteList invites={invites} />
     </div>

@@ -4,13 +4,12 @@ import { useInviteForm } from "./useInviteForm";
 import { InviteFormField } from "./InviteFormField";
 
 interface InviteFormProps {
-  playerId: string;
   onInviteCreated: (invite: any) => void;
   onClose: () => void;
 }
 
-export const InviteForm = ({ playerId, onInviteCreated, onClose }: InviteFormProps) => {
-  const { form, onSubmit } = useInviteForm({ playerId, onInviteCreated, onClose });
+export const InviteForm = ({ onInviteCreated, onClose }: InviteFormProps) => {
+  const { form, onSubmit } = useInviteForm({ onInviteCreated, onClose });
 
   return (
     <Form {...form}>

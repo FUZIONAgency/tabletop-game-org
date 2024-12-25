@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "../ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/auth";
 
 const inviteSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -14,13 +15,13 @@ const inviteSchema = z.object({
 export type InviteFormData = z.infer<typeof inviteSchema>;
 
 interface UseInviteFormProps {
-  playerId: string;
   onInviteCreated: (invite: any) => void;
   onClose: () => void;
 }
 
-export const useInviteForm = ({ playerId, onInviteCreated, onClose }: UseInviteFormProps) => {
+export const useInviteForm = ({ onInviteCreated, onClose }: UseInviteFormProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const form = useForm<InviteFormData>({
     resolver: zodResolver(inviteSchema),
@@ -73,18 +74,26 @@ export const useInviteForm = ({ playerId, onInviteCreated, onClose }: UseInviteF
   };
 
   const onSubmit = async (data: InviteFormData) => {
+    if (!user?.id) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "You must be logged in to send invites.",
+      });
+      return;
+    }
+
     try {
       const { data: invite, error: inviteError } = await supabase
         .from("invites")
         .insert([
           {
-            player_id: playerId,
+            user_id: user.id,
             email: data.email,
             first_name: data.firstName,
             last_name: data.lastName,
             cell: data.cell,
             status: "unsent",
-            type: "requested",
           },
         ])
         .select()
