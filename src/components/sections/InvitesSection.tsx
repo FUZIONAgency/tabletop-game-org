@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, UserPlus } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
@@ -110,15 +110,11 @@ const InvitesSection = () => {
 
   return (
     <div className="space-y-8 mt-16">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <div className="flex items-center gap-2">
           <Mail className="h-5 w-5" />
           <h3 className="text-xl font-semibold">Your Invites</h3>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-          <UserPlus className="h-4 w-4" />
-          New Invite
-        </button>
       </div>
       <div className="grid gap-4">
         {invites.map((invite) => (

@@ -608,6 +608,7 @@ export type Database = {
           downline_id: string
           id: string
           status: string | null
+          type: string
           updated_at: string | null
           upline_id: string
         }
@@ -616,6 +617,7 @@ export type Database = {
           downline_id: string
           id?: string
           status?: string | null
+          type?: string
           updated_at?: string | null
           upline_id: string
         }
@@ -624,6 +626,7 @@ export type Database = {
           downline_id?: string
           id?: string
           status?: string | null
+          type?: string
           updated_at?: string | null
           upline_id?: string
         }
