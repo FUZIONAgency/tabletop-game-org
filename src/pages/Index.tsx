@@ -6,12 +6,21 @@ import GamesSection from "@/components/sections/GamesSection";
 import HelpSection from "@/components/sections/HelpSection";
 import RewardsSection from "@/components/sections/RewardsSection";
 import { useAuth } from "@/contexts/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const { isLoading } = useAuth();
 
-  // Don't render skeleton here as it's handled by ProtectedRoute
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white p-6 space-y-8">
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-[60vh] w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white">
