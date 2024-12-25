@@ -10,14 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 
 const Index = () => {
-  const { isLoading, role } = useAuth();
+  const { isLoading, role, user } = useAuth();
 
   useEffect(() => {
+    console.log("Index component mounted");
     console.log("Auth loading state:", isLoading);
     console.log("Current role:", role);
-  }, [isLoading, role]);
+    console.log("Current user:", user?.id);
+  }, [isLoading, role, user]);
 
   if (isLoading) {
+    console.log("Rendering loading skeleton...");
     return (
       <div className="min-h-screen bg-white p-6 space-y-8">
         <Skeleton className="h-16 w-full" />
@@ -28,6 +31,7 @@ const Index = () => {
     );
   }
 
+  console.log("Rendering full content...");
   return (
     <div className="bg-white">
       <Navigation />

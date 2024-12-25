@@ -30,17 +30,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("AuthProvider mounted");
+    
     const initializeAuth = async () => {
       try {
+        console.log("Initializing auth...");
         const { data: { session } } = await supabase.auth.getSession();
-        console.log("Initial session:", session?.user?.id);
+        console.log("Session retrieved:", session?.user?.id);
         setUser(session?.user ?? null);
+        
         if (session?.user) {
+          console.log("Fetching user role...");
           await fetchUserRole(session.user.id);
+        } else {
+          console.log("No session found");
+          setRole(null);
         }
       } catch (error) {
-        console.error("Error getting session:", error);
+        console.error("Error in initializeAuth:", error);
       } finally {
+        console.log("Setting loading to false");
         setIsLoading(false);
       }
     };
@@ -52,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.id);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
         await fetchUserRole(session.user.id);
       } else {
@@ -65,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      console.log("Fetching role for user:", userId);
       const { data, error } = await supabase
         .from("profiles")
         .select("role")
@@ -76,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      console.log("Role fetched:", data.role);
       setRole(data.role);
     } catch (error) {
       console.error("Error in fetchUserRole:", error);
