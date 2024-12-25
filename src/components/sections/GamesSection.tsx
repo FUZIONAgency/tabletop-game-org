@@ -15,7 +15,7 @@ const GamesSection = () => {
       title: "Conventions",
       description: "Host games at conventions",
       icon: Users,
-      route: "/conventions"
+      route: "/play/convention-games"
     },
     {
       title: "Online",
