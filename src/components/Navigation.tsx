@@ -15,7 +15,7 @@ const Navigation = () => {
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Dices, label: "Play" },
     { id: "recruiting", icon: UserPlus, label: "Recruit" },
-    { id: "rewards", icon: DollarSign, label: "Get Paid" },
+    { id: "rewards", icon: DollarSign, label: "Earn" },
   ];
 
   const scrollToSection = (id: string) => {
