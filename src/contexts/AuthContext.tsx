@@ -3,17 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
   role: string | null;
   isLoading: boolean;
-};
+}
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  role: null,
-  isLoading: true,
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -75,8 +71,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const value = { user, role, isLoading };
+
   return (
-    <AuthContext.Provider value={{ user, role, isLoading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
