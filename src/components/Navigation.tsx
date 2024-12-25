@@ -48,7 +48,7 @@ const Navigation = () => {
             className={`flex items-center space-x-2 transition-colors p-2 ${
               scrolled
                 ? "text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                : "text-gray-600 hover:text-black dark:text-gray-200 dark:hover:text-white"
+                : "text-white hover:text-[#C8C8C9]"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -61,7 +61,7 @@ const Navigation = () => {
             className={`flex items-center space-x-2 transition-colors w-full p-2 ${
               scrolled
                 ? "text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                : "text-gray-600 hover:text-black dark:text-gray-200 dark:hover:text-white"
+                : "text-white hover:text-[#C8C8C9]"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -114,7 +114,7 @@ const Navigation = () => {
                   className={`h-10 w-10 ${
                     scrolled
                       ? "text-gray-800 dark:text-white"
-                      : "text-gray-800 dark:text-white"
+                      : "text-white"
                   }`}
                 >
                   <Menu className="h-6 w-6" />
