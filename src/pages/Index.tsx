@@ -45,7 +45,7 @@ const Index = () => {
       {user && (
         <Section
           id="network"
-          title="Your Downline"
+          title="Your Network"
           subtitle="NETWORK"
           className="bg-white"
         >
