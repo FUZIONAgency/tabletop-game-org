@@ -1,8 +1,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Campaign } from "@/types/campaign";
+import { useState } from "react";
 
 interface CampaignTableProps {
   campaigns: Campaign[];
@@ -10,9 +11,25 @@ interface CampaignTableProps {
 }
 
 export const CampaignTable = ({ campaigns, onJoinCampaign }: CampaignTableProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+
   if (campaigns.length === 0) {
     return <p className="text-center text-gray-500">No online campaigns available.</p>;
   }
+
+  const handleJoinClick = (campaignId: string) => {
+    setSelectedCampaignId(campaignId);
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirmJoin = async () => {
+    if (selectedCampaignId) {
+      await onJoinCampaign(selectedCampaignId);
+      setIsDialogOpen(false);
+      setSelectedCampaignId(null);
+    }
+  };
 
   return (
     <Table>
@@ -31,9 +48,13 @@ export const CampaignTable = ({ campaigns, onJoinCampaign }: CampaignTableProps)
         {campaigns.map((campaign) => (
           <TableRow key={campaign.id}>
             <TableCell>
-              <Dialog>
+              <Dialog open={isDialogOpen && selectedCampaignId === campaign.id} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="default" className="bg-yellow-500 hover:bg-yellow-600">
+                  <Button 
+                    variant="default" 
+                    className="bg-yellow-500 hover:bg-yellow-600"
+                    onClick={() => handleJoinClick(campaign.id)}
+                  >
                     Join
                   </Button>
                 </DialogTrigger>
@@ -45,9 +66,12 @@ export const CampaignTable = ({ campaigns, onJoinCampaign }: CampaignTableProps)
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex justify-end gap-4 mt-4">
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
                     <Button
                       variant="default"
-                      onClick={() => onJoinCampaign(campaign.id)}
+                      onClick={handleConfirmJoin}
                     >
                       Confirm
                     </Button>
