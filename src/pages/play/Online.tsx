@@ -51,8 +51,8 @@ const OnlineGames = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Description</TableHead>
+            <TableHead className="text-left">Title</TableHead>
+            <TableHead className="text-left">Description</TableHead>
             <TableHead>Players</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Status</TableHead>
@@ -62,8 +62,8 @@ const OnlineGames = () => {
         <TableBody>
           {campaigns?.map((campaign) => (
             <TableRow key={campaign.id}>
-              <TableCell className="font-medium">{campaign.title}</TableCell>
-              <TableCell>{campaign.description}</TableCell>
+              <TableCell className="font-medium text-left">{campaign.title}</TableCell>
+              <TableCell className="text-left">{campaign.description}</TableCell>
               <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
               <TableCell>${campaign.price}</TableCell>
               <TableCell>
