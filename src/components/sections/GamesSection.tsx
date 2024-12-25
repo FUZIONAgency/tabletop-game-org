@@ -1,4 +1,4 @@
-import { Store, Award, Dices } from "lucide-react";
+import { Store, Users, Dices } from "lucide-react";
 
 const GamesSection = () => {
   return (
@@ -12,7 +12,7 @@ const GamesSection = () => {
         {
           title: "Conventions",
           description: "Host games at conventions",
-          icon: Award,
+          icon: Users,
         },
         {
           title: "Online",
