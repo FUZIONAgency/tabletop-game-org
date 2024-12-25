@@ -35,25 +35,21 @@ export const useInviteForm = ({ onInviteCreated, onClose }: UseInviteFormProps) 
 
   const handleEmailSending = async (invite: any, data: InviteFormData) => {
     try {
-      const response = await fetch("/functions/v1/send-invite-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const { error: functionError } = await supabase.functions.invoke('send-invite-email', {
+        body: {
           to: data.email,
           firstName: data.firstName,
           lastName: data.lastName,
-        }),
+        },
       });
 
-      if (!response.ok) {
+      if (functionError) {
         await supabase
           .from("invites")
           .update({ status: "email_failed" })
           .eq("id", invite.id);
 
-        throw new Error("Failed to send email");
+        throw functionError;
       }
 
       const { error: updateError } = await supabase
