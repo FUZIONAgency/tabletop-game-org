@@ -445,6 +445,62 @@ export type Database = {
         }
         Relationships: []
       }
+      invites: {
+        Row: {
+          cell: string | null
+          created_at: string | null
+          date_decided: string | null
+          date_read: string | null
+          date_sent: string | null
+          email: string
+          first_name: string | null
+          id: string
+          is_opt_out: boolean | null
+          last_name: string | null
+          player_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          cell?: string | null
+          created_at?: string | null
+          date_decided?: string | null
+          date_read?: string | null
+          date_sent?: string | null
+          email: string
+          first_name?: string | null
+          id?: string
+          is_opt_out?: boolean | null
+          last_name?: string | null
+          player_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          cell?: string | null
+          created_at?: string | null
+          date_decided?: string | null
+          date_read?: string | null
+          date_sent?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          is_opt_out?: boolean | null
+          last_name?: string | null
+          player_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invites_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       link_types: {
         Row: {
           created_at: string
