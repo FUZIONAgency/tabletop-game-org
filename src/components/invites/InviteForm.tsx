@@ -37,7 +37,7 @@ export const InviteForm = ({ playerId, onInviteCreated, onClose }: InviteFormPro
 
   const onSubmit = async (data: InviteFormData) => {
     try {
-      // Create the invite
+      // First, create the invite record
       const { data: invite, error: inviteError } = await supabase
         .from("invites")
         .insert([
@@ -56,27 +56,56 @@ export const InviteForm = ({ playerId, onInviteCreated, onClose }: InviteFormPro
 
       if (inviteError) throw inviteError;
 
-      // Send the email
-      const response = await fetch("/functions/v1/send-invite-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-        }),
-      });
+      // Then attempt to send the email
+      try {
+        const response = await fetch("/functions/v1/send-invite-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to send email");
+        if (!response.ok) {
+          // Update invite status to indicate email sending failed
+          await supabase
+            .from("invites")
+            .update({ status: "email_failed" })
+            .eq("id", invite.id);
+
+          throw new Error("Failed to send email");
+        }
+
+        // Update invite status to indicate email was sent
+        const { error: updateError } = await supabase
+          .from("invites")
+          .update({ 
+            status: "sent",
+            date_sent: new Date().toISOString()
+          })
+          .eq("id", invite.id);
+
+        if (updateError) throw updateError;
+      } catch (emailError) {
+        console.error("Error sending email:", emailError);
+        toast({
+          variant: "destructive",
+          title: "Warning",
+          description: "Invite created but email could not be sent. Please try resending later.",
+        });
+        // Still update parent component since invite was created
+        onInviteCreated(invite);
+        form.reset();
+        onClose();
+        return;
       }
 
-      // Update parent component
+      // Everything succeeded
       onInviteCreated(invite);
-      
-      // Reset form and close dialog
       form.reset();
       onClose();
       
@@ -89,7 +118,7 @@ export const InviteForm = ({ playerId, onInviteCreated, onClose }: InviteFormPro
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send invite. Please try again.",
+        description: "Failed to create invite. Please try again.",
       });
     }
   };
