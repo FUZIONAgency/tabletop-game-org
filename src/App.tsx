@@ -3,6 +3,8 @@ import { AuthProvider } from "./contexts/auth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Network from "./pages/Network";
+import MyRetailers from "./pages/MyRetailers";
+import MyConventions from "./pages/MyConventions";
 import { useAuth } from "./contexts/auth";
 import { Skeleton } from "./components/ui/skeleton";
 
@@ -51,6 +53,22 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Network />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/retailers"
+            element={
+              <ProtectedRoute>
+                <MyRetailers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conventions"
+            element={
+              <ProtectedRoute>
+                <MyConventions />
               </ProtectedRoute>
             }
           />
