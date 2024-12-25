@@ -7,14 +7,14 @@ export const authService = {
         .from("profiles")
         .select("role")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching user role:", error);
         return null;
       }
 
-      return data.role;
+      return data?.role ?? null;
     } catch (error) {
       console.error("Error in fetchUserRole:", error);
       return null;
