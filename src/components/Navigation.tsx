@@ -11,11 +11,11 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
+    ...(user ? [{ id: "qualify", icon: ChevronDown, label: "Qualify" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Dices, label: "Play Games" },
     { id: "recruiting", icon: UserPlus, label: "Recruit" },
     { id: "rewards", icon: DollarSign, label: "Get Paid" },
-    ...(user ? [{ id: "qualify", icon: ChevronDown, label: "Qualify" }] : []),
   ];
 
   const scrollToSection = (id: string) => {
