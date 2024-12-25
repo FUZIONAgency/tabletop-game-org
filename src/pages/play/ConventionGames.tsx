@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useConventionCampaigns } from "@/hooks/useConventionCampaigns";
+import Section from "@/components/Section";
 
 const ConventionGames = () => {
   const { user } = useAuth();
@@ -151,14 +152,17 @@ const ConventionGames = () => {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Convention Games</h1>
+    <Section
+      id="convention-games"
+      title="Convention Games"
+      subtitle="Find games at conventions"
+    >
       <CampaignTable 
         campaigns={campaigns || []} 
         onJoinCampaign={handleJoinCampaign}
         onLeaveCampaign={handleLeaveCampaign}
       />
-    </div>
+    </Section>
   );
 };
 

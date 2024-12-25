@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
+import Section from "@/components/Section";
 
 const OnlineGames = () => {
   const { user } = useAuth();
@@ -151,14 +152,17 @@ const OnlineGames = () => {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Online Games</h1>
+    <Section
+      id="online-games"
+      title="Online Games"
+      subtitle="Play from anywhere"
+    >
       <CampaignTable 
         campaigns={campaigns || []} 
         onJoinCampaign={handleJoinCampaign}
         onLeaveCampaign={handleLeaveCampaign}
       />
-    </div>
+    </Section>
   );
 };
 
