@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 interface CreatePlayerFormProps {
   email: string;
+  onSuccess?: () => void;
 }
 
 interface FormData {
@@ -24,7 +25,7 @@ interface FormData {
   state: string;
 }
 
-export function CreatePlayerForm({ email }: CreatePlayerFormProps) {
+export function CreatePlayerForm({ email, onSuccess }: CreatePlayerFormProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const form = useForm<FormData>();
@@ -42,6 +43,7 @@ export function CreatePlayerForm({ email }: CreatePlayerFormProps) {
         description: "Player profile created successfully",
       });
       setOpen(false);
+      onSuccess?.();
     } catch (error) {
       console.error("Error creating player:", error);
       toast({

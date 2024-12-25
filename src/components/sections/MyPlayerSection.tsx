@@ -29,42 +29,42 @@ const MyPlayerSection = () => {
   const [gameSystems, setGameSystems] = useState<GameSystem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.email) return;
+  const fetchData = async () => {
+    if (!user?.email) return;
 
-      try {
-        const [playerResult, gameSystemsResult] = await Promise.all([
-          supabase
-            .from("players")
-            .select("*")
-            .eq("email", user.email)
-            .maybeSingle(),
-          supabase
-            .from("game_systems")
-            .select("*")
-            .eq("status", "active")
-        ]);
+    try {
+      const [playerResult, gameSystemsResult] = await Promise.all([
+        supabase
+          .from("players")
+          .select("*")
+          .eq("email", user.email)
+          .maybeSingle(),
+        supabase
+          .from("game_systems")
+          .select("*")
+          .eq("status", "active")
+      ]);
 
-        if (playerResult.error) {
-          console.error("Error fetching player data:", playerResult.error);
-          return;
-        }
-
-        if (gameSystemsResult.error) {
-          console.error("Error fetching game systems:", gameSystemsResult.error);
-          return;
-        }
-
-        setPlayer(playerResult.data);
-        setGameSystems(gameSystemsResult.data || []);
-      } catch (error) {
-        console.error("Error in fetchData:", error);
-      } finally {
-        setIsLoading(false);
+      if (playerResult.error) {
+        console.error("Error fetching player data:", playerResult.error);
+        return;
       }
-    };
 
+      if (gameSystemsResult.error) {
+        console.error("Error fetching game systems:", gameSystemsResult.error);
+        return;
+      }
+
+      setPlayer(playerResult.data);
+      setGameSystems(gameSystemsResult.data || []);
+    } catch (error) {
+      console.error("Error in fetchData:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [user?.email]);
 
@@ -86,7 +86,7 @@ const MyPlayerSection = () => {
           <p className="text-muted-foreground">
             Your email is not associated with any player profile.
           </p>
-          {user?.email && <CreatePlayerForm email={user.email} />}
+          {user?.email && <CreatePlayerForm email={user.email} onSuccess={fetchData} />}
         </CardContent>
       </Card>
     );
