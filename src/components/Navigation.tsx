@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { UserPlus, Gamepad, HelpCircle, DollarSign } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,10 +15,6 @@ const Navigation = () => {
   }, []);
 
   const scrollToSection = (id: string) => {
-    if (id === "signup") {
-      navigate("/signup");
-      return;
-    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });

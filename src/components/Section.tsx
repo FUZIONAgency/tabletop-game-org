@@ -12,7 +12,7 @@ const Section = ({ id, title, subtitle, children, className = "" }: SectionProps
   return (
     <section
       id={id}
-      className={`min-h-screen flex items-center justify-center py-20 opacity-100 ${className}`}
+      className={`min-h-screen flex items-center justify-center py-20 ${className}`}
     >
       <div className="container mx-auto px-6">
         <div className="space-y-4 text-center mb-16">
