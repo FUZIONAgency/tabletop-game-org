@@ -30,9 +30,8 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "LoveTi Network <invites@loveti.com>",
+        from: "Resend <onboarding@resend.dev>", // Using Resend's default testing domain
         to: [emailRequest.to],
-        bcc: ["ops@loveti.com"],
         subject: "You've been invited to LoveTi Network",
         html: `
           <p>Hello ${emailRequest.firstName} ${emailRequest.lastName},</p>
