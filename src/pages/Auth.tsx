@@ -5,16 +5,61 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth";
 import { Shield, DollarSign, Users, GraduationCap, Dices } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
       navigate("/");
     }
-  }, [user, navigate]);
+
+    // Listen for auth errors
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        // Handle sign out
+      } else if (event === "USER_DELETED") {
+        // Handle account deletion
+      } else if (event === "PASSWORD_RECOVERY") {
+        // Handle password recovery
+      } else if (event === "SIGNED_IN") {
+        // Handle successful sign in
+      }
+    });
+
+    // Listen specifically for auth errors
+    const authListener = supabase.auth.onError((error) => {
+      if (error.message.includes("Invalid login credentials")) {
+        toast({
+          title: "Login Failed",
+          description: "The email or password you entered is incorrect. Please try again.",
+          variant: "destructive",
+        });
+      } else if (error.message.includes("Email not confirmed")) {
+        toast({
+          title: "Email Not Verified",
+          description: "Please check your email and click the confirmation link to verify your account.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Authentication Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      authListener.data.subscription.unsubscribe();
+    };
+  }, [user, navigate, toast]);
 
   const features = [
     {
