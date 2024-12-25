@@ -15,10 +15,14 @@ export const useCampaigns = () => {
         .eq("auth_id", user?.id)
         .maybeSingle();
 
-      // Get all campaigns
+      // Get all campaigns with game system information
       const { data: campaigns, error } = await supabase
         .from("campaigns")
-        .select("*, campaign_players!inner(*)")
+        .select(`
+          *,
+          campaign_players!inner(*),
+          game_system:game_systems(name)
+        `)
         .eq("type", "online")
         .order("created_at", { ascending: false });
 
