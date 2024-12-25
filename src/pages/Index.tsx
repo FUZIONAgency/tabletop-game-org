@@ -7,9 +7,15 @@ import HelpSection from "@/components/sections/HelpSection";
 import RewardsSection from "@/components/sections/RewardsSection";
 import { useAuth } from "@/contexts/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect } from "react";
 
 const Index = () => {
-  const { isLoading } = useAuth();
+  const { isLoading, role } = useAuth();
+
+  useEffect(() => {
+    console.log("Auth loading state:", isLoading);
+    console.log("Current role:", role);
+  }, [isLoading, role]);
 
   if (isLoading) {
     return (
