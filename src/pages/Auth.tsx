@@ -39,7 +39,7 @@ const Auth = () => {
       {/* Left side - Features */}
       <div className="w-full max-w-xl p-8 space-y-8 text-white animate-fadeIn">
         <h1 className="text-4xl md:text-5xl font-bold text-gold">
-          Join Try My Game Gaming
+          Join TabletopGame.org Gaming
         </h1>
         <p className="text-xl text-gray-300">
           Your gateway to gaming success and rewards
@@ -67,7 +67,7 @@ const Auth = () => {
           <div className="flex items-center justify-center gap-2 mb-6">
             <Shield className="w-6 h-6 text-gold" />
             <h2 className="text-2xl font-bold text-center">
-              Welcome to Try My Game
+              Welcome to TabletopGame.org
             </h2>
           </div>
           <SupabaseAuth

@@ -90,7 +90,7 @@ const Navigation = () => {
                 : "text-white hover:text-gray-200"
             }`}
           >
-            Try My Game
+            TabletopGame.org
           </Link>
 
           {/* Desktop Navigation */}
