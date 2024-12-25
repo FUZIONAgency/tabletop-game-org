@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Tree, UserPlus2 } from "lucide-react";
+import { Trees, UserPlus2 } from "lucide-react";
 import { Card } from "../ui/card";
 
 interface NetworkNode {
@@ -57,7 +57,7 @@ const NetworkSection = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-center gap-2">
-        <Tree className="h-5 w-5" />
+        <Trees className="h-5 w-5" />
         <h3 className="text-xl font-semibold">Your Network</h3>
       </div>
       <div className="flex justify-center">
