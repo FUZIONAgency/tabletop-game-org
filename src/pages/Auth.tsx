@@ -107,6 +107,10 @@ const Auth = () => {
               },
             }}
             providers={[]}
+            redirectTo={window.location.origin}
+            onError={(error) => {
+              console.error("Auth error:", error);
+            }}
           />
         </div>
       </div>
