@@ -4,7 +4,7 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth";
-import { Shield, DollarSign, Users } from "lucide-react";
+import { Shield, DollarSign, Users, GraduationCap } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -17,6 +17,11 @@ const Auth = () => {
   }, [user, navigate]);
 
   const features = [
+    {
+      icon: <GraduationCap className="w-8 h-8" />,
+      title: "Qualify",
+      description: "Become certified on each game system",
+    },
     {
       icon: <Shield className="w-8 h-8" />,
       title: "Play Games",
