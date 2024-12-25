@@ -15,7 +15,7 @@ const Profile = () => {
         .from("profiles")
         .select("*")
         .eq("id", user?.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!user?.id,
@@ -28,7 +28,7 @@ const Profile = () => {
         .from("players")
         .select("*")
         .eq("auth_id", user?.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!user?.id,
