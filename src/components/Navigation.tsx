@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserPlus, Dices, HelpCircle, DollarSign, Network, Menu } from "lucide-react";
+import { UserPlus, Dices, Network, DollarSign, Menu } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
@@ -14,7 +14,7 @@ const Navigation = () => {
     ...(user ? [{ id: "network", icon: Network, label: "Your Network", href: "/network" }] : []),
     ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
     { id: "games", icon: Dices, label: "Play Games" },
-    { id: "help", icon: HelpCircle, label: "Find Help" },
+    { id: "recruiting", icon: UserPlus, label: "Build Your Team" },
     { id: "rewards", icon: DollarSign, label: "Get Paid" },
   ];
 
