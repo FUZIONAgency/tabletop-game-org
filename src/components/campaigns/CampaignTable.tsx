@@ -8,24 +8,31 @@ import { useState } from "react";
 interface CampaignTableProps {
   campaigns: Campaign[];
   onJoinCampaign: (campaignId: string) => Promise<void>;
+  onLeaveCampaign: (campaignId: string) => Promise<void>;
 }
 
-export const CampaignTable = ({ campaigns, onJoinCampaign }: CampaignTableProps) => {
+export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: CampaignTableProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  const [dialogAction, setDialogAction] = useState<'join' | 'leave'>('join');
 
   if (campaigns.length === 0) {
     return <p className="text-center text-gray-500">No online campaigns available.</p>;
   }
 
-  const handleJoinClick = (campaignId: string) => {
+  const handleActionClick = (campaignId: string, action: 'join' | 'leave') => {
     setSelectedCampaignId(campaignId);
+    setDialogAction(action);
     setIsDialogOpen(true);
   };
 
-  const handleConfirmJoin = async () => {
+  const handleConfirmAction = async () => {
     if (selectedCampaignId) {
-      await onJoinCampaign(selectedCampaignId);
+      if (dialogAction === 'join') {
+        await onJoinCampaign(selectedCampaignId);
+      } else {
+        await onLeaveCampaign(selectedCampaignId);
+      }
       setIsDialogOpen(false);
       setSelectedCampaignId(null);
     }
@@ -50,19 +57,29 @@ export const CampaignTable = ({ campaigns, onJoinCampaign }: CampaignTableProps)
             <TableCell>
               <Dialog open={isDialogOpen && selectedCampaignId === campaign.id} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button 
-                    variant="default" 
-                    className="bg-yellow-500 hover:bg-yellow-600"
-                    onClick={() => handleJoinClick(campaign.id)}
-                  >
-                    Join
-                  </Button>
+                  {campaign.is_member ? (
+                    <Button 
+                      variant="default" 
+                      className="bg-black hover:bg-gray-800"
+                      onClick={() => handleActionClick(campaign.id, 'leave')}
+                    >
+                      Leave
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="default" 
+                      className="bg-yellow-500 hover:bg-yellow-600"
+                      onClick={() => handleActionClick(campaign.id, 'join')}
+                    >
+                      Join
+                    </Button>
+                  )}
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Join Campaign</DialogTitle>
+                    <DialogTitle>{dialogAction === 'join' ? 'Join' : 'Leave'} Campaign</DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to join "{campaign.title}"?
+                      Are you sure you want to {dialogAction} "{campaign.title}"?
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex justify-end gap-4 mt-4">
@@ -71,7 +88,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign }: CampaignTableProps)
                     </DialogClose>
                     <Button
                       variant="default"
-                      onClick={handleConfirmJoin}
+                      onClick={handleConfirmAction}
                     >
                       Confirm
                     </Button>

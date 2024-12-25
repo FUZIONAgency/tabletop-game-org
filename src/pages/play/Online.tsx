@@ -92,6 +92,56 @@ const OnlineGames = () => {
     }
   };
 
+  const handleLeaveCampaign = async (campaignId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to leave campaigns",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: playerData } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", user.id)
+        .maybeSingle();
+
+      if (!playerData) {
+        toast({
+          title: "Error",
+          description: "Player profile not found",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error: leaveError } = await supabase
+        .from("campaign_players")
+        .delete()
+        .eq("campaign_id", campaignId)
+        .eq("player_id", playerData.id);
+
+      if (leaveError) throw leaveError;
+
+      toast({
+        title: "Success!",
+        description: "You have left the campaign",
+      });
+
+      refetch();
+    } catch (error) {
+      console.error("Error leaving campaign:", error);
+      toast({
+        title: "Error",
+        description: "Failed to leave campaign. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -105,7 +155,8 @@ const OnlineGames = () => {
       <h1 className="text-3xl font-bold mb-6">Online Games</h1>
       <CampaignTable 
         campaigns={campaigns || []} 
-        onJoinCampaign={handleJoinCampaign} 
+        onJoinCampaign={handleJoinCampaign}
+        onLeaveCampaign={handleLeaveCampaign}
       />
     </div>
   );

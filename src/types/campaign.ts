@@ -8,4 +8,5 @@ export interface Campaign {
   min_players: number;
   max_players: number;
   price: number;
+  is_member?: boolean;
 }
