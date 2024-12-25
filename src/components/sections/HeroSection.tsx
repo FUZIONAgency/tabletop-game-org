@@ -4,6 +4,13 @@ import { useAuth } from "@/contexts/auth";
 const HeroSection = () => {
   const { role } = useAuth();
 
+  const scrollToQualify = () => {
+    const qualifySection = document.getElementById("qualify");
+    if (qualifySection) {
+      qualifySection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white">
       <div className="container mx-auto px-6 text-center">
@@ -21,6 +28,7 @@ const HeroSection = () => {
         <Button
           size="lg"
           className="bg-gold hover:bg-gold/90 text-black animate-fadeIn"
+          onClick={scrollToQualify}
         >
           Get Started Now
         </Button>
