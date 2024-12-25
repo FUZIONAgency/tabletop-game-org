@@ -18,18 +18,24 @@ const NetworkSection = () => {
     const fetchNetwork = async () => {
       // This is a placeholder - implement actual network fetching logic
       const mockNetwork = {
-        id: "root",
-        alias: "You",
+        id: "sponsor",
+        alias: "Sponsor",
         children: [
           {
-            id: "left",
-            alias: "Left Team",
-            children: [],
-          },
-          {
-            id: "right",
-            alias: "Right Team",
-            children: [],
+            id: "root",
+            alias: "You",
+            children: [
+              {
+                id: "left",
+                alias: "Left Team",
+                children: [],
+              },
+              {
+                id: "right",
+                alias: "Right Team",
+                children: [],
+              },
+            ],
           },
         ],
       };
