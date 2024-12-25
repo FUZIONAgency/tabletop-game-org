@@ -48,7 +48,7 @@ const NetworkSection = () => {
   const renderNode = (node: NetworkNode) => {
     return (
       <div key={node.id} className="flex flex-col items-center relative">
-        <Card className="p-4 mb-4 w-32 text-center relative z-10 bg-white">
+        <Card className="p-4 mb-4 w-32 text-center relative z-10 bg-white hover:bg-yellow-100 transition-colors duration-200">
           {node.id === "sponsor" ? (
             <a href="#" className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
               <Link2 className="h-4 w-4" />
