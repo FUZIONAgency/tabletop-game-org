@@ -86,8 +86,8 @@ const Navigation = () => {
             to="/" 
             className={`text-xl font-bold transition-colors ${
               scrolled
-                ? "hover:text-gray-700 dark:text-white dark:hover:text-gray-200"
-                : "text-gray-800 hover:text-black dark:text-white dark:hover:text-gray-200"
+                ? "text-gray-800 hover:text-gray-700 dark:text-white dark:hover:text-gray-200"
+                : "text-white hover:text-gray-200"
             }`}
           >
             Adventure Trade
