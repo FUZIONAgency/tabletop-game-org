@@ -11,25 +11,29 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 
-interface Game {
+interface Campaign {
   id: string;
   title: string;
   description: string | null;
-  status: string;
+  status: string | null;
   created_at: string;
+  type: string | null;
+  min_players: number;
+  max_players: number;
+  price: number;
 }
 
 const OnlineGames = () => {
-  const { data: games, isLoading } = useQuery({
-    queryKey: ["online-games"],
+  const { data: campaigns, isLoading } = useQuery({
+    queryKey: ["online-campaigns"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("games")
+        .from("campaigns")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Game[];
+      return data as Campaign[];
     },
   });
 
@@ -49,24 +53,28 @@ const OnlineGames = () => {
           <TableRow>
             <TableHead>Title</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Players</TableHead>
+            <TableHead>Price</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {games?.map((game) => (
-            <TableRow key={game.id}>
-              <TableCell className="font-medium">{game.title}</TableCell>
-              <TableCell>{game.description}</TableCell>
+          {campaigns?.map((campaign) => (
+            <TableRow key={campaign.id}>
+              <TableCell className="font-medium">{campaign.title}</TableCell>
+              <TableCell>{campaign.description}</TableCell>
+              <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
+              <TableCell>${campaign.price}</TableCell>
               <TableCell>
                 <Badge
-                  variant={game.status === "draft" ? "secondary" : "default"}
+                  variant={campaign.status === "draft" ? "secondary" : "default"}
                 >
-                  {game.status}
+                  {campaign.status || "N/A"}
                 </Badge>
               </TableCell>
               <TableCell>
-                {new Date(game.created_at).toLocaleDateString()}
+                {new Date(campaign.created_at).toLocaleDateString()}
               </TableCell>
             </TableRow>
           ))}
