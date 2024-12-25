@@ -29,23 +29,23 @@ const Auth = () => {
         // Handle successful sign in
       } else if (!session && event === "INITIAL_SESSION") {
         // Handle invalid credentials or other auth errors
-        const error = session?.error;
-        if (error?.message?.includes("Invalid login credentials")) {
+        const authError = (session as any)?.error?.message;
+        if (authError?.includes("Invalid login credentials")) {
           toast({
             title: "Login Failed",
             description: "The email or password you entered is incorrect. Please try again.",
             variant: "destructive",
           });
-        } else if (error?.message?.includes("Email not confirmed")) {
+        } else if (authError?.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and click the confirmation link to verify your account.",
             variant: "destructive",
           });
-        } else if (error?.message) {
+        } else if (authError) {
           toast({
             title: "Authentication Error",
-            description: error.message,
+            description: authError,
             variant: "destructive",
           });
         }
