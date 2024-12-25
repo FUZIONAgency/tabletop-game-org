@@ -15,14 +15,16 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
 });
 
-export function useAuth() {
+// Export the hook as a named export
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
+};
 
+// Export the provider as the default export
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<string | null>(null);
