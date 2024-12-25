@@ -58,7 +58,7 @@ const Index = () => {
         id="games"
         title="Play Anywhere, Anytime"
         subtitle="GAMES"
-        className="bg-white"
+        className="bg-white -mt-12" // Added -mt-12 to remove extra space
       >
         <GamesSection />
       </Section>
