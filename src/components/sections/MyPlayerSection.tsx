@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { User, MapPin, Mail, UserCircle } from "lucide-react";
+import { User, MapPin, Mail, UserCircle, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreatePlayerForm } from "@/components/forms/CreatePlayerForm";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button"; // Add this import
 
 interface PlayerData {
   id: string;
