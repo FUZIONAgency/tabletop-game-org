@@ -42,10 +42,10 @@ const Profile = () => {
       className="bg-background"
     >
       <div className="grid gap-8 md:grid-cols-2">
-        <div>
+        <div className="w-full">
           <ProfileCard profile={profile} />
         </div>
-        <div>
+        <div className="w-full">
           <PlayerCard player={player} userEmail={user?.email ?? ""} onSuccess={() => {}} />
         </div>
       </div>
