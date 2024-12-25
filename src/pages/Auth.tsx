@@ -47,7 +47,7 @@ const Auth = () => {
           TabletopGame.org
         </h1>
         <p className="text-xl text-gray-300">
-          Become a tabletop professional
+          The Home for Tabletop Professionals
         </p>
         <div className="grid gap-6 mt-8">
           {features.map((feature, index) => (
