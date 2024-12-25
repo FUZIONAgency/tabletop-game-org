@@ -28,34 +28,22 @@ const Index = () => {
       <Navigation />
       <HeroSection />
       
-      {user && (
-        <Section
-          id="qualify"
-          title="Get Certified"
-          subtitle="QUALIFICATION"
-          className="bg-gray-50"
-        >
-          <MyPlayerSection />
-        </Section>
-      )}
-
-      {!user && (
-        <Section
-          id="signup"
-          title="Join Our Gaming Community"
-          subtitle="SIGN UP"
-          className="bg-white"
-        >
-          <SignUpSection />
-        </Section>
-      )}
+      {/* Qualify Section */}
+      <Section
+        id="qualify"
+        title="Get Certified"
+        subtitle="QUALIFICATION"
+        className="bg-gray-50"
+      >
+        <MyPlayerSection />
+      </Section>
 
       {/* Games Section */}
       <Section
         id="games"
         title="Play Anywhere, Anytime"
         subtitle="GAMES"
-        className="bg-gray-50"
+        className="bg-white"
       >
         <GamesSection />
       </Section>
@@ -65,7 +53,7 @@ const Index = () => {
         id="recruiting"
         title="Build Your Team"
         subtitle="RECRUITING"
-        className="bg-white"
+        className="bg-gray-50"
       >
         <RecruitingSection />
       </Section>
@@ -75,7 +63,7 @@ const Index = () => {
         id="rewards"
         title="Earn While You Play"
         subtitle="REWARDS"
-        className="bg-gray-50"
+        className="bg-white"
       >
         <RewardsSection />
       </Section>

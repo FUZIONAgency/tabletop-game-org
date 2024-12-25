@@ -11,11 +11,10 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
-    ...(user ? [{ id: "qualify", icon: ShieldCheck, label: "Qualify" }] : []),
-    ...(user ? [] : [{ id: "signup", icon: UserPlus, label: "Sign Up" }]),
-    { id: "games", icon: Dices, label: "Play" },
-    { id: "recruiting", icon: UserPlus, label: "Recruit" },
-    { id: "rewards", icon: DollarSign, label: "Earn" },
+    { id: "qualify", icon: ShieldCheck, label: "Qualify", subtitle: "Become certified on each game system" },
+    { id: "games", icon: Dices, label: "Play", subtitle: "Play Anywhere, Anytime" },
+    { id: "recruiting", icon: UserPlus, label: "Recruit", subtitle: "Build Your Team" },
+    { id: "rewards", icon: DollarSign, label: "Earn", subtitle: "Earn While You Play" },
   ];
 
   const scrollToSection = (id: string) => {
