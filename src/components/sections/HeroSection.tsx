@@ -17,7 +17,7 @@ const HeroSection = () => {
         <h1 className="text-5xl md:text-7xl font-bold mb-8 animate-fadeIn">
           Play Games. Earn Rewards.
           <br />
-          Build Your Future.
+          Go Pro.
         </h1>
         <p className="text-xl md:text-2xl mb-4 animate-fadeIn opacity-90">
           Join our community of gamers and entrepreneurs
