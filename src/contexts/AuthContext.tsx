@@ -9,15 +9,12 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-const initialContext: AuthContextType = {
+const AuthContext = createContext<AuthContextType>({
   user: null,
   role: null,
   isLoading: true,
-};
+});
 
-const AuthContext = createContext<AuthContextType>(initialContext);
-
-// Export the hook separately from its definition to maintain consistent exports
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -33,7 +30,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get initial session
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -51,7 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initializeAuth();
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {

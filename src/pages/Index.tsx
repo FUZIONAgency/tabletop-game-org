@@ -5,8 +5,14 @@ import SignUpSection from "@/components/sections/SignUpSection";
 import GamesSection from "@/components/sections/GamesSection";
 import HelpSection from "@/components/sections/HelpSection";
 import RewardsSection from "@/components/sections/RewardsSection";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
+  const { isLoading } = useAuth();
+
+  // Don't render skeleton here as it's handled by ProtectedRoute
+  if (isLoading) return null;
+
   return (
     <div className="bg-white">
       <Navigation />
