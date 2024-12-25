@@ -30,6 +30,7 @@ const OnlineGames = () => {
       const { data, error } = await supabase
         .from("campaigns")
         .select("*")
+        .eq("type", "online")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -48,38 +49,42 @@ const OnlineGames = () => {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">Online Games</h1>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-left">Title</TableHead>
-            <TableHead className="text-left">Description</TableHead>
-            <TableHead>Players</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {campaigns?.map((campaign) => (
-            <TableRow key={campaign.id}>
-              <TableCell className="font-medium text-left">{campaign.title}</TableCell>
-              <TableCell className="text-left">{campaign.description}</TableCell>
-              <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
-              <TableCell>${campaign.price}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={campaign.status === "draft" ? "secondary" : "default"}
-                >
-                  {campaign.status || "N/A"}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {new Date(campaign.created_at).toLocaleDateString()}
-              </TableCell>
+      {campaigns?.length === 0 ? (
+        <p className="text-center text-gray-500">No online campaigns available.</p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-left">Title</TableHead>
+              <TableHead className="text-left">Description</TableHead>
+              <TableHead>Players</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {campaigns?.map((campaign) => (
+              <TableRow key={campaign.id}>
+                <TableCell className="font-medium text-left">{campaign.title}</TableCell>
+                <TableCell className="text-left">{campaign.description}</TableCell>
+                <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
+                <TableCell>${campaign.price}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={campaign.status === "draft" ? "secondary" : "default"}
+                  >
+                    {campaign.status || "N/A"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {new Date(campaign.created_at).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };
