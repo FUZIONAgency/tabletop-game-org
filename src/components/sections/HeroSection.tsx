@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 
 const HeroSection = () => {
   const { role } = useAuth();
