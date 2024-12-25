@@ -5,7 +5,7 @@ import SignUpSection from "@/components/sections/SignUpSection";
 import GamesSection from "@/components/sections/GamesSection";
 import HelpSection from "@/components/sections/HelpSection";
 import RewardsSection from "@/components/sections/RewardsSection";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 

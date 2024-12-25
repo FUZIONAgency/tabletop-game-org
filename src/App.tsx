@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import AuthProvider from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/auth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import { useAuth } from "./contexts/AuthContext";
+import { useAuth } from "./contexts/auth";
 import { Skeleton } from "./components/ui/skeleton";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
