@@ -42,8 +42,12 @@ const Profile = () => {
       className="bg-background"
     >
       <div className="grid gap-8 md:grid-cols-2">
-        <ProfileCard profile={profile} />
-        <PlayerCard player={player} userEmail={user?.email ?? ""} onSuccess={() => {}} />
+        <div>
+          <ProfileCard profile={profile} />
+        </div>
+        <div>
+          <PlayerCard player={player} userEmail={user?.email ?? ""} onSuccess={() => {}} />
+        </div>
       </div>
     </Section>
   );
