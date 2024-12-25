@@ -28,33 +28,33 @@ const InvitesSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchInvites = async () => {
-      if (!user?.id) return;
+  const fetchInvites = async () => {
+    if (!user?.id) return;
 
-      try {
-        setIsLoading(true);
-        setError(null);
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        const { data: invitesData, error: invitesError } = await supabase
-          .from("invites")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
+      const { data: invitesData, error: invitesError } = await supabase
+        .from("invites")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
-        if (invitesError) {
-          throw invitesError;
-        }
-
-        setInvites(invitesData || []);
-      } catch (err) {
-        console.error("Error fetching invites:", err);
-        setError("Failed to load invites. Please try again later.");
-      } finally {
-        setIsLoading(false);
+      if (invitesError) {
+        throw invitesError;
       }
-    };
 
+      setInvites(invitesData || []);
+    } catch (err) {
+      console.error("Error fetching invites:", err);
+      setError("Failed to load invites. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchInvites();
   }, [user?.id]);
 
@@ -113,7 +113,7 @@ const InvitesSection = () => {
           </DialogContent>
         </Dialog>
       </div>
-      <InviteList invites={invites} />
+      <InviteList invites={invites} onInviteUpdate={fetchInvites} />
     </div>
   );
 };
