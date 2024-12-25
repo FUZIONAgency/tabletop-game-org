@@ -5,6 +5,9 @@ import Auth from "./pages/Auth";
 import Network from "./pages/Network";
 import MyRetailers from "./pages/MyRetailers";
 import MyConventions from "./pages/MyConventions";
+import MyGames from "./pages/MyGames";
+import MyTournaments from "./pages/MyTournaments";
+import MyProducts from "./pages/MyProducts";
 import { useAuth } from "./contexts/auth";
 import { Skeleton } from "./components/ui/skeleton";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -73,6 +76,30 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <MyConventions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/games"
+              element={
+                <ProtectedRoute>
+                  <MyGames />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tournaments"
+              element={
+                <ProtectedRoute>
+                  <MyTournaments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute>
+                  <MyProducts />
                 </ProtectedRoute>
               }
             />
