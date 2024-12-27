@@ -17,51 +17,35 @@ const Auth = () => {
       navigate("/");
     }
 
-    // Listen for auth state changes and errors
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
+      if (event === "SIGNED_IN") {
+        navigate("/");
+      } else if (event === "SIGNED_OUT") {
         // Handle sign out
       } else if (event === "PASSWORD_RECOVERY") {
         // Handle password recovery
-      } else if (event === "SIGNED_IN") {
-        // Handle successful sign in
-      } else if (!session) {
-        // Handle invalid credentials or other auth errors
-        const error = (session as any)?.error;
-        let errorMessage = error?.message;
-        let errorCode = null;
+      } else if (!session && event === "USER_UPDATED") {
+        // Handle authentication errors
+        const error = new URLSearchParams(window.location.search).get("error_description");
         
-        try {
-          if (error?.body) {
-            const parsedBody = JSON.parse(error.body);
-            errorCode = parsedBody.code;
-            if (!errorMessage) {
-              errorMessage = parsedBody.message;
-            }
-          }
-        } catch (e) {
-          console.error("Error parsing error body:", e);
-        }
-        
-        if (errorMessage?.includes("Invalid login credentials") || 
-            errorCode === "invalid_credentials") {
+        if (error?.includes("Invalid login credentials")) {
           toast({
             title: "Login Failed",
             description: "The account and password didn't match. Please try again.",
             variant: "destructive",
           });
-        } else if (errorMessage?.includes("Email not confirmed")) {
+        } else if (error?.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and click the confirmation link to verify your account.",
             variant: "destructive",
           });
-        } else if (errorMessage) {
+        } else if (error) {
           toast({
             title: "Authentication Error",
-            description: errorMessage,
+            description: error,
             variant: "destructive",
           });
         }
