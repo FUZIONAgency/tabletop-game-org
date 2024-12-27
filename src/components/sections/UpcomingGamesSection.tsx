@@ -14,6 +14,7 @@ interface Session {
   campaign: {
     id: string;
     title: string;
+    retailer_id: string | null;
   };
 }
 
@@ -51,7 +52,8 @@ export const UpcomingGamesSection = () => {
           description,
           campaign:campaigns (
             id,
-            title
+            title,
+            retailer_id
           )
         `)
         .gte("start_date", new Date().toISOString())
@@ -95,7 +97,8 @@ export const UpcomingGamesSection = () => {
           description,
           campaign:campaigns (
             id,
-            title
+            title,
+            retailer_id
           )
         `)
         .gte("start_date", new Date().toISOString())
@@ -113,6 +116,10 @@ export const UpcomingGamesSection = () => {
     navigate(`/campaigns/${campaignId}`);
   };
 
+  const handleViewRetailer = (retailerId: string) => {
+    navigate(`/retailers/${retailerId}`);
+  };
+
   const renderSessionCard = (session: Session) => (
     <Card key={session.id} className="p-4 space-y-2">
       <div className="flex justify-between items-start">
@@ -126,13 +133,23 @@ export const UpcomingGamesSection = () => {
             <p className="text-sm text-gray-600 mt-2">{session.description}</p>
           )}
         </div>
-        <Button
-          onClick={() => handleViewSession(session.campaign.id)}
-          className="bg-yellow-500 hover:bg-yellow-600"
-        >
-          <Eye className="h-4 w-4 mr-2" />
-          View
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            onClick={() => handleViewSession(session.campaign.id)}
+            className="bg-yellow-500 hover:bg-yellow-600"
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            View
+          </Button>
+          {session.campaign.retailer_id && (
+            <Button
+              onClick={() => handleViewRetailer(session.campaign.retailer_id!)}
+              className="bg-black text-white hover:bg-gray-800"
+            >
+              Retailer
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );
