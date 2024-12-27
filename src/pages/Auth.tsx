@@ -33,7 +33,7 @@ const Auth = () => {
         if (authError?.includes("Invalid login credentials")) {
           toast({
             title: "Login Failed",
-            description: "The email or password you entered is incorrect. Please try again.",
+            description: "The account and password didn't match. Please try again.",
             variant: "destructive",
           });
         } else if (authError?.includes("Email not confirmed")) {
