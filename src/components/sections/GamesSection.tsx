@@ -1,8 +1,11 @@
 import { Store, Users, Dices } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/auth";
+import { UpcomingGamesSection } from "./UpcomingGamesSection";
 
 const GamesSection = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const gameOptions = [
     {
@@ -30,18 +33,22 @@ const GamesSection = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-3 gap-8">
-      {gameOptions.map((item, index) => (
-        <div
-          key={index}
-          className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
-          onClick={() => handleCardClick(item.route)}
-        >
-          <item.icon className="w-12 h-12 mb-6 text-gold" />
-          <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
-          <p className="text-gray-600">{item.description}</p>
-        </div>
-      ))}
+    <div className="space-y-12">
+      <div className="grid md:grid-cols-3 gap-8">
+        {gameOptions.map((item, index) => (
+          <div
+            key={index}
+            className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            onClick={() => handleCardClick(item.route)}
+          >
+            <item.icon className="w-12 h-12 mb-6 text-gold" />
+            <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
+            <p className="text-gray-600">{item.description}</p>
+          </div>
+        ))}
+      </div>
+
+      {user && <UpcomingGamesSection />}
     </div>
   );
 };
