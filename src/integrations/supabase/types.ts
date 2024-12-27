@@ -474,7 +474,7 @@ export type Database = {
           last_name?: string | null
           status?: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           cell?: string | null
@@ -555,6 +555,105 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      offer_statuses: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      offer_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      offers: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          date_expiration: string | null
+          date_posted: string | null
+          description: string | null
+          id: string
+          max_uses: number | null
+          name: string
+          renewal_months: number | null
+          status_id: string
+          type_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          date_expiration?: string | null
+          date_posted?: string | null
+          description?: string | null
+          id?: string
+          max_uses?: number | null
+          name: string
+          renewal_months?: number | null
+          status_id: string
+          type_id: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          date_expiration?: string | null
+          date_posted?: string | null
+          description?: string | null
+          id?: string
+          max_uses?: number | null
+          name?: string
+          renewal_months?: number | null
+          status_id?: string
+          type_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "offer_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_type_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "offer_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       player_game_accounts: {
         Row: {
