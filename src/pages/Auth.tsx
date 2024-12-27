@@ -30,26 +30,38 @@ const Auth = () => {
       } else if (!session) {
         // Handle invalid credentials or other auth errors
         const error = (session as any)?.error;
-        const errorBody = error?.body ? JSON.parse(error.body) : null;
+        let errorMessage = error?.message;
+        let errorCode = null;
         
-        if (error?.message?.includes("Invalid login credentials") || 
-            errorBody?.code === "invalid_credentials" ||
-            errorBody?.message === "Invalid login credentials") {
+        try {
+          if (error?.body) {
+            const parsedBody = JSON.parse(error.body);
+            errorCode = parsedBody.code;
+            if (!errorMessage) {
+              errorMessage = parsedBody.message;
+            }
+          }
+        } catch (e) {
+          console.error("Error parsing error body:", e);
+        }
+        
+        if (errorMessage?.includes("Invalid login credentials") || 
+            errorCode === "invalid_credentials") {
           toast({
             title: "Login Failed",
             description: "The account and password didn't match. Please try again.",
             variant: "destructive",
           });
-        } else if (error?.message?.includes("Email not confirmed")) {
+        } else if (errorMessage?.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and click the confirmation link to verify your account.",
             variant: "destructive",
           });
-        } else if (error?.message) {
+        } else if (errorMessage) {
           toast({
             title: "Authentication Error",
-            description: error.message,
+            description: errorMessage,
             variant: "destructive",
           });
         }
