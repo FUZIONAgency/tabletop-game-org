@@ -13,7 +13,11 @@ const Games = () => {
   const handleJoinCampaign = async (campaignId: string) => {
     const { error } = await supabase
       .from("campaign_players")
-      .insert([{ player_id: user?.id, campaign_id: campaignId }]);
+      .insert([{ 
+        player_id: user?.id, 
+        campaign_id: campaignId,
+        role_type: 'player' // Adding the required role_type field
+      }]);
 
     if (error) {
       console.error("Error joining campaign:", error);

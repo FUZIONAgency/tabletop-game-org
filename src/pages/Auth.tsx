@@ -29,10 +29,10 @@ const Auth = () => {
         // Handle successful sign in
       } else if (!session) {
         // Handle invalid credentials or other auth errors
-        const authError = (session as any)?.error?.message;
-        const errorBody = session?.error?.body ? JSON.parse(session.error.body) : null;
+        const error = (session as any)?.error;
+        const errorBody = error?.body ? JSON.parse(error.body) : null;
         
-        if (authError?.includes("Invalid login credentials") || 
+        if (error?.message?.includes("Invalid login credentials") || 
             errorBody?.code === "invalid_credentials" ||
             errorBody?.message === "Invalid login credentials") {
           toast({
@@ -40,16 +40,16 @@ const Auth = () => {
             description: "The account and password didn't match. Please try again.",
             variant: "destructive",
           });
-        } else if (authError?.includes("Email not confirmed")) {
+        } else if (error?.message?.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and click the confirmation link to verify your account.",
             variant: "destructive",
           });
-        } else if (authError) {
+        } else if (error?.message) {
           toast({
             title: "Authentication Error",
-            description: authError,
+            description: error.message,
             variant: "destructive",
           });
         }
