@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import type { AuthContextType } from "./types";
 import { authService } from "./authService";
 
@@ -13,7 +12,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState(null);
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -44,8 +42,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       
       if (session?.user) {
         setUser(session.user);
-        const userRole = await authService.fetchUserRole(session.user.id);
-        setRole(userRole);
+        try {
+          const userRole = await authService.fetchUserRole(session.user.id);
+          setRole(userRole);
+        } catch (error) {
+          console.error("Error fetching user role:", error);
+          setRole(null);
+        }
       } else {
         setUser(null);
         setRole(null);
@@ -53,8 +56,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  console.log("AuthContext state:", { user, role, isLoading });
 
   return (
     <AuthContext.Provider value={{ user, role, isLoading }}>
