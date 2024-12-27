@@ -19,16 +19,19 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await authService.getSession();
-        setUser(session?.user ?? null);
         
         if (session?.user) {
+          setUser(session.user);
           const userRole = await authService.fetchUserRole(session.user.id);
           setRole(userRole);
         } else {
+          setUser(null);
           setRole(null);
         }
       } catch (error) {
         console.error("Error in initializeAuth:", error);
+        setUser(null);
+        setRole(null);
       } finally {
         setIsLoading(false);
       }
@@ -36,13 +39,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     initializeAuth();
 
-    const { data: { subscription } } = authService.onAuthStateChange(async (session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = authService.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
       
       if (session?.user) {
+        setUser(session.user);
         const userRole = await authService.fetchUserRole(session.user.id);
         setRole(userRole);
       } else {
+        setUser(null);
         setRole(null);
       }
       setIsLoading(false);
