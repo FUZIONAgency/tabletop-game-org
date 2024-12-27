@@ -27,10 +27,14 @@ const Auth = () => {
         // Handle password recovery
       } else if (event === "SIGNED_IN") {
         // Handle successful sign in
-      } else if (!session && event === "INITIAL_SESSION") {
+      } else if (!session) {
         // Handle invalid credentials or other auth errors
         const authError = (session as any)?.error?.message;
-        if (authError?.includes("Invalid login credentials")) {
+        const errorBody = session?.error?.body ? JSON.parse(session.error.body) : null;
+        
+        if (authError?.includes("Invalid login credentials") || 
+            errorBody?.code === "invalid_credentials" ||
+            errorBody?.message === "Invalid login credentials") {
           toast({
             title: "Login Failed",
             description: "The account and password didn't match. Please try again.",
