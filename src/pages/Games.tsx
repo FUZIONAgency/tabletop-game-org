@@ -4,8 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import Section from "@/components/Section";
-import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
+import { supabase } from "@/integrations/supabase/client"; // Add this import
 
 const Games = () => {
   const { user } = useAuth();
@@ -153,22 +152,17 @@ const Games = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="pt-16">
-        <Section
-          id="games"
-          title="My Games"
-          subtitle="View and manage your games"
-        >
-          <CampaignTable 
-            campaigns={campaigns || []} 
-            onJoinCampaign={handleJoinCampaign}
-            onLeaveCampaign={handleLeaveCampaign}
-          />
-        </Section>
-      </main>
-    </div>
+    <Section
+      id="games"
+      title="My Games"
+      subtitle="View and manage your games"
+    >
+      <CampaignTable 
+        campaigns={campaigns || []} 
+        onJoinCampaign={handleJoinCampaign}
+        onLeaveCampaign={handleLeaveCampaign}
+      />
+    </Section>
   );
 };
 
