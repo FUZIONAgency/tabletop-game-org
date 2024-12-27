@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { AuthContextType } from "./types";
 import { authService } from "./authService";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -39,23 +40,25 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     initializeAuth();
 
-    const { data: { subscription } } = authService.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        try {
-          const userRole = await authService.fetchUserRole(session.user.id);
-          setRole(userRole);
-        } catch (error) {
-          console.error("Error fetching user role:", error);
+    const { data: { subscription } } = authService.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null) => {
+        console.log("Auth state changed:", event, session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          try {
+            const userRole = await authService.fetchUserRole(session.user.id);
+            setRole(userRole);
+          } catch (error) {
+            console.error("Error fetching user role:", error);
+            setRole(null);
+          }
+        } else {
           setRole(null);
         }
-      } else {
-        setRole(null);
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, []);

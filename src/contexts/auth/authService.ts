@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export const authService = {
   async fetchUserRole(userId: string) {
@@ -25,9 +26,7 @@ export const authService = {
     return await supabase.auth.getSession();
   },
 
-  onAuthStateChange(callback: (session: any) => void) {
-    return supabase.auth.onAuthStateChange(async (_, session) => {
-      callback(session);
-    });
+  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
+    return supabase.auth.onAuthStateChange(callback);
   }
 };
