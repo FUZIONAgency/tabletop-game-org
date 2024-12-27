@@ -16,6 +16,7 @@ const Index = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Handle scroll to section after navigation
     if (location.state?.scrollTo) {
       const element = document.getElementById(location.state.scrollTo);
       if (element) {
@@ -27,15 +28,12 @@ const Index = () => {
   }, [location.state]);
 
   if (isLoading) {
-    console.log("Loading state:", { isLoading, role, user });
     return (
       <div className="min-h-screen bg-white p-6 space-y-8">
-        <Navigation />
-        <div className="pt-16">
-          <Skeleton className="h-[60vh] w-full" />
-          <Skeleton className="h-96 w-full mt-8" />
-          <Skeleton className="h-96 w-full mt-8" />
-        </div>
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-[60vh] w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
       </div>
     );
   }
@@ -60,7 +58,7 @@ const Index = () => {
         id="games"
         title="Play Anywhere, Anytime"
         subtitle="GAMES"
-        className="bg-white"
+        className="bg-white -mt-12" // Added -mt-12 to remove extra space
       >
         <GamesSection />
       </Section>
