@@ -32,6 +32,16 @@ export const UpcomingGamesSection = () => {
 
       if (!playerData) return [];
 
+      // First get the campaign IDs where the user is an owner
+      const { data: campaignIds } = await supabase
+        .from("campaign_players")
+        .select("campaign_id")
+        .eq("player_id", playerData.id)
+        .eq("role_type", "owner");
+
+      if (!campaignIds) return [];
+
+      // Then get the sessions for those campaigns
       const { data, error } = await supabase
         .from("sessions")
         .select(`
@@ -45,13 +55,7 @@ export const UpcomingGamesSection = () => {
           )
         `)
         .gte("start_date", new Date().toISOString())
-        .in("campaign_id", (
-          supabase
-            .from("campaign_players")
-            .select("campaign_id")
-            .eq("player_id", playerData.id)
-            .eq("role_type", "owner")
-        ))
+        .in("campaign_id", campaignIds.map(c => c.campaign_id))
         .order("start_date", { ascending: true })
         .limit(4);
 
@@ -72,6 +76,16 @@ export const UpcomingGamesSection = () => {
 
       if (!playerData) return [];
 
+      // First get the campaign IDs where the user is a player (not owner)
+      const { data: campaignIds } = await supabase
+        .from("campaign_players")
+        .select("campaign_id")
+        .eq("player_id", playerData.id)
+        .neq("role_type", "owner");
+
+      if (!campaignIds) return [];
+
+      // Then get the sessions for those campaigns
       const { data, error } = await supabase
         .from("sessions")
         .select(`
@@ -85,13 +99,7 @@ export const UpcomingGamesSection = () => {
           )
         `)
         .gte("start_date", new Date().toISOString())
-        .in("campaign_id", (
-          supabase
-            .from("campaign_players")
-            .select("campaign_id")
-            .eq("player_id", playerData.id)
-            .neq("role_type", "owner")
-        ))
+        .in("campaign_id", campaignIds.map(c => c.campaign_id))
         .order("start_date", { ascending: true })
         .limit(4);
 
