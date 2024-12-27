@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import Section from "@/components/Section";
+import { supabase } from "@/integrations/supabase/client"; // Add this import
 
 const Games = () => {
   const { user } = useAuth();
