@@ -37,7 +37,7 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
         <NavigationMenuItem>
           <NavigationMenuTrigger 
             onClick={handlePlayClick}
-            className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent ${
+            className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-gold ${
               activeSection === 'games' ? 'text-gold' : ''
             }`}
           >

@@ -31,7 +31,7 @@ const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
         <NavigationMenuItem>
           <NavigationMenuTrigger 
             onClick={handleRecruitClick}
-            className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent ${
+            className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-gold ${
               activeSection === 'recruiting' ? 'text-gold' : ''
             }`}
           >
