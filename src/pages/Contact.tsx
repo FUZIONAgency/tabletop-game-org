@@ -28,19 +28,15 @@ const Contact = () => {
 
       if (error) throw error;
 
-      // Then send email notification
-      const response = await fetch("/functions/v1/send-contact-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      // Then send email notification using Supabase Edge Function
+      const { error: functionError } = await supabase.functions.invoke(
+        "send-contact-email",
+        {
+          body: formData,
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error("Failed to send email notification");
-      }
+      if (functionError) throw functionError;
 
       // Show success toast
       toast({
