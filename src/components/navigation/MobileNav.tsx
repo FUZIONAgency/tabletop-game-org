@@ -9,17 +9,11 @@ import EarnNav from "./EarnNav";
 interface MobileNavProps {
   activeSection: string | null;
   scrollToSection: (id: string) => void;
-  handlePlayClick: (e: React.MouseEvent) => void;
-  handleRecruitClick: (e: React.MouseEvent) => void;
-  handleEarnClick: (e: React.MouseEvent) => void;
 }
 
 const MobileNav = ({
   activeSection,
   scrollToSection,
-  handlePlayClick,
-  handleRecruitClick,
-  handleEarnClick,
 }: MobileNavProps) => {
   return (
     <Sheet>
@@ -36,9 +30,9 @@ const MobileNav = ({
       <SheetContent side="right" className="w-[300px] sm:w-[400px]">
         <nav className="flex flex-col gap-4 mt-8">
           <QualifyNav activeSection={activeSection} scrollToSection={scrollToSection} />
-          <PlayNav activeSection={activeSection} handlePlayClick={handlePlayClick} />
-          <RecruitNav activeSection={activeSection} handleRecruitClick={handleRecruitClick} />
-          <EarnNav activeSection={activeSection} handleEarnClick={handleEarnClick} />
+          <PlayNav activeSection={activeSection} scrollToSection={scrollToSection} />
+          <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
+          <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
         </nav>
       </SheetContent>
     </Sheet>
