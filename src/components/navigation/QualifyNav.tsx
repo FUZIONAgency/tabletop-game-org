@@ -1,4 +1,4 @@
-import { ShieldCheck, Award, Star } from "lucide-react";
+import { ShieldCheck, Award, Star, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -27,12 +27,13 @@ const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
       <DropdownMenuTrigger asChild>
         <button
           onClick={handleQualifyClick}
-          className={`flex items-center space-x-2 transition-colors w-full p-2 text-white hover:text-gold ${
+          className={`flex items-center space-x-2 transition-colors w-full p-2 text-white hover:text-gold group ${
             activeSection === 'qualify' ? 'text-gold' : ''
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
           <span>Qualify</span>
+          <ChevronDown className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
