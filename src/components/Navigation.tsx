@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { UserPlus, Dices, DollarSign, Menu, ShieldCheck, LogIn } from "lucide-react";
+import { UserPlus, Dices, DollarSign, Menu, ShieldCheck, LogIn, Store, Users } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const Navigation = () => {
   const { user } = useAuth();
@@ -13,9 +21,14 @@ const Navigation = () => {
 
   const navItems = [
     { id: "qualify", icon: ShieldCheck, label: "Qualify", subtitle: "Become certified on each game system" },
-    { id: "games", icon: Dices, label: "Play", subtitle: "Play Anywhere, Anytime" },
     { id: "recruiting", icon: UserPlus, label: "Recruit", subtitle: "Build Your Team" },
     { id: "rewards", icon: DollarSign, label: "Earn", subtitle: "Earn While You Play" },
+  ];
+
+  const playItems = [
+    { icon: Store, label: "Retailer Games", route: "/play/retailer" },
+    { icon: Users, label: "Convention Games", route: "/play/convention" },
+    { icon: Dices, label: "Online Games", route: "/play/online" },
   ];
 
   const scrollToSection = (id: string) => {
@@ -41,6 +54,34 @@ const Navigation = () => {
           <span>{label}</span>
         </button>
       ))}
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger 
+              onClick={() => scrollToSection('games')}
+              className="text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent"
+            >
+              <Dices className="w-4 h-4 mr-2" />
+              Play
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                {playItems.map((item) => (
+                  <Button
+                    key={item.route}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => navigate(item.route)}
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
     </>
   );
 
