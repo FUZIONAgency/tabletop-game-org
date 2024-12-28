@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import { GamepadIcon } from "lucide-react";
+import { Dices } from "lucide-react";
 
 const PaidGames = () => {
   return (
@@ -8,7 +8,7 @@ const PaidGames = () => {
       <main className="flex-grow bg-white">
         <div className="container mx-auto px-4 pt-24 pb-12">
           <div className="flex items-center gap-2 mb-8">
-            <GamepadIcon className="w-6 h-6" />
+            <Dices className="w-6 h-6" />
             <h1 className="text-3xl font-bold">Paid Games</h1>
           </div>
           <p className="text-gray-600">View your earnings from paid gaming sessions.</p>
