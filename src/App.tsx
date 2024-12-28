@@ -18,6 +18,8 @@ import Overrides from "@/pages/earn/Overrides";
 import ConventionSales from "@/pages/earn/ConventionSales";
 import RetailerSales from "@/pages/earn/RetailerSales";
 import PaidGames from "@/pages/earn/PaidGames";
+import GetCertified from "@/pages/qualify/GetCertified";
+import Ratings from "@/pages/qualify/Ratings";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,8 @@ function App() {
             <Route path="/earn/convention-sales" element={<ConventionSales />} />
             <Route path="/earn/retailer-sales" element={<RetailerSales />} />
             <Route path="/earn/paid-games" element={<PaidGames />} />
+            <Route path="/qualify/get-certified" element={<GetCertified />} />
+            <Route path="/qualify/ratings" element={<Ratings />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
