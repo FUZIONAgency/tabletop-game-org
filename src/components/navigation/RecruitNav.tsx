@@ -11,11 +11,15 @@ import {
 
 interface RecruitNavProps {
   activeSection: string | null;
-  handleRecruitClick: (e: React.MouseEvent) => void;
+  scrollToSection: (id: string) => void;
 }
 
-const RecruitNav = ({ activeSection, handleRecruitClick }: RecruitNavProps) => {
+const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
   const navigate = useNavigate();
+
+  const handleRecruitClick = (e: React.MouseEvent) => {
+    scrollToSection('recruiting');
+  };
 
   const networkItems = [
     { icon: Users, label: "Your Network", route: "/network" },

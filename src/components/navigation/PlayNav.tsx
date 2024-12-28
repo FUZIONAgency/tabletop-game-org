@@ -12,12 +12,18 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlayNavProps {
   activeSection: string | null;
-  handlePlayClick: (e: React.MouseEvent) => void;
+  scrollToSection: (id: string) => void;
 }
 
-const PlayNav = ({ activeSection, handlePlayClick }: PlayNavProps) => {
+const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  const handlePlayClick = (e: React.MouseEvent) => {
+    if (!isMobile) {
+      scrollToSection('games');
+    }
+  };
 
   const playItems = [
     { icon: Store, label: "Retailer Games", route: "/play/retailer" },

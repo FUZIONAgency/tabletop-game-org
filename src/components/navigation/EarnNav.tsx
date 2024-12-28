@@ -11,11 +11,15 @@ import {
 
 interface EarnNavProps {
   activeSection: string | null;
-  handleEarnClick: (e: React.MouseEvent) => void;
+  scrollToSection: (id: string) => void;
 }
 
-const EarnNav = ({ activeSection, handleEarnClick }: EarnNavProps) => {
+const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
   const navigate = useNavigate();
+
+  const handleEarnClick = (e: React.MouseEvent) => {
+    scrollToSection('rewards');
+  };
 
   const earnItems = [
     { icon: DollarSign, label: "Product Sales", route: "/earn/product-sales" },
