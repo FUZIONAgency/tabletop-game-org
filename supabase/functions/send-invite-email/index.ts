@@ -30,15 +30,15 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "LoveTi Network <invites@loveti.com>",
+        from: "TabletopGame.org <info@tabletopgame.org>",
         to: [emailRequest.to],
-        bcc: ["ops@loveti.com"],
-        subject: "You've been invited to LoveTi Network",
+        bcc: ["info@tabletopgame.org"],
+        subject: "You've been invited to join",
         html: `
           <p>Hello ${emailRequest.firstName} ${emailRequest.lastName},</p>
-          <p>You've been invited to join the LoveTi Network!</p>
+          <p>You've been invited to join the Tabletop Game Organization!</p>
           <p>Please click the link below to accept your invitation.</p>
-          <a href="https://loveti.com/invite">Accept Invitation</a>
+          <a href="https://tabletopgame.org/auth">Accept Invitation</a>
         `,
       }),
     });
