@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import PageLayout from "@/components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,17 +21,32 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
+      // First save to database
       const { error } = await supabase
         .from("contact_messages")
         .insert([formData]);
 
       if (error) throw error;
 
+      // Then send email notification
+      const response = await fetch("/functions/v1/send-contact-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send email notification");
+      }
+
       // Show success toast
       toast({
         title: "Message Sent Successfully",
         description: "Thank you for your message. We'll get back to you soon!",
-        variant: "default", // You can customize this
+        variant: "default",
       });
 
       // Reset form after successful submission
