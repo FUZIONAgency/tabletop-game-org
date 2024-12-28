@@ -20,9 +20,9 @@ import RetailerSales from "@/pages/earn/RetailerSales";
 import PaidGames from "@/pages/earn/PaidGames";
 import GetCertified from "@/pages/qualify/GetCertified";
 import Ratings from "@/pages/qualify/Ratings";
-import PrivacyPolicy from "@/pages/PrivacyPolicy";
-import Terms from "@/pages/Terms";
-import Contact from "@/pages/Contact";
+import PrivacyPolicy from "@/pages/footer/PrivacyPolicy";
+import Terms from "@/pages/footer/Terms";
+import Contact from "@/pages/footer/Contact";
 
 const queryClient = new QueryClient();
 
