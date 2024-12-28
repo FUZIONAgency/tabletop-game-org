@@ -39,24 +39,26 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <Section
-        id="profile"
-        title="My Profile"
-        subtitle="Account Information"
-        className="bg-background"
-      >
-        <div className="grid gap-8 md:grid-cols-3">
-          <div className="w-full">
-            <AuthUserCard userId={user?.id} />
+      <main className="pt-16">
+        <Section
+          id="profile"
+          title="My Profile"
+          subtitle="Account Information"
+          className="bg-background"
+        >
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="w-full">
+              <AuthUserCard userId={user?.id} />
+            </div>
+            <div className="w-full">
+              <ProfileCard profile={profile} />
+            </div>
+            <div className="w-full">
+              <PlayerCard player={player} userEmail={user?.email ?? ""} onSuccess={() => {}} />
+            </div>
           </div>
-          <div className="w-full">
-            <ProfileCard profile={profile} />
-          </div>
-          <div className="w-full">
-            <PlayerCard player={player} userEmail={user?.email ?? ""} onSuccess={() => {}} />
-          </div>
-        </div>
-      </Section>
+        </Section>
+      </main>
     </div>
   );
 };
