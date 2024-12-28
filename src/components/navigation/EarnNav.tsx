@@ -1,4 +1,4 @@
-import { DollarSign, Percent, GamepadIcon } from "lucide-react";
+import { DollarSign, Percent, Dices, BaggageClaim, EarthLock, Store } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,11 +24,11 @@ const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
   };
 
   const earnItems = [
-    { icon: DollarSign, label: "Product Sales", route: "/earn/product-sales" },
+    { icon: BaggageClaim, label: "Product Sales", route: "/earn/product-sales" },
     { icon: Percent, label: "Overrides", route: "/earn/overrides" },
-    { icon: Percent, label: "Convention Sales", route: "/earn/convention-sales" },
-    { icon: DollarSign, label: "Retailer Sales", route: "/earn/retailer-sales" },
-    { icon: GamepadIcon, label: "Paid Games", route: "/earn/paid-games" },
+    { icon: EarthLock, label: "Convention Sales", route: "/earn/convention-sales" },
+    { icon: Store, label: "Retailer Sales", route: "/earn/retailer-sales" },
+    { icon: Dices, label: "Paid Games", route: "/earn/paid-games" },
   ];
 
   return (
