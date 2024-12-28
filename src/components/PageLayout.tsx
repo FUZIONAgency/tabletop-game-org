@@ -14,8 +14,8 @@ const PageLayout = ({ children }: PageLayoutProps) => {
         <main className="flex-grow">
           {children}
         </main>
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };
