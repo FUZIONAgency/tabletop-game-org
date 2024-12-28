@@ -153,8 +153,7 @@ const ConventionGames = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <PageLayout>
+    <PageLayout>
       <main className="pt-16">
         <Section
           id="convention-games"
