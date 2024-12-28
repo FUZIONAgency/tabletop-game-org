@@ -18,6 +18,7 @@ const Navigation = () => {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const navItems = [
     { id: "qualify", icon: ShieldCheck, label: "Qualify", subtitle: "Become certified on each game system" },
@@ -40,6 +41,7 @@ const Navigation = () => {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
+    setActiveSection(id);
   };
 
   const NavLinks = () => (
@@ -48,7 +50,9 @@ const Navigation = () => {
         <button
           key={id}
           onClick={() => scrollToSection(id)}
-          className="flex items-center space-x-2 transition-colors w-full p-2 text-white hover:text-gold"
+          className={`flex items-center space-x-2 transition-colors w-full p-2 text-white hover:text-gold ${
+            activeSection === id ? 'text-gold' : ''
+          }`}
         >
           <Icon className="w-4 h-4" />
           <span>{label}</span>
@@ -59,7 +63,9 @@ const Navigation = () => {
           <NavigationMenuItem>
             <NavigationMenuTrigger 
               onClick={() => scrollToSection('games')}
-              className="text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent"
+              className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent ${
+                activeSection === 'games' ? 'text-gold' : ''
+              }`}
             >
               <Dices className="w-4 h-4 mr-2" />
               Play
