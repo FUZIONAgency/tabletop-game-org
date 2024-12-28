@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
+import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 
 const OnlineGames = () => {
@@ -152,17 +153,22 @@ const OnlineGames = () => {
   }
 
   return (
-    <Section
-      id="online-games"
-      title="Online Games"
-      subtitle="Play from anywhere"
-    >
-      <CampaignTable 
-        campaigns={campaigns || []} 
-        onJoinCampaign={handleJoinCampaign}
-        onLeaveCampaign={handleLeaveCampaign}
-      />
-    </Section>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="pt-16">
+        <Section
+          id="online-games"
+          title="Online Games"
+          subtitle="Play from anywhere"
+        >
+          <CampaignTable 
+            campaigns={campaigns || []} 
+            onJoinCampaign={handleJoinCampaign}
+            onLeaveCampaign={handleLeaveCampaign}
+          />
+        </Section>
+      </main>
+    </div>
   );
 };
 

@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useConventionCampaigns } from "@/hooks/useConventionCampaigns";
+import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 
 const ConventionGames = () => {
@@ -152,17 +153,22 @@ const ConventionGames = () => {
   }
 
   return (
-    <Section
-      id="convention-games"
-      title="Convention Games"
-      subtitle="Find games at conventions"
-    >
-      <CampaignTable 
-        campaigns={campaigns || []} 
-        onJoinCampaign={handleJoinCampaign}
-        onLeaveCampaign={handleLeaveCampaign}
-      />
-    </Section>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="pt-16">
+        <Section
+          id="convention-games"
+          title="Convention Games"
+          subtitle="Find games at conventions"
+        >
+          <CampaignTable 
+            campaigns={campaigns || []} 
+            onJoinCampaign={handleJoinCampaign}
+            onLeaveCampaign={handleLeaveCampaign}
+          />
+        </Section>
+      </main>
+    </div>
   );
 };
 

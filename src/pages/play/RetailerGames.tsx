@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useRetailerCampaigns } from "@/hooks/useRetailerCampaigns";
+import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 
 const RetailerGames = () => {
@@ -152,17 +153,22 @@ const RetailerGames = () => {
   }
 
   return (
-    <Section
-      id="retailer-games"
-      title="Retailer Games"
-      subtitle="Play at your local game store"
-    >
-      <CampaignTable 
-        campaigns={campaigns || []} 
-        onJoinCampaign={handleJoinCampaign}
-        onLeaveCampaign={handleLeaveCampaign}
-      />
-    </Section>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="pt-16">
+        <Section
+          id="retailer-games"
+          title="Retailer Games"
+          subtitle="Play at your local game store"
+        >
+          <CampaignTable 
+            campaigns={campaigns || []} 
+            onJoinCampaign={handleJoinCampaign}
+            onLeaveCampaign={handleLeaveCampaign}
+          />
+        </Section>
+      </main>
+    </div>
   );
 };
 
