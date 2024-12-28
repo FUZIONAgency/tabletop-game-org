@@ -6,17 +6,17 @@ import GamesSection from "@/components/sections/GamesSection";
 import RecruitingSection from "@/components/sections/RecruitingSection";
 import RewardsSection from "@/components/sections/RewardsSection";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
+import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const Index = () => {
-  const { isLoading, role, user } = useAuth();
+  const { isLoading, user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
-    // Handle scroll to section after navigation
     if (location.state?.scrollTo) {
       const element = document.getElementById(location.state.scrollTo);
       if (element) {
@@ -39,49 +39,52 @@ const Index = () => {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-white flex flex-col min-h-screen">
       <Navigation />
-      <HeroSection />
-      
-      {/* Qualify Section */}
-      <Section
-        id="qualify"
-        title="Get Certified"
-        subtitle="QUALIFICATION"
-        className="bg-gray-50"
-      >
-        {user ? <MyPlayerSection /> : <SignUpSection />}
-      </Section>
+      <div className="flex-grow">
+        <HeroSection />
+        
+        {/* Qualify Section */}
+        <Section
+          id="qualify"
+          title="Get Certified"
+          subtitle="QUALIFICATION"
+          className="bg-gray-50"
+        >
+          {user ? <MyPlayerSection /> : <SignUpSection />}
+        </Section>
 
-      {/* Games Section */}
-      <Section
-        id="games"
-        title="Play Anywhere, Anytime"
-        subtitle="GAMES"
-        className="bg-white -mt-12" // Added -mt-12 to remove extra space
-      >
-        <GamesSection />
-      </Section>
+        {/* Games Section */}
+        <Section
+          id="games"
+          title="Play Anywhere, Anytime"
+          subtitle="GAMES"
+          className="bg-white -mt-12"
+        >
+          <GamesSection />
+        </Section>
 
-      {/* Recruiting Section */}
-      <Section
-        id="recruiting"
-        title="Build Your Team"
-        subtitle="RECRUITING"
-        className="bg-gray-50"
-      >
-        <RecruitingSection />
-      </Section>
+        {/* Recruiting Section */}
+        <Section
+          id="recruiting"
+          title="Build Your Team"
+          subtitle="RECRUITING"
+          className="bg-gray-50"
+        >
+          <RecruitingSection />
+        </Section>
 
-      {/* Rewards Section */}
-      <Section
-        id="rewards"
-        title="Get Paid to Play"
-        subtitle="REWARDS"
-        className="bg-white"
-      >
-        <RewardsSection />
-      </Section>
+        {/* Rewards Section */}
+        <Section
+          id="rewards"
+          title="Get Paid to Play"
+          subtitle="REWARDS"
+          className="bg-white"
+        >
+          <RewardsSection />
+        </Section>
+      </div>
+      <Footer />
     </div>
   );
 };

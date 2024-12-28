@@ -20,6 +20,9 @@ import RetailerSales from "@/pages/earn/RetailerSales";
 import PaidGames from "@/pages/earn/PaidGames";
 import GetCertified from "@/pages/qualify/GetCertified";
 import Ratings from "@/pages/qualify/Ratings";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import Terms from "@/pages/Terms";
+import Contact from "@/pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +51,9 @@ function App() {
             <Route path="/earn/paid-games" element={<PaidGames />} />
             <Route path="/qualify/get-certified" element={<GetCertified />} />
             <Route path="/qualify/ratings" element={<Ratings />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
