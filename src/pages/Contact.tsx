@@ -27,11 +27,14 @@ const Contact = () => {
 
       if (error) throw error;
 
+      // Show success toast
       toast({
-        title: "Message sent!",
-        description: "We'll get back to you as soon as possible.",
+        title: "Message Sent Successfully",
+        description: "Thank you for your message. We'll get back to you soon!",
+        variant: "default", // You can customize this
       });
 
+      // Reset form after successful submission
       setFormData({
         name: "",
         email: "",
@@ -39,9 +42,10 @@ const Contact = () => {
         message: "",
       });
     } catch (error) {
+      // Show error toast if submission fails
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Error Sending Message",
+        description: "There was a problem sending your message. Please try again.",
         variant: "destructive",
       });
     } finally {
