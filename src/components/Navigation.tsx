@@ -9,16 +9,17 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Navigation = () => {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const navItems = [
     { id: "qualify", icon: ShieldCheck, label: "Qualify", subtitle: "Become certified on each game system" },
@@ -44,6 +45,16 @@ const Navigation = () => {
     setActiveSection(id);
   };
 
+  const handlePlayClick = (e: React.MouseEvent) => {
+    if (isMobile) {
+      // On mobile, let the dropdown handle the click
+      return;
+    }
+    // On desktop, navigate to games section
+    e.preventDefault();
+    scrollToSection('games');
+  };
+
   const NavLinks = () => (
     <>
       {navItems.map(({ id, icon: Icon, label }) => (
@@ -62,7 +73,7 @@ const Navigation = () => {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger 
-              onClick={() => scrollToSection('games')}
+              onClick={handlePlayClick}
               className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent ${
                 activeSection === 'games' ? 'text-gold' : ''
               }`}
