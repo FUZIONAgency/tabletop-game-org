@@ -23,7 +23,6 @@ const Navigation = () => {
 
   const navItems = [
     { id: "qualify", icon: ShieldCheck, label: "Qualify", subtitle: "Become certified on each game system" },
-    { id: "recruiting", icon: UserPlus, label: "Recruit", subtitle: "Build Your Team" },
     { id: "rewards", icon: DollarSign, label: "Earn", subtitle: "Earn While You Play" },
   ];
 
@@ -31,6 +30,10 @@ const Navigation = () => {
     { icon: Store, label: "Retailer Games", route: "/play/retailer" },
     { icon: Users, label: "Convention Games", route: "/play/convention" },
     { icon: Dices, label: "Online Games", route: "/play/online" },
+  ];
+
+  const networkItems = [
+    { icon: Users, label: "Your Network", route: "/network" },
   ];
 
   const scrollToSection = (id: string) => {
@@ -47,12 +50,18 @@ const Navigation = () => {
 
   const handlePlayClick = (e: React.MouseEvent) => {
     if (isMobile) {
-      // On mobile, let the dropdown handle the click
       return;
     }
-    // On desktop, navigate to games section
     e.preventDefault();
     scrollToSection('games');
+  };
+
+  const handleRecruitClick = (e: React.MouseEvent) => {
+    if (isMobile) {
+      return;
+    }
+    e.preventDefault();
+    scrollToSection('recruiting');
   };
 
   const NavLinks = () => (
@@ -69,6 +78,36 @@ const Navigation = () => {
           <span>{label}</span>
         </button>
       ))}
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger 
+              onClick={handleRecruitClick}
+              className={`text-white hover:text-gold bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent ${
+                activeSection === 'recruiting' ? 'text-gold' : ''
+              }`}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Recruit
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                {networkItems.map((item) => (
+                  <Button
+                    key={item.route}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => navigate(item.route)}
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
