@@ -8,8 +8,8 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children }: PageLayoutProps) => {
   return (
-    <div className="container mx-auto px-4 pt-24 pb-8">
-      <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
+      <div className="container mx-auto px-4 pt-24 pb-8">
         <Navigation />
         <main className="flex-grow">
           {children}
