@@ -9,6 +9,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/auth";
 
 interface QualifyNavProps {
   activeSection: string | null;
@@ -17,6 +18,7 @@ interface QualifyNavProps {
 
 const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
 
   const handleQualifyClick = () => {
     if (!isMobile) {
@@ -37,30 +39,32 @@ const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
             <ShieldCheck className="w-4 h-4 mr-2" />
             Qualify
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="w-[200px] p-2">
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                asChild
-              >
-                <Link to="/qualify/get-certified" className="flex items-center space-x-2">
-                  <Award className="w-4 h-4" />
-                  <span>Get Certified</span>
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                asChild
-              >
-                <Link to="/qualify/ratings" className="flex items-center space-x-2">
-                  <Star className="w-4 h-4" />
-                  <span>Ratings</span>
-                </Link>
-              </Button>
-            </div>
-          </NavigationMenuContent>
+          {user && (
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link to="/qualify/get-certified" className="flex items-center space-x-2">
+                    <Award className="w-4 h-4" />
+                    <span>Get Certified</span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link to="/qualify/ratings" className="flex items-center space-x-2">
+                    <Star className="w-4 h-4" />
+                    <span>Ratings</span>
+                  </Link>
+                </Button>
+              </div>
+            </NavigationMenuContent>
+          )}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

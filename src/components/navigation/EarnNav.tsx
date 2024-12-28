@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useAuth } from "@/contexts/auth";
 
 interface EarnNavProps {
   activeSection: string | null;
@@ -16,6 +17,7 @@ interface EarnNavProps {
 
 const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleEarnClick = (e: React.MouseEvent) => {
     scrollToSection('rewards');
@@ -42,21 +44,23 @@ const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
             <DollarSign className="w-4 h-4 mr-2" />
             Earn
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="w-[200px] p-2">
-              {earnItems.map((item) => (
-                <Button
-                  key={item.route}
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => navigate(item.route)}
-                >
-                  <item.icon className="w-4 h-4 mr-2" />
-                  {item.label}
-                </Button>
-              ))}
-            </div>
-          </NavigationMenuContent>
+          {user && (
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                {earnItems.map((item) => (
+                  <Button
+                    key={item.route}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => navigate(item.route)}
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </NavigationMenuContent>
+          )}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

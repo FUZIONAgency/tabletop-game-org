@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useAuth } from "@/contexts/auth";
 
 interface RecruitNavProps {
   activeSection: string | null;
@@ -16,6 +17,7 @@ interface RecruitNavProps {
 
 const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleRecruitClick = (e: React.MouseEvent) => {
     scrollToSection('recruiting');
@@ -38,21 +40,23 @@ const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
             <UserPlus className="w-4 h-4 mr-2" />
             Recruit
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="w-[200px] p-2">
-              {networkItems.map((item) => (
-                <Button
-                  key={item.route}
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => navigate(item.route)}
-                >
-                  <item.icon className="w-4 h-4 mr-2" />
-                  {item.label}
-                </Button>
-              ))}
-            </div>
-          </NavigationMenuContent>
+          {user && (
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                {networkItems.map((item) => (
+                  <Button
+                    key={item.route}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => navigate(item.route)}
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </NavigationMenuContent>
+          )}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

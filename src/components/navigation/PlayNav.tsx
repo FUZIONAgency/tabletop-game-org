@@ -9,6 +9,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/auth";
 
 interface PlayNavProps {
   activeSection: string | null;
@@ -18,6 +19,7 @@ interface PlayNavProps {
 const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
 
   const handlePlayClick = (e: React.MouseEvent) => {
     if (!isMobile) {
@@ -44,21 +46,23 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
             <Dices className="w-4 h-4 mr-2" />
             Play
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="w-[200px] p-2">
-              {playItems.map((item) => (
-                <Button
-                  key={item.route}
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => navigate(item.route)}
-                >
-                  <item.icon className="w-4 h-4 mr-2" />
-                  {item.label}
-                </Button>
-              ))}
-            </div>
-          </NavigationMenuContent>
+          {user && (
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                {playItems.map((item) => (
+                  <Button
+                    key={item.route}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => navigate(item.route)}
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </NavigationMenuContent>
+          )}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
