@@ -9,13 +9,13 @@ const GamesSection = () => {
       title: "Retailers",
       description: "Play at your local retailer",
       icon: Store,
-      route: "/play/retailer-games"
+      route: "/play/retailer"
     },
     {
       title: "Conventions",
       description: "Host games at conventions",
       icon: Users,
-      route: "/play/convention-games"
+      route: "/play/convention"
     },
     {
       title: "Online",
