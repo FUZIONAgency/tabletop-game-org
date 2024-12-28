@@ -3,7 +3,7 @@ import PageLayout from "@/components/PageLayout";
 const Terms = () => {
   return (
     <PageLayout>
-      <div className="container mx-auto px-4 pt-24 pb-8">
+
         <h1 className="text-3xl font-bold mb-6">Terms and Conditions</h1>
         <div className="prose max-w-none">
           <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
@@ -28,7 +28,7 @@ const Terms = () => {
             <p>In no event shall we or our suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website.</p>
           </section>
         </div>
-      </div>
+
     </PageLayout>
   );
 };
