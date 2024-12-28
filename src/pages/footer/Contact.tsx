@@ -73,7 +73,6 @@ const Contact = () => {
 
   return (
     <PageLayout>
-      <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Contact Us</h1>
         <div className="max-w-2xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -139,7 +138,6 @@ const Contact = () => {
             </Button>
           </form>
         </div>
-      </div>
     </PageLayout>
   );
 };
