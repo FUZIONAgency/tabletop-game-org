@@ -13,6 +13,11 @@ import MyProducts from "@/pages/MyProducts";
 import RetailerGames from "@/pages/play/RetailerGames";
 import OnlineGames from "@/pages/play/Online";
 import ConventionGames from "@/pages/play/ConventionGames";
+import ProductSales from "@/pages/earn/ProductSales";
+import Overrides from "@/pages/earn/Overrides";
+import ConventionSales from "@/pages/earn/ConventionSales";
+import RetailerSales from "@/pages/earn/RetailerSales";
+import PaidGames from "@/pages/earn/PaidGames";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +39,11 @@ function App() {
             <Route path="/play/retailer" element={<RetailerGames />} />
             <Route path="/play/online" element={<OnlineGames />} />
             <Route path="/play/convention" element={<ConventionGames />} />
+            <Route path="/earn/product-sales" element={<ProductSales />} />
+            <Route path="/earn/overrides" element={<Overrides />} />
+            <Route path="/earn/convention-sales" element={<ConventionSales />} />
+            <Route path="/earn/retailer-sales" element={<RetailerSales />} />
+            <Route path="/earn/paid-games" element={<PaidGames />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
