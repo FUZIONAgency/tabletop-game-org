@@ -24,7 +24,7 @@ const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
   };
 
   const networkItems = [
-    { icon: Users, label: "Your Network", route: "/network" },
+    { icon: Users, label: "Your Network", route: "/my/network" },
   ];
 
   return (

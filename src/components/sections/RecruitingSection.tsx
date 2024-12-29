@@ -13,7 +13,7 @@ const RecruitingSection = () => {
           You can invite friends to help you run games and operate conventions.
         </p>
         <Button 
-          onClick={() => navigate("/network")}
+          onClick={() => navigate("/my/network")}
           className="bg-gold hover:bg-gold/90 text-black"
         >
           <UserPlus className="mr-2 h-4 w-4" /> Invite Friends
