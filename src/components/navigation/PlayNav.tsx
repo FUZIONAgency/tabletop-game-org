@@ -22,9 +22,7 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   const { user } = useAuth();
 
   const handlePlayClick = (e: React.MouseEvent) => {
-    if (!isMobile) {
-      scrollToSection('games');
-    }
+    scrollToSection('games');
   };
 
   const playItems = [
