@@ -33,30 +33,28 @@ export const GameSystemCardContent = ({ gameSystem, exams, hasCertification }: G
               className="h-12 w-12 object-contain"
             />
           )}
-          <h3 className="text-lg font-semibold">{gameSystem.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold">{gameSystem.name}</h3>
+            {hasCertification && (
+              <Trophy className="h-5 w-5 text-green-600" />
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {hasCertification ? (
-          <div className="flex items-center gap-2 text-green-600">
-            <Trophy className="h-5 w-5" />
-            <span>Certified!</span>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {exams?.map((exam) => (
-              <div key={exam.id} className="flex items-center justify-between">
-                <span className="text-sm">{exam.name}</span>
-                <Button 
-                  variant="default" 
-                  className="bg-gold hover:bg-gold/90 text-white"
-                >
-                  Take Exam
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="space-y-2">
+          {exams?.map((exam) => (
+            <div key={exam.id} className="flex items-center justify-between">
+              <span className="text-sm">{exam.name}</span>
+              <Button 
+                variant="default" 
+                className="bg-gold hover:bg-gold/90 text-white"
+              >
+                Take Exam
+              </Button>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

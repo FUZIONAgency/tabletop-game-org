@@ -65,19 +65,20 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem?: GameSystem }) => {
   });
 
   const { data: playerExams } = useQuery({
-    queryKey: ['player_exams', gameSystem?.id],
+    queryKey: ['player_exams', player?.id, gameSystem?.id],
     queryFn: async () => {
       if (!player) return [];
 
       const { data, error } = await supabase
         .from('player_exams')
         .select('*')
-        .eq('player_id', player.id);
+        .eq('player_id', player.id)
+        .eq('exam_id', exams?.map(exam => exam.id));
 
       if (error) throw error;
       return data;
     },
-    enabled: !!player?.id && !!gameSystem?.id
+    enabled: !!player?.id && !!gameSystem?.id && !!exams?.length
   });
 
   // If this is the "Add More Games" card
