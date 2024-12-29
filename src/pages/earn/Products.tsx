@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Filter, Loader } from "lucide-react";
+import { Filter } from "lucide-react";
 import ProductFilter from "@/components/products/ProductFilter";
 import ProductCard from "@/components/products/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +16,7 @@ const Products = () => {
   const { data: products, isLoading, error } = useQuery({
     queryKey: ['products', selectedAttributes],
     queryFn: async () => {
+      console.log('Fetching products...');
       const { data, error } = await supabase
         .from('products')
         .select(`
@@ -37,12 +37,18 @@ const Products = () => {
         `)
         .eq('status', 'active');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+      }
+      
+      console.log('Products fetched:', data);
       return data;
     },
   });
 
   if (error) {
+    console.error('Query error:', error);
     return (
       <PageLayout>
         <div className="text-center py-12">
