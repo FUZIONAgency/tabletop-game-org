@@ -121,6 +121,7 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem?: GameSystem }) => {
       gameSystem={gameSystem}
       exams={exams}
       hasCertification={hasCertification}
+      accountId={playerGameAccount.account_id}
     />
   );
 };

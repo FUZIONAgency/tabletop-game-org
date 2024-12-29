@@ -19,9 +19,15 @@ interface GameSystemCardContentProps {
   gameSystem: GameSystem;
   exams?: Exam[];
   hasCertification: boolean;
+  accountId: string;
 }
 
-export const GameSystemCardContent = ({ gameSystem, exams, hasCertification }: GameSystemCardContentProps) => {
+export const GameSystemCardContent = ({ 
+  gameSystem, 
+  exams, 
+  hasCertification, 
+  accountId 
+}: GameSystemCardContentProps) => {
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center space-y-0 pb-2">
@@ -42,6 +48,9 @@ export const GameSystemCardContent = ({ gameSystem, exams, hasCertification }: G
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="text-sm text-gray-600 mb-2">
+          Account ID: {accountId}
+        </div>
         <div className="space-y-2">
           {exams?.map((exam) => (
             <div key={exam.id} className="flex items-center justify-between">
