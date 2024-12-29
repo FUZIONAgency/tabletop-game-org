@@ -280,6 +280,24 @@ export type Database = {
           },
         ]
       }
+      condition_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       contact_inquiries: {
         Row: {
           budget: string
@@ -397,6 +415,24 @@ export type Database = {
           updated_at?: string | null
           venue?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      countries: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
         }
         Relationships: []
       }
@@ -525,6 +561,44 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          quantity: number
+          reference_id: string | null
+          sku_id: string | null
+          transaction_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          quantity: number
+          reference_id?: string | null
+          sku_id?: string | null
+          transaction_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          reference_id?: string | null
+          sku_id?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_sku_id_fkey"
+            columns: ["sku_id"]
+            isOneToOne: false
+            referencedRelation: "skus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_transactions: {
         Row: {
           created_at: string
@@ -628,6 +702,84 @@ export type Database = {
           name?: string | null
         }
         Relationships: []
+      }
+      location_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          address: string | null
+          city: string | null
+          country_id: string | null
+          created_at: string
+          id: string
+          lat: number | null
+          lng: number | null
+          name: string | null
+          postal_code: string | null
+          square_feet: number | null
+          state: string | null
+          type_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          country_id?: string | null
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          postal_code?: string | null
+          square_feet?: number | null
+          state?: string | null
+          type_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          country_id?: string | null
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string | null
+          postal_code?: string | null
+          square_feet?: number | null
+          state?: string | null
+          type_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "locations_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "locations_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "location_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       metro: {
         Row: {
@@ -1252,6 +1404,105 @@ export type Database = {
             columns: ["sku_id"]
             isOneToOne: false
             referencedRelation: "skus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sku_instance_statuses: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      sku_instances: {
+        Row: {
+          amount_owed: number | null
+          amount_paid: number | null
+          condition_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          location_id: string | null
+          master_sku_id: string | null
+          product_id: string | null
+          quantity: number | null
+          status_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_owed?: number | null
+          amount_paid?: number | null
+          condition_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_id?: string | null
+          master_sku_id?: string | null
+          product_id?: string | null
+          quantity?: number | null
+          status_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_owed?: number | null
+          amount_paid?: number | null
+          condition_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_id?: string | null
+          master_sku_id?: string | null
+          product_id?: string | null
+          quantity?: number | null
+          status_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sku_instances_condition_id_fkey"
+            columns: ["condition_id"]
+            isOneToOne: false
+            referencedRelation: "condition_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sku_instances_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sku_instances_master_sku_id_fkey"
+            columns: ["master_sku_id"]
+            isOneToOne: false
+            referencedRelation: "skus"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sku_instances_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sku_instances_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "sku_instance_statuses"
             referencedColumns: ["id"]
           },
         ]
