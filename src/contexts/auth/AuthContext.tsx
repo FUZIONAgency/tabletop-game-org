@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import type { AuthContextType } from "./types";
 import { authService } from "./authService";
 
@@ -13,12 +12,41 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState(null);
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('AuthProvider mounted');
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth...');
         const { data: { session } } = await authService.getSession();
+        console.log('Session:', session);
+        
+        if (mounted) {
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const userRole = await authService.fetchUserRole(session.user.id);
+            setRole(userRole);
+          } else {
+            setRole(null);
+          }
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error in initializeAuth:", error);
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = authService.onAuthStateChange(async (session) => {
+      console.log('Auth state changed:', session);
+      if (mounted) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
@@ -27,29 +55,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         } else {
           setRole(null);
         }
-      } catch (error) {
-        console.error("Error in initializeAuth:", error);
-      } finally {
         setIsLoading(false);
       }
-    };
-
-    initializeAuth();
-
-    const { data: { subscription } } = authService.onAuthStateChange(async (session) => {
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const userRole = await authService.fetchUserRole(session.user.id);
-        setRole(userRole);
-      } else {
-        setRole(null);
-      }
-      setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
+
+  console.log('AuthProvider state:', { user, role, isLoading });
 
   return (
     <AuthContext.Provider value={{ user, role, isLoading }}>
