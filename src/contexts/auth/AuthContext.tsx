@@ -29,6 +29,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
       } catch (error) {
         console.error("Error in initializeAuth:", error);
+        setUser(null);
+        setRole(null);
       } finally {
         setIsLoading(false);
       }
