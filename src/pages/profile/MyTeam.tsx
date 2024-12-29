@@ -1,12 +1,15 @@
-import { PageLayout } from "@/components/PageLayout";
-import { Section } from "@/components/Section";
+import PageLayout from "@/components/PageLayout";
+import Section from "@/components/Section";
 
 const MyTeam = () => {
   return (
     <PageLayout>
-      <Section>
+      <Section
+        id="my-team"
+        title="My Team"
+        subtitle="Team Management"
+      >
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold">My Team</h1>
           <p className="text-muted-foreground">
             View and manage your team members here.
           </p>

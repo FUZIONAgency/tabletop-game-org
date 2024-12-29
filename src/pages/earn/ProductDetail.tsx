@@ -5,7 +5,7 @@ import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/auth";
-import SKUSelector from "@/components/products/SKUSelector";
+import { SKUSelector } from "@/components/products/SKUSelector";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -86,7 +86,8 @@ const ProductDetail = () => {
             <p className="text-gray-600 mb-6">{product.description}</p>
             <SKUSelector 
               skus={product.skus} 
-              customerPrices={customerPrices || []}
+              selectedSku={null}
+              onSelect={() => {}}
             />
           </CardContent>
         </Card>
