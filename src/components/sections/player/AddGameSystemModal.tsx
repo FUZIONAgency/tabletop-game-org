@@ -48,8 +48,8 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
       if (error) throw error;
 
       toast.success("Game system added successfully!");
-      // Invalidate and refetch the my-games query
-      await queryClient.invalidateQueries({ queryKey: ['my-games'] });
+      // Invalidate the my-games query without await
+      queryClient.invalidateQueries({ queryKey: ['my-games'] });
       onOpenChange(false);
       form.reset();
     } catch (error) {
