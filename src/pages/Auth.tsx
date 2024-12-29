@@ -21,6 +21,7 @@ const Auth = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth page state change:", event, session);
       if (event === "SIGNED_IN") {
         navigate("/");
       } else if (event === "SIGNED_OUT") {

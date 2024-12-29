@@ -31,13 +31,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setUser(null);
         setRole(null);
       } finally {
-        setIsLoading(false);  // Make sure we set loading to false after initial check
+        setIsLoading(false);
       }
     };
 
     initializeAuth();
 
-    const { data: { subscription } } = authService.onAuthStateChange(async (session) => {
+    const { data: { subscription } } = authService.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user);
       try {
         if (session?.user) {
           setUser(session.user);
