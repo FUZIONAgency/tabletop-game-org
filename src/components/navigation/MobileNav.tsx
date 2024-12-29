@@ -77,12 +77,14 @@ const MobileNav = ({
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+      <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-white">
         <nav className="flex flex-col gap-4 mt-8">
-          <QualifyNav activeSection={activeSection} scrollToSection={scrollToSection} />
-          <PlayNav activeSection={activeSection} scrollToSection={scrollToSection} />
-          <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
-          <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
+          <div className="text-black">
+            <QualifyNav activeSection={activeSection} scrollToSection={scrollToSection} />
+            <PlayNav activeSection={activeSection} scrollToSection={scrollToSection} />
+            <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
+            <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
+          </div>
           
           {user && (
             <div className="border-t pt-4 mt-4">
