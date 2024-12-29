@@ -1,64 +1,80 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/contexts/auth";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Profile from "@/pages/Profile";
-import Network from "@/pages/Network";
-import MyGames from "@/pages/profile/MyGames";
-import MyRetailers from "@/pages/profile/MyRetailers";
-import MyTournaments from "@/pages/profile/MyTournaments";
-import MyConventions from "@/pages/profile/MyConventions";
+import Profile from "@/pages/profile/Profile";
 import MyProducts from "@/pages/profile/MyProducts";
-import RetailerGames from "@/pages/play/RetailerGames";
-import OnlineGames from "@/pages/play/Online";
-import ConventionGames from "@/pages/play/ConventionGames";
+import MyGames from "@/pages/profile/MyGames";
+import MyTeam from "@/pages/profile/MyTeam";
+import MyEarnings from "@/pages/profile/MyEarnings";
 import ProductSales from "@/pages/earn/ProductSales";
 import Overrides from "@/pages/earn/Overrides";
 import ConventionSales from "@/pages/earn/ConventionSales";
 import RetailerSales from "@/pages/earn/RetailerSales";
 import PaidGames from "@/pages/earn/PaidGames";
-import GetCertified from "@/pages/qualify/GetCertified";
-import Ratings from "@/pages/qualify/Ratings";
-import PrivacyPolicy from "@/pages/footer/PrivacyPolicy";
-import Terms from "@/pages/footer/Terms";
-import Contact from "@/pages/footer/Contact";
+import Products from "@/pages/earn/Products";
+import ProductDetail from "@/pages/earn/ProductDetail";
 
-const queryClient = new QueryClient();
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Index />,
+  },
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "/profile/products",
+    element: <MyProducts />,
+  },
+  {
+    path: "/profile/games",
+    element: <MyGames />,
+  },
+  {
+    path: "/profile/team",
+    element: <MyTeam />,
+  },
+  {
+    path: "/profile/earnings",
+    element: <MyEarnings />,
+  },
+  {
+    path: "/earn/product-sales",
+    element: <ProductSales />,
+  },
+  {
+    path: "/earn/overrides",
+    element: <Overrides />,
+  },
+  {
+    path: "/earn/convention-sales",
+    element: <ConventionSales />,
+  },
+  {
+    path: "/earn/retailer-sales",
+    element: <RetailerSales />,
+  },
+  {
+    path: "/earn/paid-games",
+    element: <PaidGames />,
+  },
+  {
+    path: "/earn/products",
+    element: <Products />,
+  },
+  {
+    path: "/earn/products/:id",
+    element: <ProductDetail />,
+  },
+]);
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/network" element={<Network />} />
-            <Route path="/games" element={<MyGames />} />
-            <Route path="/retailers" element={<MyRetailers />} />
-            <Route path="/tournaments" element={<MyTournaments />} />
-            <Route path="/conventions" element={<MyConventions />} />
-            <Route path="/products" element={<MyProducts />} />
-            <Route path="/play/retailer" element={<RetailerGames />} />
-            <Route path="/play/online" element={<OnlineGames />} />
-            <Route path="/play/convention" element={<ConventionGames />} />
-            <Route path="/earn/product-sales" element={<ProductSales />} />
-            <Route path="/earn/overrides" element={<Overrides />} />
-            <Route path="/earn/convention-sales" element={<ConventionSales />} />
-            <Route path="/earn/retailer-sales" element={<RetailerSales />} />
-            <Route path="/earn/paid-games" element={<PaidGames />} />
-            <Route path="/qualify/get-certified" element={<GetCertified />} />
-            <Route path="/qualify/ratings" element={<Ratings />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
