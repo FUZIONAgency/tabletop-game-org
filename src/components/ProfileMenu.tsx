@@ -37,13 +37,13 @@ const ProfileMenu = () => {
   };
 
   const menuItems = [
-    { label: "My Profile", icon: User, path: "/profile" },
-    { label: "My Games", icon: Gamepad, path: "/games" },
-    { label: "My Retailers", icon: Store, path: "/retailers" },
-    { label: "My Tournaments", icon: Trophy, path: "/tournaments" },
-    { label: "My Conventions", icon: Tent, path: "/conventions" },
-    { label: "My Products", icon: Package, path: "/products" },
-    { label: "My Team", icon: Users, path: "/network" },
+    { label: "My Profile", icon: User, path: "/my/profile" },
+    { label: "My Games", icon: Gamepad, path: "/my/games" },
+    { label: "My Retailers", icon: Store, path: "/my/retailers" },
+    { label: "My Tournaments", icon: Trophy, path: "/my/tournaments" },
+    { label: "My Conventions", icon: Tent, path: "/my/conventions" },
+    { label: "My Products", icon: Package, path: "/my/products" },
+    { label: "My Team", icon: Users, path: "/my/network" },
     { label: "Logout", icon: LogOut, onClick: handleLogout },
   ];
 
