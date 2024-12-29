@@ -19,7 +19,7 @@ const Navigation = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
-  console.log('test: ');
+  console.log('test: ',isLoading,user);
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
