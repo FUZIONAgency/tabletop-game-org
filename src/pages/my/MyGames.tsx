@@ -4,14 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Plus } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 const MyGames = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const { data: games, isLoading, error } = useQuery({
     queryKey: ['my-games', user?.id],
@@ -94,18 +91,6 @@ const MyGames = () => {
                   </div>
                 </Card>
               ))}
-              
-              {/* Add Game System Card */}
-              <Card className="p-4 border-2 border-dashed">
-                <Button 
-                  variant="ghost" 
-                  className="w-full flex items-center gap-4 h-24"
-                  onClick={() => navigate('/games')}
-                >
-                  <Plus className="h-8 w-8" />
-                  <span className="text-lg font-semibold">Add a Game System</span>
-                </Button>
-              </Card>
             </div>
           )}
         </div>
