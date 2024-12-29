@@ -484,6 +484,41 @@ export type Database = {
           },
         ]
       }
+      exams: {
+        Row: {
+          created_at: string
+          game_system_id: string
+          id: string
+          name: string
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          game_system_id: string
+          id?: string
+          name: string
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          game_system_id?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exams_game_system_id_fkey"
+            columns: ["game_system_id"]
+            isOneToOne: false
+            referencedRelation: "game_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_system_links: {
         Row: {
           at_tag: string | null
@@ -921,6 +956,58 @@ export type Database = {
             columns: ["type_id"]
             isOneToOne: false
             referencedRelation: "offer_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      player_exams: {
+        Row: {
+          approval_player_id: string | null
+          created_at: string
+          exam_id: string
+          id: string
+          player_id: string
+          score: number | null
+          updated_at: string
+        }
+        Insert: {
+          approval_player_id?: string | null
+          created_at?: string
+          exam_id: string
+          id?: string
+          player_id: string
+          score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approval_player_id?: string | null
+          created_at?: string
+          exam_id?: string
+          id?: string
+          player_id?: string
+          score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_exams_approval_player_id_fkey"
+            columns: ["approval_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_exams_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_exams_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
             referencedColumns: ["id"]
           },
         ]
