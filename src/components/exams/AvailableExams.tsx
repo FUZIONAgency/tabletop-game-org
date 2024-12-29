@@ -1,20 +1,16 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { Exam } from "@/types/exam";
-import TakeExamForm from "./TakeExamForm";
 
 interface AvailableExamsProps {
   availableExams: Exam[] | undefined;
   completedExamIds: string[];
   isLoading: boolean;
-  playerId?: string;
 }
 
-const AvailableExams = ({ availableExams, completedExamIds, isLoading, playerId }: AvailableExamsProps) => {
+const AvailableExams = ({ availableExams, completedExamIds, isLoading }: AvailableExamsProps) => {
   const navigate = useNavigate();
-  const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -26,16 +22,6 @@ const AvailableExams = ({ availableExams, completedExamIds, isLoading, playerId 
   }
 
   const filteredExams = availableExams?.filter(exam => !completedExamIds.includes(exam.id)) || [];
-
-  if (selectedExamId && playerId) {
-    return (
-      <TakeExamForm
-        examId={selectedExamId}
-        playerId={playerId}
-        onComplete={() => setSelectedExamId(null)}
-      />
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -60,7 +46,7 @@ const AvailableExams = ({ availableExams, completedExamIds, isLoading, playerId 
             </div>
           </div>
           <Button 
-            onClick={() => setSelectedExamId(exam.id)}
+            onClick={() => navigate(`/my/exams/${exam.id}`)}
             className="bg-gold hover:bg-gold/90"
           >
             Take Exam
