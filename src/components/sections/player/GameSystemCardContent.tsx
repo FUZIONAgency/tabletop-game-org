@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface GameSystem {
   id: string;
@@ -30,6 +31,16 @@ export const GameSystemCardContent = ({
   accountId,
   completedExamIds = []
 }: GameSystemCardContentProps) => {
+  const { toast } = useToast();
+
+  const handleTakeExam = () => {
+    toast({
+      title: "Exam Coming Soon",
+      description: "This exam is coming soon",
+      variant: "default"
+    });
+  };
+
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center space-y-0 pb-2">
@@ -69,6 +80,7 @@ export const GameSystemCardContent = ({
                 <Button 
                   variant="default" 
                   className="bg-gold hover:bg-gold/90 text-white"
+                  onClick={handleTakeExam}
                 >
                   Take Exam
                 </Button>
