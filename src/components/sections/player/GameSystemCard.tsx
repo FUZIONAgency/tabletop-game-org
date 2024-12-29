@@ -65,7 +65,7 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem?: GameSystem }) => {
   });
 
   const { data: playerExams } = useQuery({
-    queryKey: ['player_exams', player?.id, gameSystem?.id],
+    queryKey: ['player_exams', player?.id, exams],
     queryFn: async () => {
       if (!player || !exams?.length) return [];
 
@@ -114,6 +114,7 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem?: GameSystem }) => {
     return null;
   }
 
+  const completedExamIds = playerExams?.map(exam => exam.exam_id) || [];
   const hasCertification = playerExams && playerExams.length > 0;
 
   return (
@@ -122,6 +123,7 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem?: GameSystem }) => {
       exams={exams}
       hasCertification={hasCertification}
       accountId={playerGameAccount.account_id}
+      completedExamIds={completedExamIds}
     />
   );
 };

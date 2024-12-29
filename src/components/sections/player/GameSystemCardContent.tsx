@@ -20,13 +20,15 @@ interface GameSystemCardContentProps {
   exams?: Exam[];
   hasCertification: boolean;
   accountId: string;
+  completedExamIds?: string[];
 }
 
 export const GameSystemCardContent = ({ 
   gameSystem, 
   exams, 
   hasCertification, 
-  accountId 
+  accountId,
+  completedExamIds = []
 }: GameSystemCardContentProps) => {
   return (
     <Card className="h-full">
@@ -55,12 +57,22 @@ export const GameSystemCardContent = ({
           {exams?.map((exam) => (
             <div key={exam.id} className="flex items-center justify-between">
               <span className="text-sm">{exam.name}</span>
-              <Button 
-                variant="default" 
-                className="bg-gold hover:bg-gold/90 text-white"
-              >
-                Take Exam
-              </Button>
+              {completedExamIds.includes(exam.id) ? (
+                <Button 
+                  variant="default" 
+                  className="bg-black hover:bg-black/90 text-white cursor-not-allowed"
+                  disabled
+                >
+                  Certified
+                </Button>
+              ) : (
+                <Button 
+                  variant="default" 
+                  className="bg-gold hover:bg-gold/90 text-white"
+                >
+                  Take Exam
+                </Button>
+              )}
             </div>
           ))}
         </div>
