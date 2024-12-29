@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogIn } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import RecruitNav from "./navigation/RecruitNav";
 import EarnNav from "./navigation/EarnNav";
 import MobileNav from "./navigation/MobileNav";
 import Logo from "./navigation/Logo";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navigation = () => {
   const { user } = useAuth();
@@ -18,6 +19,18 @@ const Navigation = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const [currentUser, setCurrentUser] = useState(user);
+
+  useEffect(() => {
+    // Update currentUser when auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setCurrentUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
@@ -44,7 +57,7 @@ const Navigation = () => {
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <div className="ml-4">
-              {user ? (
+              {currentUser ? (
                 <ProfileMenu />
               ) : (
                 <Button
@@ -62,7 +75,7 @@ const Navigation = () => {
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              {user ? (
+              {currentUser ? (
                 <ProfileMenu />
               ) : (
                 <Button
