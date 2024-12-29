@@ -43,8 +43,8 @@ const Navigation = () => {
             <PlayNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
+            LOGIN
             <div className="ml-4">
-              LOGIN
               {!user && !isLoading && (
                 <Button
                   variant="ghost"
