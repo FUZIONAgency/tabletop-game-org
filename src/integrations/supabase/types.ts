@@ -484,6 +484,47 @@ export type Database = {
           },
         ]
       }
+      exam_questions: {
+        Row: {
+          created_at: string
+          exam_id: string
+          id: string
+          name: string
+          order: number | null
+          updated_at: string
+          url: string | null
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          exam_id: string
+          id?: string
+          name: string
+          order?: number | null
+          updated_at?: string
+          url?: string | null
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          exam_id?: string
+          id?: string
+          name?: string
+          order?: number | null
+          updated_at?: string
+          url?: string | null
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exams: {
         Row: {
           created_at: string
