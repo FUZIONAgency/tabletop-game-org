@@ -3,14 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { ExternalLink } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -21,8 +14,6 @@ interface TakeExamFormProps {
 }
 
 const TakeExamForm = ({ examId, playerId, onComplete }: TakeExamFormProps) => {
-  const [urlModalOpen, setUrlModalOpen] = useState(false);
-  const [selectedUrl, setSelectedUrl] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -118,9 +109,8 @@ const TakeExamForm = ({ examId, playerId, onComplete }: TakeExamFormProps) => {
     }
   };
 
-  const handleUrlClick = (url: string) => {
-    setSelectedUrl(url);
-    setUrlModalOpen(true);
+  const handleResourceClick = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   if (isLoading) {
@@ -144,7 +134,7 @@ const TakeExamForm = ({ examId, playerId, onComplete }: TakeExamFormProps) => {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleUrlClick(question.url!)}
+                  onClick={() => handleResourceClick(question.url!)}
                   className="text-blue-600 hover:text-blue-800"
                 >
                   <ExternalLink className="h-4 w-4 mr-1" />
@@ -175,22 +165,6 @@ const TakeExamForm = ({ examId, playerId, onComplete }: TakeExamFormProps) => {
           </Button>
         </div>
       </form>
-
-      <Dialog open={urlModalOpen} onOpenChange={setUrlModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>External Resource</DialogTitle>
-          </DialogHeader>
-          <div className="aspect-video">
-            <iframe
-              src={selectedUrl}
-              className="w-full h-full"
-              title="External resource"
-              allowFullScreen
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
