@@ -11,26 +11,13 @@ import RecruitNav from "./navigation/RecruitNav";
 import EarnNav from "./navigation/EarnNav";
 import MobileNav from "./navigation/MobileNav";
 import Logo from "./navigation/Logo";
-import { supabase } from "@/integrations/supabase/client";
 
 const Navigation = () => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const isMobile = useIsMobile();
-  const [currentUser, setCurrentUser] = useState(user);
-
-  useEffect(() => {
-    // Update currentUser when auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setCurrentUser(session?.user ?? null);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
@@ -57,7 +44,7 @@ const Navigation = () => {
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <div className="ml-4">
-              {currentUser ? (
+              {!isLoading && (user ? (
                 <ProfileMenu />
               ) : (
                 <Button
@@ -68,14 +55,14 @@ const Navigation = () => {
                   <LogIn className="w-4 h-4 mr-2" />
                   Login
                 </Button>
-              )}
+              ))}
             </div>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              {currentUser ? (
+              {!isLoading && (user ? (
                 <ProfileMenu />
               ) : (
                 <Button
@@ -87,7 +74,7 @@ const Navigation = () => {
                   <LogIn className="h-4 w-4" />
                   <span className="sr-only">Login</span>
                 </Button>
-              )}
+              ))}
             </div>
             <MobileNav
               activeSection={activeSection}
