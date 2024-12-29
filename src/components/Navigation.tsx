@@ -19,6 +19,8 @@ const Navigation = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
+  console.log('test: ');
+
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
       navigate('/', { state: { scrollTo: id } });
