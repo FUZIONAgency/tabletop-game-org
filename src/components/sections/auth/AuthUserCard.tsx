@@ -5,7 +5,7 @@ interface AuthUserCardProps {
   userId: string | undefined;
 }
 
-export const AuthUserCard = ({ userId }: AuthUserCardProps) => {
+const AuthUserCard = ({ userId }: AuthUserCardProps) => {
   return (
     <Card>
       <CardHeader>
@@ -25,3 +25,5 @@ export const AuthUserCard = ({ userId }: AuthUserCardProps) => {
     </Card>
   );
 };
+
+export default AuthUserCard;
