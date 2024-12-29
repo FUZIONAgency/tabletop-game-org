@@ -24,11 +24,16 @@ export const authService = {
   },
 
   async getSession() {
-    return await supabase.auth.getSession();
+    console.log('Getting session...');
+    const session = await supabase.auth.getSession();
+    console.log('Session result:', session);
+    return session;
   },
 
   onAuthStateChange(callback: (session: any) => void) {
+    console.log('Setting up auth state change listener');
     return supabase.auth.onAuthStateChange(async (_, session) => {
+      console.log('Auth state change detected:', session);
       callback(session);
     });
   }
