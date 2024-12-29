@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LogIn } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ const Navigation = () => {
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <div className="ml-4">
-              {!isLoading && (user ? (
+              {!isLoading && user ? (
                 <ProfileMenu />
               ) : (
                 <Button
@@ -55,14 +55,14 @@ const Navigation = () => {
                   <LogIn className="w-4 h-4 mr-2" />
                   Login
                 </Button>
-              ))}
+              )}
             </div>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              {!isLoading && (user ? (
+              {!isLoading && user ? (
                 <ProfileMenu />
               ) : (
                 <Button
@@ -74,7 +74,7 @@ const Navigation = () => {
                   <LogIn className="h-4 w-4" />
                   <span className="sr-only">Login</span>
                 </Button>
-              ))}
+              )}
             </div>
             <MobileNav
               activeSection={activeSection}
