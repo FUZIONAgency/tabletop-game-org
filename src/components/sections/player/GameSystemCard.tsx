@@ -90,8 +90,8 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
               <div key={exam.id} className="flex items-center justify-between">
                 <span className="text-sm">{exam.name}</span>
                 <Button 
-                  variant="outline" 
-                  className="bg-yellow-100 hover:bg-yellow-200 border-yellow-300"
+                  variant="default" 
+                  className="bg-gold hover:bg-gold/90 text-white"
                 >
                   Take Exam
                 </Button>
