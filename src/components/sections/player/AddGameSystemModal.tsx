@@ -4,7 +4,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -21,6 +21,7 @@ interface AddGameSystemModalProps {
 
 export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSystemModalProps) => {
   const form = useForm<AddGameSystemFormValues>();
+  const queryClient = useQueryClient();
 
   const { data: gameSystems } = useQuery({
     queryKey: ['game_systems'],
@@ -47,7 +48,10 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
       if (error) throw error;
 
       toast.success("Game system added successfully!");
+      // Invalidate and refetch the my-games query
+      await queryClient.invalidateQueries({ queryKey: ['my-games'] });
       onOpenChange(false);
+      form.reset();
     } catch (error) {
       console.error('Error adding game system:', error);
       toast.error("Failed to add game system");
