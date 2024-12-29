@@ -963,6 +963,51 @@ export type Database = {
           },
         ]
       }
+      player_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          player_id: string
+          rating: number
+          rating_player_id: string
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          player_id: string
+          rating: number
+          rating_player_id: string
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          player_id?: string
+          rating?: number
+          rating_player_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_ratings_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_ratings_rating_player_id_fkey"
+            columns: ["rating_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_relationships: {
         Row: {
           created_at: string | null
