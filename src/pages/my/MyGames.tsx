@@ -61,46 +61,48 @@ const MyGames = () => {
           )}
           
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Skeleton className="h-32 w-full" />
-              <Skeleton className="h-32 w-full" />
+            <div className="space-y-4">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
               {games?.map((game) => (
-                <Card key={game.id} className="p-6">
-                  <div className="flex flex-col h-full">
+                <Card key={game.id} className="p-4">
+                  <div className="flex items-center gap-4">
                     {game.logo_image_url && (
                       <img 
                         src={game.logo_image_url} 
                         alt={game.name}
-                        className="w-full h-48 object-cover rounded-lg mb-4"
+                        className="w-24 h-24 object-contain rounded-lg"
                       />
                     )}
-                    <h3 className="font-semibold text-lg mb-2">{game.name}</h3>
-                    <p className="text-sm text-gray-600 mb-4 flex-grow">{game.description}</p>
-                    {game.video_url && (
-                      <a 
-                        href={game.video_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        Watch Tutorial
-                      </a>
-                    )}
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-lg">{game.name}</h3>
+                      <p className="text-sm text-gray-600">{game.description}</p>
+                      {game.video_url && (
+                        <a 
+                          href={game.video_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+                        >
+                          Watch Tutorial
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </Card>
               ))}
               
               {/* Add Game System Card */}
-              <Card className="p-6 flex flex-col items-center justify-center border-2 border-dashed">
+              <Card className="p-4 border-2 border-dashed">
                 <Button 
                   variant="ghost" 
-                  className="flex flex-col gap-4 h-auto p-6"
+                  className="w-full flex items-center gap-4 h-24"
                   onClick={() => navigate('/games')}
                 >
-                  <Plus className="h-12 w-12" />
+                  <Plus className="h-8 w-8" />
                   <span className="text-lg font-semibold">Add a Game System</span>
                 </Button>
               </Card>
