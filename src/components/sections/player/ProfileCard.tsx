@@ -12,7 +12,7 @@ interface ProfileCardProps {
   profile: ProfileData | null;
 }
 
-export const ProfileCard = ({ profile }: ProfileCardProps) => {
+const ProfileCard = ({ profile }: ProfileCardProps) => {
   if (!profile) return null;
 
   return (
@@ -45,3 +45,5 @@ export const ProfileCard = ({ profile }: ProfileCardProps) => {
     </Card>
   );
 };
+
+export default ProfileCard;

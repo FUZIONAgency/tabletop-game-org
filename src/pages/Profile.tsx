@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/auth";
-import { ProfileCard } from "@/components/sections/player/ProfileCard";
+import ProfileCard from "@/components/sections/player/ProfileCard";
 import { PlayerCard } from "@/components/sections/player/PlayerCard";
-import { AuthUserCard } from "@/components/sections/auth/AuthUserCard";
+import AuthUserCard from "@/components/sections/auth/AuthUserCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
