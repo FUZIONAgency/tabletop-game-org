@@ -15,6 +15,7 @@ import {
   Package,
   Users,
   LogOut,
+  TestTube,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +45,7 @@ const ProfileMenu = () => {
     { label: "My Conventions", icon: Tent, path: "/my/conventions" },
     { label: "My Products", icon: Package, path: "/my/products" },
     { label: "My Team", icon: Users, path: "/my/network" },
+    { label: "My Exams", icon: TestTube, path: "/my/exams" },
     { label: "Logout", icon: LogOut, onClick: handleLogout },
   ];
 
