@@ -1,3 +1,4 @@
+import Navigation from "@/components/Navigation";
 import { useAuth } from "@/contexts/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,34 +58,46 @@ const MyGames = () => {
   });
 
   return (
-    <div className="container mx-auto px-4 pt-24 pb-12">
-      <h1 className="text-3xl font-bold mb-8">My Games</h1>
-      
-      {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            There was an error loading your games. Please try again later.
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {isLoading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      <main className="flex-grow bg-white">
+        <div className="container mx-auto px-4 pt-24 pb-12">
+          <h1 className="text-3xl font-bold mb-8">My Games</h1>
+          
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                There was an error loading your games. Please try again later.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {games?.map((game) => (
+                <GameSystemCard 
+                  key={game.game_system?.id || game.account_id} 
+                  gameSystem={game.game_system}
+                />
+              ))}
+              <GameSystemCard />
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="space-y-4">
-          {games?.map((game) => (
-            <GameSystemCard 
-              key={game.game_system?.id || game.account_id} 
-              gameSystem={game.game_system}
-            />
-          ))}
-          <GameSystemCard />
+      </main>
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-sm">
+            © {new Date().getFullYear()} TabletopGame.org. All rights reserved.
+          </p>
         </div>
-      )}
+      </footer>
     </div>
   );
 };

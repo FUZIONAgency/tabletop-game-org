@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface GameSystem {
   id: string;
@@ -31,10 +31,14 @@ export const GameSystemCardContent = ({
   accountId,
   completedExamIds = []
 }: GameSystemCardContentProps) => {
-  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleTakeExam = (examId: string) => {
-    navigate(`/qualify/exam/${examId}`);
+  const handleTakeExam = () => {
+    toast({
+      title: "Exam Coming Soon",
+      description: "This exam is coming soon",
+      variant: "default"
+    });
   };
 
   return (
@@ -76,7 +80,7 @@ export const GameSystemCardContent = ({
                 <Button 
                   variant="default" 
                   className="bg-gold hover:bg-gold/90 text-white"
-                  onClick={() => handleTakeExam(exam.id)}
+                  onClick={handleTakeExam}
                 >
                   Take Exam
                 </Button>

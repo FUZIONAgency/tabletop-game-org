@@ -484,47 +484,6 @@ export type Database = {
           },
         ]
       }
-      exam_questions: {
-        Row: {
-          created_at: string
-          exam_id: string
-          id: string
-          name: string
-          order: number | null
-          updated_at: string
-          url: string | null
-          weight: number
-        }
-        Insert: {
-          created_at?: string
-          exam_id: string
-          id?: string
-          name: string
-          order?: number | null
-          updated_at?: string
-          url?: string | null
-          weight?: number
-        }
-        Update: {
-          created_at?: string
-          exam_id?: string
-          id?: string
-          name?: string
-          order?: number | null
-          updated_at?: string
-          url?: string | null
-          weight?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "exam_questions_exam_id_fkey"
-            columns: ["exam_id"]
-            isOneToOne: false
-            referencedRelation: "exams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       exams: {
         Row: {
           created_at: string
@@ -997,70 +956,6 @@ export type Database = {
             columns: ["type_id"]
             isOneToOne: false
             referencedRelation: "offer_types"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      player_exam_answers: {
-        Row: {
-          boolean_answer: boolean | null
-          created_at: string
-          date_answer: string | null
-          exam_id: string
-          exam_question_id: string
-          id: string
-          numeric_answer: number | null
-          player_id: string
-          text_answer: string | null
-          updated_at: string
-          uuid_answer: string | null
-        }
-        Insert: {
-          boolean_answer?: boolean | null
-          created_at?: string
-          date_answer?: string | null
-          exam_id: string
-          exam_question_id: string
-          id?: string
-          numeric_answer?: number | null
-          player_id: string
-          text_answer?: string | null
-          updated_at?: string
-          uuid_answer?: string | null
-        }
-        Update: {
-          boolean_answer?: boolean | null
-          created_at?: string
-          date_answer?: string | null
-          exam_id?: string
-          exam_question_id?: string
-          id?: string
-          numeric_answer?: number | null
-          player_id?: string
-          text_answer?: string | null
-          updated_at?: string
-          uuid_answer?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "player_exam_answers_exam_id_fkey"
-            columns: ["exam_id"]
-            isOneToOne: false
-            referencedRelation: "exams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "player_exam_answers_exam_question_id_fkey"
-            columns: ["exam_question_id"]
-            isOneToOne: false
-            referencedRelation: "exam_questions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "player_exam_answers_player_id_fkey"
-            columns: ["player_id"]
-            isOneToOne: false
-            referencedRelation: "players"
             referencedColumns: ["id"]
           },
         ]
