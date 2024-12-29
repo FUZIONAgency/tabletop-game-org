@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Profile from "@/pages/profile/Profile";
+import Profile from "@/pages/Profile";
 import MyProducts from "@/pages/profile/MyProducts";
 import MyGames from "@/pages/profile/MyGames";
 import MyTeam from "@/pages/profile/MyTeam";
