@@ -4,10 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const MyGames = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: games, isLoading, error } = useQuery({
     queryKey: ['my-games', user?.id],
@@ -57,27 +61,24 @@ const MyGames = () => {
           )}
           
           {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-32 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Skeleton className="h-32 w-full" />
               <Skeleton className="h-32 w-full" />
             </div>
-          ) : games?.length === 0 ? (
-            <p className="text-gray-500">You haven't connected with any games yet.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {games?.map((game) => (
-                <div key={game.id} className="border rounded-lg overflow-hidden shadow-sm">
-                  {game.logo_image_url && (
-                    <img 
-                      src={game.logo_image_url} 
-                      alt={game.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
-                  <div className="p-4">
+                <Card key={game.id} className="p-6">
+                  <div className="flex flex-col h-full">
+                    {game.logo_image_url && (
+                      <img 
+                        src={game.logo_image_url} 
+                        alt={game.name}
+                        className="w-full h-48 object-cover rounded-lg mb-4"
+                      />
+                    )}
                     <h3 className="font-semibold text-lg mb-2">{game.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{game.description}</p>
+                    <p className="text-sm text-gray-600 mb-4 flex-grow">{game.description}</p>
                     {game.video_url && (
                       <a 
                         href={game.video_url} 
@@ -89,8 +90,20 @@ const MyGames = () => {
                       </a>
                     )}
                   </div>
-                </div>
+                </Card>
               ))}
+              
+              {/* Add Game System Card */}
+              <Card className="p-6 flex flex-col items-center justify-center border-2 border-dashed">
+                <Button 
+                  variant="ghost" 
+                  className="flex flex-col gap-4 h-auto p-6"
+                  onClick={() => navigate('/games')}
+                >
+                  <Plus className="h-12 w-12" />
+                  <span className="text-lg font-semibold">Add a Game System</span>
+                </Button>
+              </Card>
             </div>
           )}
         </div>
