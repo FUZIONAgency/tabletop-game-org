@@ -19,7 +19,7 @@ interface PlayNavProps {
 const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
 
   const handlePlayClick = (e: React.MouseEvent) => {
     if (!isMobile) {
@@ -46,7 +46,7 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
             <Dices className="w-4 h-4 mr-2" />
             Play
           </NavigationMenuTrigger>
-          {!isLoading && user && (
+          {user && (
             <NavigationMenuContent>
               <div className="w-[200px] p-2">
                 {playItems.map((item) => (
