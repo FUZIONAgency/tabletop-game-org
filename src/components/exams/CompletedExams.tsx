@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlayerExam } from "@/types/exam";
+import { Button } from "@/components/ui/button";
 
 interface CompletedExamsProps {
   completedExams: PlayerExam[] | undefined;
@@ -39,9 +40,18 @@ const CompletedExams = ({ completedExams, isLoading }: CompletedExamsProps) => {
             </div>
           </div>
           <div className="text-right">
-            <div className="font-semibold">
-              Score: {exam.score ? `${exam.score}%` : 'Not completed'}
-            </div>
+            {exam.score ? (
+              <div className="font-semibold">
+                Score: {exam.score}%
+              </div>
+            ) : (
+              <Button 
+                disabled 
+                className="bg-[#800020] hover:bg-[#800020]/90 cursor-not-allowed"
+              >
+                In Review
+              </Button>
+            )}
           </div>
         </div>
       ))}
