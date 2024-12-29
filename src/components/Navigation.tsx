@@ -44,7 +44,7 @@ const Navigation = () => {
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <div className="ml-4">
-              {!isLoading && !user && (
+              {!user && !isLoading && (
                 <Button
                   variant="ghost"
                   className="text-white hover:text-gold"
@@ -54,14 +54,14 @@ const Navigation = () => {
                   Login
                 </Button>
               )}
-              {!isLoading && user && <ProfileMenu />}
+              {user && !isLoading && <ProfileMenu />}
             </div>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              {!isLoading && !user && (
+              {!user && !isLoading && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -72,7 +72,7 @@ const Navigation = () => {
                   <span className="sr-only">Login</span>
                 </Button>
               )}
-              {!isLoading && user && <ProfileMenu />}
+              {user && !isLoading && <ProfileMenu />}
             </div>
             <MobileNav
               activeSection={activeSection}
