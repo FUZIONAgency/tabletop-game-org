@@ -13,16 +13,19 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // If user is already logged in, redirect to home
     if (user) {
       navigate("/");
+      return;
     }
 
-    // Listen for auth state changes and errors
+    // Listen for auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth page state change:", event, session);
-      if (event === "SIGNED_IN") {
+      
+      if (event === "SIGNED_IN" && session) {
         navigate("/");
       } else if (event === "SIGNED_OUT") {
         navigate("/auth");
