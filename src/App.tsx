@@ -1,6 +1,6 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster";
 import MyGames from "@/pages/my/MyGames";
 import GetCertified from "@/pages/qualify/GetCertified";
 import TakeExam from "@/pages/qualify/TakeExam";
@@ -33,7 +33,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Toaster />
       <Navigation />
-      {router}
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }
