@@ -9,38 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      attribute_values: {
-        Row: {
-          attribute_id: string | null
-          created_at: string
-          id: string
-          updated_at: string
-          value: string
-        }
-        Insert: {
-          attribute_id?: string | null
-          created_at?: string
-          id?: string
-          updated_at?: string
-          value: string
-        }
-        Update: {
-          attribute_id?: string | null
-          created_at?: string
-          id?: string
-          updated_at?: string
-          value?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "attribute_values_attribute_id_fkey"
-            columns: ["attribute_id"]
-            isOneToOne: false
-            referencedRelation: "product_attributes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       blog_tags: {
         Row: {
           created_at: string
@@ -400,54 +368,6 @@ export type Database = {
         }
         Relationships: []
       }
-      customer_prices: {
-        Row: {
-          created_at: string
-          customer_id: string | null
-          end_date: string | null
-          id: string
-          price: number
-          sku_id: string | null
-          start_date: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          customer_id?: string | null
-          end_date?: string | null
-          id?: string
-          price: number
-          sku_id?: string | null
-          start_date?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          customer_id?: string | null
-          end_date?: string | null
-          id?: string
-          price?: number
-          sku_id?: string | null
-          start_date?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "customer_prices_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "customer_prices_sku_id_fkey"
-            columns: ["sku_id"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       game_system_links: {
         Row: {
           at_tag: string | null
@@ -524,44 +444,6 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
-      }
-      inventory_transactions: {
-        Row: {
-          created_at: string
-          id: string
-          notes: string | null
-          quantity: number
-          reference_id: string | null
-          sku_id: string | null
-          transaction_type: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          notes?: string | null
-          quantity: number
-          reference_id?: string | null
-          sku_id?: string | null
-          transaction_type: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          notes?: string | null
-          quantity?: number
-          reference_id?: string | null
-          sku_id?: string | null
-          transaction_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "inventory_transactions_sku_id_fkey"
-            columns: ["sku_id"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       invites: {
         Row: {
@@ -1015,60 +897,6 @@ export type Database = {
         }
         Relationships: []
       }
-      product_attributes: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      products: {
-        Row: {
-          base_price: number
-          brand: string | null
-          created_at: string
-          description: string | null
-          id: string
-          name: string
-          status: string | null
-          updated_at: string
-        }
-        Insert: {
-          base_price: number
-          brand?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          name: string
-          status?: string | null
-          updated_at?: string
-        }
-        Update: {
-          base_price?: number
-          brand?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          name?: string
-          status?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1216,83 +1044,6 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      sku_attributes: {
-        Row: {
-          attribute_value_id: string | null
-          created_at: string
-          id: string
-          sku_id: string | null
-        }
-        Insert: {
-          attribute_value_id?: string | null
-          created_at?: string
-          id?: string
-          sku_id?: string | null
-        }
-        Update: {
-          attribute_value_id?: string | null
-          created_at?: string
-          id?: string
-          sku_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "sku_attributes_attribute_value_id_fkey"
-            columns: ["attribute_value_id"]
-            isOneToOne: false
-            referencedRelation: "attribute_values"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "sku_attributes_sku_id_fkey"
-            columns: ["sku_id"]
-            isOneToOne: false
-            referencedRelation: "skus"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      skus: {
-        Row: {
-          created_at: string
-          id: string
-          inventory_quantity: number | null
-          price: number
-          product_id: string | null
-          sku_code: string
-          status: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          inventory_quantity?: number | null
-          price: number
-          product_id?: string | null
-          sku_code: string
-          status?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          inventory_quantity?: number | null
-          price?: number
-          product_id?: string | null
-          sku_code?: string
-          status?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "skus_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]

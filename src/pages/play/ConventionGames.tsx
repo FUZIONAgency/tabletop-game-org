@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useConventionCampaigns } from "@/hooks/useConventionCampaigns";
-import PageLayout from "@/components/PageLayout";
+import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 
 const ConventionGames = () => {
@@ -153,7 +153,8 @@ const ConventionGames = () => {
   }
 
   return (
-    <PageLayout>
+    <div className="min-h-screen bg-background">
+      <Navigation />
       <main className="pt-16">
         <Section
           id="convention-games"
@@ -167,7 +168,7 @@ const ConventionGames = () => {
           />
         </Section>
       </main>
-    </PageLayout>
+    </div>
   );
 };
 

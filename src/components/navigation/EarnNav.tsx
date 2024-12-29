@@ -17,7 +17,7 @@ interface EarnNavProps {
 
 const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
 
   const handleEarnClick = (e: React.MouseEvent) => {
     scrollToSection('rewards');
@@ -44,7 +44,7 @@ const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
             <DollarSign className="w-4 h-4 mr-2" />
             Earn
           </NavigationMenuTrigger>
-          {!isLoading && user && (
+          {user && (
             <NavigationMenuContent>
               <div className="w-[200px] p-2">
                 {earnItems.map((item) => (

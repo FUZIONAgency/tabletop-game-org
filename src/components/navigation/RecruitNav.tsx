@@ -17,7 +17,7 @@ interface RecruitNavProps {
 
 const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
 
   const handleRecruitClick = (e: React.MouseEvent) => {
     scrollToSection('recruiting');
@@ -40,7 +40,7 @@ const RecruitNav = ({ activeSection, scrollToSection }: RecruitNavProps) => {
             <UserPlus className="w-4 h-4 mr-2" />
             Recruit
           </NavigationMenuTrigger>
-          {!isLoading && user && (
+          {user && (
             <NavigationMenuContent>
               <div className="w-[200px] p-2">
                 {networkItems.map((item) => (

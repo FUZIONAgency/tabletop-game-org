@@ -1,10 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const RewardsSection = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center">
       <div className="relative">
@@ -30,10 +27,7 @@ const RewardsSection = () => {
             </li>
           ))}
         </ul>
-        <Button 
-          className="bg-gold hover:bg-gold/90 text-black"
-          onClick={() => navigate('/earn/products')}
-        >
+        <Button className="bg-gold hover:bg-gold/90 text-black">
           Start Earning
         </Button>
       </div>

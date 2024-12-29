@@ -13,13 +13,11 @@ import MobileNav from "./navigation/MobileNav";
 import Logo from "./navigation/Logo";
 
 const Navigation = () => {
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const isMobile = useIsMobile();
-
-  console.log('test: ',isLoading,user);
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== '/') {
@@ -45,9 +43,10 @@ const Navigation = () => {
             <PlayNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
-            LOGIN
             <div className="ml-4">
-              {!user && !isLoading && (
+              {user ? (
+                <ProfileMenu />
+              ) : (
                 <Button
                   variant="ghost"
                   className="text-white hover:text-gold"
@@ -57,14 +56,15 @@ const Navigation = () => {
                   Login
                 </Button>
               )}
-              {user && !isLoading && <ProfileMenu />}
             </div>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              {!user && !isLoading && (
+              {user ? (
+                <ProfileMenu />
+              ) : (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -75,7 +75,6 @@ const Navigation = () => {
                   <span className="sr-only">Login</span>
                 </Button>
               )}
-              {user && !isLoading && <ProfileMenu />}
             </div>
             <MobileNav
               activeSection={activeSection}
