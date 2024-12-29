@@ -27,6 +27,37 @@ interface PlayerExam {
 export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
   const { user } = useAuth();
 
+  const { data: player } = useQuery({
+    queryKey: ['player', user?.email],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .eq('email', user?.email)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.email
+  });
+
+  const { data: playerGameAccount } = useQuery({
+    queryKey: ['player_game_account', player?.id, gameSystem.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('player_game_accounts')
+        .select('*')
+        .eq('player_id', player?.id)
+        .eq('game_system_id', gameSystem.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!player?.id
+  });
+
   const { data: exams } = useQuery({
     queryKey: ['exams', gameSystem.id],
     queryFn: async () => {
@@ -43,12 +74,6 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
   const { data: playerExams } = useQuery({
     queryKey: ['player_exams', gameSystem.id],
     queryFn: async () => {
-      const { data: player } = await supabase
-        .from('players')
-        .select('id')
-        .eq('email', user?.email)
-        .single();
-
       if (!player) return [];
 
       const { data, error } = await supabase
@@ -59,10 +84,14 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
       if (error) throw error;
       return data as PlayerExam[];
     },
-    enabled: !!user?.email
+    enabled: !!player?.id
   });
 
   const hasCertification = playerExams && playerExams.length > 0;
+
+  if (!playerGameAccount) {
+    return null;
+  }
 
   return (
     <Card className="h-full">
