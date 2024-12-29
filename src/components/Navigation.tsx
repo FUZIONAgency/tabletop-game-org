@@ -44,41 +44,35 @@ const Navigation = () => {
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <div className="ml-4">
-              {!isLoading && (
-                user ? (
-                  <ProfileMenu />
-                ) : (
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-gold"
-                    onClick={() => navigate('/auth')}
-                  >
-                    <LogIn className="w-4 h-4 mr-2" />
-                    Login
-                  </Button>
-                )
+              {!isLoading && !user && (
+                <Button
+                  variant="ghost"
+                  className="text-white hover:text-gold"
+                  onClick={() => navigate('/auth')}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
               )}
+              {!isLoading && user && <ProfileMenu />}
             </div>
           </div>
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
             <div className="mr-2">
-              {!isLoading && (
-                user ? (
-                  <ProfileMenu />
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:text-gold"
-                    onClick={() => navigate('/auth')}
-                  >
-                    <LogIn className="h-4 w-4" />
-                    <span className="sr-only">Login</span>
-                  </Button>
-                )
+              {!isLoading && !user && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-gold"
+                  onClick={() => navigate('/auth')}
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span className="sr-only">Login</span>
+                </Button>
               )}
+              {!isLoading && user && <ProfileMenu />}
             </div>
             <MobileNav
               activeSection={activeSection}
