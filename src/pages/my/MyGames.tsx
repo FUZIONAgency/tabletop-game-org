@@ -4,11 +4,30 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { AddGameSystemModal } from "@/components/sections/player/AddGameSystemModal";
 
 const MyGames = () => {
   const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: player } = useQuery({
+    queryKey: ['player', user?.email],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .eq('email', user?.email)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.email
+  });
 
   const { data: games, isLoading, error } = useQuery({
     queryKey: ['my-games', user?.id],
@@ -91,10 +110,34 @@ const MyGames = () => {
                   </div>
                 </Card>
               ))}
+              
+              {/* Add Game Account Card */}
+              <Card className="p-4 border-2 border-dashed cursor-pointer hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Plus className="h-8 w-8" />
+                    <span className="text-lg font-semibold">Add a Game Account</span>
+                  </div>
+                  <Button 
+                    className="bg-gold hover:bg-gold/90 text-white"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Account
+                  </Button>
+                </div>
+              </Card>
             </div>
           )}
         </div>
       </main>
+      {player && (
+        <AddGameSystemModal 
+          isOpen={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          playerId={player.id}
+        />
+      )}
       <footer className="bg-gray-900 text-white py-8">
         <div className="container mx-auto px-4">
           <p className="text-center text-sm">
