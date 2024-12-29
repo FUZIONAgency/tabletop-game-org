@@ -73,7 +73,7 @@ const GetCertified = () => {
                   <div className="h-24 bg-muted animate-pulse rounded-lg" />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
                   {filteredGameSystems?.map((gameSystem) => (
                     <GameSystemCard key={gameSystem.id} gameSystem={gameSystem} />
                   ))}
