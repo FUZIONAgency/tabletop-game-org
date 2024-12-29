@@ -18,7 +18,7 @@ interface QualifyNavProps {
 
 const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
   const handleQualifyClick = () => {
     if (!isMobile) {
@@ -39,7 +39,7 @@ const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
             <ShieldCheck className="w-4 h-4 mr-2" />
             Qualify
           </NavigationMenuTrigger>
-          {user && (
+          {!isLoading && user && (
             <NavigationMenuContent>
               <div className="w-[200px] p-2">
                 <Button
