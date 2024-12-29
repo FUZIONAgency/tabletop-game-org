@@ -1,12 +1,17 @@
+import { useAuth } from "@/contexts/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { GameSystemCard } from "./player/GameSystemCard";
-import { ProfileCard } from "./player/ProfileCard";
-import { AuthUserCard } from "./auth/AuthUserCard";
-import { useAuth } from "@/contexts/auth";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import AuthUserCard from "./auth/AuthUserCard";
+import ProfileCard from "./player/ProfileCard";
 
 const MyPlayerSection = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
@@ -15,15 +20,15 @@ const MyPlayerSection = () => {
         .from('profiles')
         .select('*')
         .eq('id', user?.id)
-        .maybeSingle();
+        .single();
       
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
 
-  const { data: gameSystems } = useQuery({
+  const { data: gameSystems, isLoading } = useQuery({
     queryKey: ['game_systems'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -36,16 +41,33 @@ const MyPlayerSection = () => {
     }
   });
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="space-y-8">
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <AuthUserCard userId={user?.id} />
         <ProfileCard profile={profile} />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {gameSystems?.map((gameSystem) => (
           <GameSystemCard key={gameSystem.id} gameSystem={gameSystem} />
         ))}
+        <Card className="h-full flex flex-col justify-center">
+          <CardContent className="flex flex-col items-center justify-center space-y-4 py-6">
+            <h3 className="text-lg font-semibold text-center">Add More Game Systems</h3>
+            <Button 
+              onClick={() => navigate('/profile/my-games')} 
+              className="bg-gold hover:bg-gold/90"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Games
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
