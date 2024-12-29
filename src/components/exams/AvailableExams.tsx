@@ -7,9 +7,15 @@ interface AvailableExamsProps {
   availableExams: Exam[] | undefined;
   completedExamIds: string[];
   isLoading: boolean;
+  playerId?: string; // Make this optional since it wasn't previously in the interface
 }
 
-const AvailableExams = ({ availableExams, completedExamIds, isLoading }: AvailableExamsProps) => {
+const AvailableExams = ({ 
+  availableExams, 
+  completedExamIds, 
+  isLoading, 
+  playerId 
+}: AvailableExamsProps) => {
   const navigate = useNavigate();
 
   if (isLoading) {
