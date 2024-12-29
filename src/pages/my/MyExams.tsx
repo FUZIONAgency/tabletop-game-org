@@ -126,6 +126,7 @@ const MyExams = () => {
               availableExams={availableExams}
               completedExamIds={completedExamIds}
               isLoading={isLoadingAvailable}
+              playerId={player?.id}
             />
           </div>
         </div>
