@@ -90,7 +90,7 @@ const MobileNav = ({
                 <Button
                   key={item.label}
                   variant="ghost"
-                  className="w-full justify-start gap-2 px-2"
+                  className="w-full justify-start gap-2 px-2 text-black hover:bg-gray-100"
                   onClick={item.onClick || (() => navigate(item.path))}
                 >
                   <item.icon className="h-4 w-4" />
