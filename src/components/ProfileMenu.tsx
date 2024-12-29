@@ -16,6 +16,10 @@ import {
   Users,
   LogOut,
   TestTube,
+  DollarSign,
+  Gift,
+  Box,
+  Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +50,10 @@ const ProfileMenu = () => {
     { label: "My Products", icon: Package, path: "/my/products" },
     { label: "My Team", icon: Users, path: "/my/network" },
     { label: "My Exams", icon: TestTube, path: "/my/exams" },
+    { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
+    { label: "My Fundraisers", icon: Gift, path: "/my/fundraisers" },
+    { label: "My Inventory", icon: Box, path: "/my/inventory" },
+    { label: "My Equipment", icon: Settings, path: "/my/equipment" },
     { label: "Logout", icon: LogOut, onClick: handleLogout },
   ];
 

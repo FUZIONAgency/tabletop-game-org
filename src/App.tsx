@@ -11,6 +11,10 @@ import MyTournaments from "@/pages/my/MyTournaments";
 import MyConventions from "@/pages/my/MyConventions";
 import MyProducts from "@/pages/my/MyProducts";
 import MyExams from "@/pages/my/MyExams";
+import MyEarnings from "@/pages/my/MyEarnings";
+import MyFundraisers from "@/pages/my/MyFundraisers";
+import MyInventory from "@/pages/my/MyInventory";
+import MyEquipment from "@/pages/my/MyEquipment";
 import TakeExam from "@/pages/my/TakeExam";
 import RetailerGames from "@/pages/play/RetailerGames";
 import OnlineGames from "@/pages/play/Online";
@@ -45,6 +49,10 @@ function App() {
             <Route path="/my/tournaments" element={<MyTournaments />} />
             <Route path="/my/conventions" element={<MyConventions />} />
             <Route path="/my/products" element={<MyProducts />} />
+            <Route path="/my/earnings" element={<MyEarnings />} />
+            <Route path="/my/fundraisers" element={<MyFundraisers />} />
+            <Route path="/my/inventory" element={<MyInventory />} />
+            <Route path="/my/equipment" element={<MyEquipment />} />
             <Route path="/play/retailer" element={<RetailerGames />} />
             <Route path="/play/online" element={<OnlineGames />} />
             <Route path="/play/convention" element={<ConventionGames />} />
