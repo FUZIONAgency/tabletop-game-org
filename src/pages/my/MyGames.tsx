@@ -84,37 +84,43 @@ const MyGames = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {games?.map((game) => (
-                <Card key={game.game_system.id} className="p-4">
-                  <div className="flex items-center gap-4">
-                    {game.game_system.logo_image_url && (
-                      <img 
-                        src={game.game_system.logo_image_url} 
-                        alt={game.game_system.name}
-                        className="w-24 h-24 object-contain rounded-lg"
-                      />
-                    )}
-                    <div className="flex-grow">
-                      <h3 className="font-semibold text-lg">{game.game_system.name}</h3>
-                      <p className="text-sm text-gray-600">{game.game_system.description}</p>
-                      {game.game_system.video_url && (
-                        <a 
-                          href={game.game_system.video_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline mt-2 inline-block"
-                        >
-                          Watch Tutorial
-                        </a>
+              {games && games.length > 0 ? (
+                games.map((game) => (
+                  <Card key={game.game_system?.id || game.account_id} className="p-4">
+                    <div className="flex items-center gap-4">
+                      {game.game_system?.logo_image_url && (
+                        <img 
+                          src={game.game_system.logo_image_url} 
+                          alt={game.game_system.name}
+                          className="w-24 h-24 object-contain rounded-lg"
+                        />
                       )}
+                      <div className="flex-grow">
+                        <h3 className="font-semibold text-lg">{game.game_system?.name}</h3>
+                        <p className="text-sm text-gray-600">{game.game_system?.description}</p>
+                        {game.game_system?.video_url && (
+                          <a 
+                            href={game.game_system.video_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+                          >
+                            Watch Tutorial
+                          </a>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-600">Account ID:</p>
+                        <p className="font-medium">{game.account_id}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Account ID:</p>
-                      <p className="font-medium">{game.account_id}</p>
-                    </div>
-                  </div>
+                  </Card>
+                ))
+              ) : (
+                <Card className="p-4">
+                  <p className="text-center text-gray-500">No games added yet.</p>
                 </Card>
-              ))}
+              )}
               
               {/* Add Game Account Card */}
               <Card className="p-4 border-2 border-dashed cursor-pointer hover:bg-gray-50">
