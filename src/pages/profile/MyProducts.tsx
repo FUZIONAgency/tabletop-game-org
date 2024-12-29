@@ -9,13 +9,17 @@ import { AlertCircle } from "lucide-react";
 const MyProducts = () => {
   const { user } = useAuth();
 
-  // Note: This is a placeholder since there's no products table yet
   const { data: products, isLoading, error } = useQuery({
-    queryKey: ['my-products', user?.id],
+    queryKey: ['products'],
     queryFn: async () => {
-      return [];
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
     },
-    enabled: !!user,
   });
 
   return (
@@ -41,22 +45,25 @@ const MyProducts = () => {
               <Skeleton className="h-32 w-full" />
             </div>
           ) : products?.length === 0 ? (
-            <p className="text-gray-500">You don't have any products yet.</p>
+            <p className="text-gray-500">No products found.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products?.map((product) => (
                 <div key={product.id} className="border rounded-lg overflow-hidden shadow-sm">
-                  {product.image_url && (
-                    <img 
-                      src={product.image_url} 
-                      alt={product.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
                   <div className="p-4">
                     <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                     <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-                    <p className="text-sm font-medium text-green-600">${product.price}</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm font-medium text-green-600">
+                        ${product.base_price}
+                      </p>
+                      <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                        {product.brand || 'No brand'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Status: {product.status || 'N/A'}
+                    </p>
                   </div>
                 </div>
               ))}
