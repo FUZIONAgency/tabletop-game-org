@@ -31,22 +31,29 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setUser(null);
         setRole(null);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false);  // Make sure we set loading to false after initial check
       }
     };
 
     initializeAuth();
 
     const { data: { subscription } } = authService.onAuthStateChange(async (session) => {
-      if (session?.user) {
-        setUser(session.user);
-        const userRole = await authService.fetchUserRole(session.user.id);
-        setRole(userRole);
-      } else {
+      try {
+        if (session?.user) {
+          setUser(session.user);
+          const userRole = await authService.fetchUserRole(session.user.id);
+          setRole(userRole);
+        } else {
+          setUser(null);
+          setRole(null);
+        }
+      } catch (error) {
+        console.error("Error in auth state change:", error);
         setUser(null);
         setRole(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
