@@ -5,6 +5,25 @@ import QualifyNav from "./QualifyNav";
 import PlayNav from "./PlayNav";
 import RecruitNav from "./RecruitNav";
 import EarnNav from "./EarnNav";
+import { useAuth } from "@/contexts/auth";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  User,
+  Gamepad,
+  Store,
+  Trophy,
+  Tent,
+  Package,
+  Users,
+  LogOut,
+  TestTube,
+  DollarSign,
+  Gift,
+  Box,
+  Settings,
+} from "lucide-react";
 
 interface MobileNavProps {
   activeSection: string | null;
@@ -15,6 +34,37 @@ const MobileNav = ({
   activeSection,
   scrollToSection,
 }: MobileNavProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/auth');
+      toast.success("Logged out successfully");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Error logging out");
+    }
+  };
+
+  const profileMenuItems = [
+    { label: "My Profile", icon: User, path: "/my/profile" },
+    { label: "My Games", icon: Gamepad, path: "/my/games" },
+    { label: "My Retailers", icon: Store, path: "/my/retailers" },
+    { label: "My Tournaments", icon: Trophy, path: "/my/tournaments" },
+    { label: "My Conventions", icon: Tent, path: "/my/conventions" },
+    { label: "My Products", icon: Package, path: "/my/products" },
+    { label: "My Team", icon: Users, path: "/my/network" },
+    { label: "My Exams", icon: TestTube, path: "/my/exams" },
+    { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
+    { label: "My Fundraisers", icon: Gift, path: "/my/fundraisers" },
+    { label: "My Inventory", icon: Box, path: "/my/inventory" },
+    { label: "My Equipment", icon: Settings, path: "/my/equipment" },
+    { label: "Logout", icon: LogOut, onClick: handleLogout },
+  ];
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -33,6 +83,22 @@ const MobileNav = ({
           <PlayNav activeSection={activeSection} scrollToSection={scrollToSection} />
           <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
           <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
+          
+          {user && (
+            <div className="border-t pt-4 mt-4">
+              {profileMenuItems.map((item) => (
+                <Button
+                  key={item.label}
+                  variant="ghost"
+                  className="w-full justify-start gap-2 px-2"
+                  onClick={item.onClick || (() => navigate(item.path))}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.label}
+                </Button>
+              ))}
+            </div>
+          )}
         </nav>
       </SheetContent>
     </Sheet>
