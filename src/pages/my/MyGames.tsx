@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Plus } from "lucide-react";
+import { AlertCircle, Plus, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -61,6 +61,27 @@ const MyGames = () => {
     enabled: !!user,
   });
 
+  const { data: playerExams } = useQuery({
+    queryKey: ['player_exams', player?.id],
+    queryFn: async () => {
+      if (!player?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('player_exams')
+        .select('exam_id, exam:exams(game_system_id)')
+        .eq('player_id', player.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!player?.id
+  });
+
+  // Create a Set of game system IDs that have exams completed
+  const completedGameSystems = new Set(
+    playerExams?.map(exam => exam.exam?.game_system_id)
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -96,7 +117,12 @@ const MyGames = () => {
                         />
                       )}
                       <div className="flex-grow">
-                        <h3 className="font-semibold text-lg">{game.game_system?.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-lg">{game.game_system?.name}</h3>
+                          {completedGameSystems.has(game.game_system?.id) && (
+                            <Trophy className="h-5 w-5 text-green-600" />
+                          )}
+                        </div>
                         <p className="text-sm text-gray-600">{game.game_system?.description}</p>
                         {game.game_system?.video_url && (
                           <a 
