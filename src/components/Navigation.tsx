@@ -44,6 +44,7 @@ const Navigation = () => {
             <RecruitNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
             <div className="ml-4">
+              LOGIN
               {!user && !isLoading && (
                 <Button
                   variant="ghost"
