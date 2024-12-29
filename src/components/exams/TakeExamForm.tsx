@@ -1,6 +1,9 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -10,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { ExternalLink } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
 
 interface TakeExamFormProps {
   examId: string;
@@ -22,6 +24,7 @@ const TakeExamForm = ({ examId, playerId, onComplete }: TakeExamFormProps) => {
   const [urlModalOpen, setUrlModalOpen] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { data: questions, isLoading } = useQuery({
@@ -163,7 +166,7 @@ const TakeExamForm = ({ examId, playerId, onComplete }: TakeExamFormProps) => {
           <Button
             type="button"
             variant="outline"
-            onClick={onComplete}
+            onClick={() => navigate("/my/exams")}
           >
             Cancel
           </Button>
