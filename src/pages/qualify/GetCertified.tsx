@@ -3,8 +3,40 @@ import { supabase } from "@/integrations/supabase/client";
 import { GameSystemCard } from "@/components/sections/player/GameSystemCard";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/auth";
 
 const GetCertified = () => {
+  const { user } = useAuth();
+
+  const { data: player } = useQuery({
+    queryKey: ['player', user?.email],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .eq('email', user?.email)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.email
+  });
+
+  const { data: playerGameAccounts } = useQuery({
+    queryKey: ['player_game_accounts', player?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('player_game_accounts')
+        .select('game_system_id')
+        .eq('player_id', player?.id);
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!player?.id
+  });
+
   const { data: gameSystems, isLoading } = useQuery({
     queryKey: ['game_systems'],
     queryFn: async () => {
@@ -17,6 +49,10 @@ const GetCertified = () => {
       return data;
     }
   });
+
+  const filteredGameSystems = gameSystems?.filter(gameSystem => 
+    playerGameAccounts?.some(account => account.game_system_id === gameSystem.id)
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,12 +73,12 @@ const GetCertified = () => {
                   <div className="h-24 bg-muted animate-pulse rounded-lg" />
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {gameSystems?.map((gameSystem) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {filteredGameSystems?.map((gameSystem) => (
                     <GameSystemCard key={gameSystem.id} gameSystem={gameSystem} />
                   ))}
-                  {gameSystems?.length === 0 && (
-                    <p className="text-center text-muted-foreground">
+                  {filteredGameSystems?.length === 0 && (
+                    <p className="text-center text-muted-foreground col-span-full">
                       No game systems available for certification
                     </p>
                   )}
