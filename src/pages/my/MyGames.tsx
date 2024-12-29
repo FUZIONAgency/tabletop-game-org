@@ -44,6 +44,7 @@ const MyGames = () => {
       const { data, error: gamesError } = await supabase
         .from('player_game_accounts')
         .select(`
+          account_id,
           game_system:game_systems (
             id,
             name,
@@ -55,7 +56,7 @@ const MyGames = () => {
         .eq('player_id', playerData.id);
 
       if (gamesError) throw gamesError;
-      return data?.map(pga => pga.game_system) || [];
+      return data || [];
     },
     enabled: !!user,
   });
@@ -84,21 +85,21 @@ const MyGames = () => {
           ) : (
             <div className="space-y-4">
               {games?.map((game) => (
-                <Card key={game.id} className="p-4">
+                <Card key={game.game_system.id} className="p-4">
                   <div className="flex items-center gap-4">
-                    {game.logo_image_url && (
+                    {game.game_system.logo_image_url && (
                       <img 
-                        src={game.logo_image_url} 
-                        alt={game.name}
+                        src={game.game_system.logo_image_url} 
+                        alt={game.game_system.name}
                         className="w-24 h-24 object-contain rounded-lg"
                       />
                     )}
                     <div className="flex-grow">
-                      <h3 className="font-semibold text-lg">{game.name}</h3>
-                      <p className="text-sm text-gray-600">{game.description}</p>
-                      {game.video_url && (
+                      <h3 className="font-semibold text-lg">{game.game_system.name}</h3>
+                      <p className="text-sm text-gray-600">{game.game_system.description}</p>
+                      {game.game_system.video_url && (
                         <a 
-                          href={game.video_url} 
+                          href={game.game_system.video_url} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-sm text-blue-600 hover:underline mt-2 inline-block"
@@ -106,6 +107,10 @@ const MyGames = () => {
                           Watch Tutorial
                         </a>
                       )}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">Account ID:</p>
+                      <p className="font-medium">{game.account_id}</p>
                     </div>
                   </div>
                 </Card>
