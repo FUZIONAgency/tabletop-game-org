@@ -6,25 +6,26 @@ import GetCertified from "@/pages/qualify/GetCertified";
 import TakeExam from "@/pages/qualify/TakeExam";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
 import Navigation from "@/components/Navigation";
+import PageLayout from "@/components/PageLayout";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MyPlayerSection />,
+    element: <PageLayout><MyPlayerSection /></PageLayout>,
   },
   {
     path: "/my/games",
-    element: <MyGames />,
+    element: <PageLayout><MyGames /></PageLayout>,
   },
   {
     path: "/qualify",
-    element: <GetCertified />,
+    element: <PageLayout><GetCertified /></PageLayout>,
   },
   {
     path: "/qualify/exam/:examId",
-    element: <TakeExam />,
+    element: <PageLayout><TakeExam /></PageLayout>,
   },
 ]);
 
@@ -32,7 +33,6 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster />
-      <Navigation />
       <RouterProvider router={router} />
     </QueryClientProvider>
   );
