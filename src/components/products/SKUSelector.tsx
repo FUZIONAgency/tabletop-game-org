@@ -8,10 +8,6 @@ interface SKUSelectorProps {
   customerPrices: any[];
 }
 
-interface SKUAttributes {
-  [key: string]: string;
-}
-
 const SKUSelector = ({ skus, customerPrices }: SKUSelectorProps) => {
   const [selectedSKU, setSelectedSKU] = useState(skus[0]?.id);
 
@@ -19,8 +15,8 @@ const SKUSelector = ({ skus, customerPrices }: SKUSelectorProps) => {
     return customerPrices.find(cp => cp.sku_id === skuId)?.price;
   };
 
-  const groupAttributesBySKU = (sku: any): SKUAttributes => {
-    return sku.sku_attributes.reduce((acc: SKUAttributes, attr: any) => {
+  const groupAttributesBySKU = (sku: any) => {
+    return sku.sku_attributes.reduce((acc: any, attr: any) => {
       const { value, product_attributes } = attr.attribute_values;
       return { ...acc, [product_attributes.name]: value };
     }, {});

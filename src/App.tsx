@@ -1,8 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
+import Profile from "@/pages/profile/Profile";
 import MyProducts from "@/pages/profile/MyProducts";
 import MyGames from "@/pages/profile/MyGames";
+import MyTeam from "@/pages/profile/MyTeam";
+import MyEarnings from "@/pages/profile/MyEarnings";
 import ProductSales from "@/pages/earn/ProductSales";
 import Overrides from "@/pages/earn/Overrides";
 import ConventionSales from "@/pages/earn/ConventionSales";
@@ -21,12 +24,24 @@ const router = createBrowserRouter([
     element: <Auth />,
   },
   {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
     path: "/profile/products",
     element: <MyProducts />,
   },
   {
     path: "/profile/games",
     element: <MyGames />,
+  },
+  {
+    path: "/profile/team",
+    element: <MyTeam />,
+  },
+  {
+    path: "/profile/earnings",
+    element: <MyEarnings />,
   },
   {
     path: "/earn/product-sales",

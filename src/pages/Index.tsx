@@ -17,11 +17,6 @@ const Index = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log('Index page mounted');
-    console.log('Auth state:', { isLoading, user });
-  }, [isLoading, user]);
-
-  useEffect(() => {
     if (location.state?.scrollTo) {
       const element = document.getElementById(location.state.scrollTo);
       if (element) {
@@ -33,20 +28,16 @@ const Index = () => {
   }, [location.state]);
 
   if (isLoading) {
-    console.log('Rendering loading state');
     return (
       <div className="min-h-screen bg-white p-6 space-y-8">
-        <Navigation />
-        <div className="container mx-auto">
-          <Skeleton className="h-[60vh] w-full mb-8" />
-          <Skeleton className="h-96 w-full mb-8" />
-          <Skeleton className="h-96 w-full" />
-        </div>
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-[60vh] w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
       </div>
     );
   }
 
-  console.log('Rendering full page content');
   return (
     <div className="bg-white flex flex-col min-h-screen">
       <Navigation />
