@@ -98,17 +98,18 @@ const MyPlayerSection = () => {
 
   return (
     <div className="space-y-8">
-      <ProfileCard profile={profile} />
-      
-      <Separator />
-      
-      <PlayerCard 
-        player={player} 
-        userEmail={user?.email || ""} 
-        onSuccess={fetchData} 
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <ProfileCard profile={profile} />
+        <PlayerCard 
+          player={player} 
+          userEmail={user?.email || ""} 
+          onSuccess={fetchData} 
+        />
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Separator />
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {gameSystems.map((gameSystem) => (
           <GameSystemCard key={gameSystem.id} gameSystem={gameSystem} />
         ))}

@@ -1,7 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { GraduationCap, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
+import { useAuth } from "@/contexts/auth";
 
 interface GameSystem {
   id: string;
@@ -20,10 +22,11 @@ interface PlayerExam {
   id: string;
   exam_id: string;
   score: number | null;
-  approval_player_id: string | null;
 }
 
 export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
+  const { user } = useAuth();
+
   const { data: exams } = useQuery({
     queryKey: ['exams', gameSystem.id],
     queryFn: async () => {
@@ -43,7 +46,7 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
       const { data: player } = await supabase
         .from('players')
         .select('id')
-        .eq('auth_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('email', user?.email)
         .single();
 
       if (!player) return [];
@@ -55,13 +58,16 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
 
       if (error) throw error;
       return data as PlayerExam[];
-    }
+    },
+    enabled: !!user?.email
   });
 
+  const hasCertification = playerExams && playerExams.length > 0;
+
   return (
-    <Card className="mb-6">
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 w-full">
           {gameSystem.logo_image_url && (
             <img
               src={gameSystem.logo_image_url}
@@ -69,56 +75,30 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem: GameSystem }) => {
               className="h-12 w-12 object-contain"
             />
           )}
-          <CardTitle className="text-xl">{gameSystem.name}</CardTitle>
+          <h3 className="text-lg font-semibold">{gameSystem.name}</h3>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <GraduationCap className="mr-2 h-5 w-5" />
-                Available Exams
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {exams?.length === 0 && (
-                <p className="text-sm text-muted-foreground">No exams available yet</p>
-              )}
-              {exams?.map((exam) => (
-                <div key={exam.id} className="mb-2">
-                  <p className="font-medium">{exam.name}</p>
-                  <p className="text-sm text-muted-foreground">Weight: {exam.weight}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <Trophy className="mr-2 h-5 w-5" />
-                Results
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {playerExams?.length === 0 && (
-                <p className="text-sm text-muted-foreground">No exam results yet</p>
-              )}
-              {playerExams?.map((playerExam) => {
-                const exam = exams?.find(e => e.id === playerExam.exam_id);
-                return (
-                  <div key={playerExam.id} className="mb-2">
-                    <p className="font-medium">{exam?.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Score: {playerExam.score ?? 'Pending'}
-                    </p>
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-        </div>
+      <CardContent className="space-y-4">
+        {hasCertification ? (
+          <div className="flex items-center gap-2 text-green-600">
+            <Trophy className="h-5 w-5" />
+            <span>Certified!</span>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {exams?.map((exam) => (
+              <div key={exam.id} className="flex items-center justify-between">
+                <span className="text-sm">{exam.name}</span>
+                <Button 
+                  variant="outline" 
+                  className="bg-yellow-100 hover:bg-yellow-200 border-yellow-300"
+                >
+                  Take Exam
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
