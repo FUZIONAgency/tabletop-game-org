@@ -38,7 +38,7 @@ const ProfileMenu = () => {
 
   const menuItems = [
     { label: "My Profile", icon: User, path: "/profile" },
-    { label: "My Games", icon: Gamepad, path: "/my-games" },
+    { label: "My Games", icon: Gamepad, path: "/games" },
     { label: "My Retailers", icon: Store, path: "/retailers" },
     { label: "My Tournaments", icon: Trophy, path: "/tournaments" },
     { label: "My Conventions", icon: Tent, path: "/conventions" },
