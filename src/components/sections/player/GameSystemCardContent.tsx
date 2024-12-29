@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -29,16 +28,14 @@ export const GameSystemCardContent = ({
   exams, 
   hasCertification, 
   accountId,
-  completedExamIds = []
 }: GameSystemCardContentProps) => {
   const navigate = useNavigate();
 
-  const handleTakeExam = () => {
-    navigate('/my/exams');
-  };
-
   return (
-    <Card className="h-full">
+    <Card 
+      className="h-full cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={() => navigate('/my/exams')}
+    >
       <CardHeader className="flex flex-row items-center space-y-0 pb-2">
         <div className="flex items-center space-x-4 w-full">
           {gameSystem.logo_image_url && (
@@ -64,23 +61,6 @@ export const GameSystemCardContent = ({
           {exams?.map((exam) => (
             <div key={exam.id} className="flex items-center justify-between">
               <span className="text-sm">{exam.name}</span>
-              {completedExamIds.includes(exam.id) ? (
-                <Button 
-                  variant="default" 
-                  className="bg-black hover:bg-black/90 text-white cursor-not-allowed"
-                  disabled
-                >
-                  Certified
-                </Button>
-              ) : (
-                <Button 
-                  variant="default" 
-                  className="bg-gold hover:bg-gold/90 text-white"
-                  onClick={handleTakeExam}
-                >
-                  Take Exam
-                </Button>
-              )}
             </div>
           ))}
         </div>
