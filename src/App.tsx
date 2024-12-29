@@ -10,6 +10,7 @@ import MyRetailers from "@/pages/my/MyRetailers";
 import MyTournaments from "@/pages/my/MyTournaments";
 import MyConventions from "@/pages/my/MyConventions";
 import MyProducts from "@/pages/my/MyProducts";
+import MyExams from "@/pages/my/MyExams";
 import RetailerGames from "@/pages/play/RetailerGames";
 import OnlineGames from "@/pages/play/Online";
 import ConventionGames from "@/pages/play/ConventionGames";
@@ -37,6 +38,7 @@ function App() {
             <Route path="/my/profile" element={<Profile />} />
             <Route path="/my/network" element={<Network />} />
             <Route path="/my/games" element={<MyGames />} />
+            <Route path="/my/exams" element={<MyExams />} />
             <Route path="/my/retailers" element={<MyRetailers />} />
             <Route path="/my/tournaments" element={<MyTournaments />} />
             <Route path="/my/conventions" element={<MyConventions />} />
