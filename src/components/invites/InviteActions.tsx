@@ -42,26 +42,41 @@ export const InviteActions = ({
     );
   }
 
-  if (type === 'received' && !invite.decision) {
-    return (
-      <>
+  if (type === 'received') {
+    if (invite.decision === 'Accepted') {
+      return (
         <Button
-          variant="default"
+          variant="outline"
           size="sm"
-          onClick={() => onDecide(invite, 'Accepted')}
-          className="bg-green-500 hover:bg-green-600"
+          disabled
+          className="bg-black text-white hover:bg-black"
         >
-          Accept
+          Accepted
         </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => onDecide(invite, 'Declined')}
-        >
-          Decline
-        </Button>
-      </>
-    );
+      );
+    }
+
+    if (!invite.decision) {
+      return (
+        <>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => onDecide(invite, 'Accepted')}
+            className="bg-green-500 hover:bg-green-600"
+          >
+            Accept
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => onDecide(invite, 'Declined')}
+          >
+            Decline
+          </Button>
+        </>
+      );
+    }
   }
 
   return null;
