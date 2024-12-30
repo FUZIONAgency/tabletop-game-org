@@ -1492,6 +1492,7 @@ export type Database = {
           email: string | null
           id: string
           is_over_13: boolean | null
+          retailers_max: number | null
           role: string | null
           username: string | null
         }
@@ -1501,6 +1502,7 @@ export type Database = {
           email?: string | null
           id: string
           is_over_13?: boolean | null
+          retailers_max?: number | null
           role?: string | null
           username?: string | null
         }
@@ -1510,6 +1512,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_over_13?: boolean | null
+          retailers_max?: number | null
           role?: string | null
           username?: string | null
         }
