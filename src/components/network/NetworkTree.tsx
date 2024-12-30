@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { handleSponsorRequest } from "@/utils/sponsorRequests"; // Import the utility function
+import { handleSponsorRequest } from "@/utils/sponsorRequests";
 
 interface AdminProfile {
   id: string;
@@ -25,6 +25,7 @@ export const NetworkTree = () => {
   const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([]);
   const [activeSponsor, setActiveSponsor] = useState<ActiveSponsor | null>(null);
   const [downlines, setDownlines] = useState<Downline[]>([]);
+  const [hasPendingRequest, setHasPendingRequest] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -41,6 +42,16 @@ export const NetworkTree = () => {
           .single();
 
         if (!playerData) return;
+
+        // Check for pending sponsor requests
+        const { data: pendingRequests } = await supabase
+          .from('player_relationships')
+          .select()
+          .eq('downline_id', playerData.id)
+          .eq('status', 'pending')
+          .maybeSingle();
+
+        setHasPendingRequest(!!pendingRequests);
 
         // Fetch downlines
         const { data: downlineData } = await supabase
@@ -64,7 +75,7 @@ export const NetworkTree = () => {
         // Create network structure including downlines
         const mockNetwork = {
           id: "sponsor",
-          alias: "Request a Sponsor",
+          alias: hasPendingRequest ? "In Review" : "Request a Sponsor",
           children: [
             {
               id: "root",
@@ -180,7 +191,7 @@ export const NetworkTree = () => {
   const onSponsorRequest = async (adminProfileId: string) => {
     try {
       await handleSponsorRequest(adminProfileId, user);
-      
+      setHasPendingRequest(true);
       toast({
         title: "Success",
         description: "Sponsor request sent successfully",
@@ -206,6 +217,7 @@ export const NetworkTree = () => {
       adminProfiles={adminProfiles}
       onSponsorRequest={onSponsorRequest}
       onInviteCreated={handleInviteCreated}
+      hasPendingRequest={hasPendingRequest}
     />
   ) : null;
 };

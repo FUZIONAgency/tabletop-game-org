@@ -12,6 +12,7 @@ interface NetworkNodeProps {
   adminProfiles: { id: string; username: string }[];
   onSponsorRequest: (adminProfileId: string) => void;
   onInviteCreated?: (invite: any) => void;
+  hasPendingRequest?: boolean;
 }
 
 export const NetworkNode = ({ 
@@ -19,7 +20,8 @@ export const NetworkNode = ({
   activeSponsor, 
   adminProfiles, 
   onSponsorRequest,
-  onInviteCreated 
+  onInviteCreated,
+  hasPendingRequest 
 }: NetworkNodeProps) => {
   const renderNode = () => {
     switch (node.id) {
@@ -29,6 +31,7 @@ export const NetworkNode = ({
             activeSponsor={activeSponsor}
             adminProfiles={adminProfiles}
             onSponsorRequest={onSponsorRequest}
+            hasPendingRequest={hasPendingRequest}
           />
         );
       case "left":
@@ -62,6 +65,7 @@ export const NetworkNode = ({
                 adminProfiles={adminProfiles}
                 onSponsorRequest={onSponsorRequest}
                 onInviteCreated={onInviteCreated}
+                hasPendingRequest={hasPendingRequest}
               />
             ))}
           </div>

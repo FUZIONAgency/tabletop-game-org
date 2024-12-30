@@ -11,12 +11,14 @@ interface SponsorNodeProps {
   activeSponsor: { uplineId: string; uplineUsername: string } | null;
   adminProfiles: { id: string; username: string }[];
   onSponsorRequest: (adminProfileId: string) => void;
+  hasPendingRequest?: boolean;
 }
 
 export const SponsorNode = ({ 
   activeSponsor, 
   adminProfiles, 
-  onSponsorRequest 
+  onSponsorRequest,
+  hasPendingRequest 
 }: SponsorNodeProps) => {
   if (activeSponsor) {
     return (
@@ -24,6 +26,17 @@ export const SponsorNode = ({
         <div className="flex items-center justify-center gap-1">
           <Trees className="h-4 w-4" />
           {activeSponsor.uplineUsername}
+        </div>
+      </Card>
+    );
+  }
+
+  if (hasPendingRequest) {
+    return (
+      <Card className="p-4 mb-4 w-32 text-center bg-blue-600 text-white">
+        <div className="flex items-center justify-center gap-1">
+          <Trees className="h-4 w-4" />
+          In Review
         </div>
       </Card>
     );
