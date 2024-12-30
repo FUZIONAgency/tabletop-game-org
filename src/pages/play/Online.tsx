@@ -1,14 +1,17 @@
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const OnlineGames = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { data: campaigns, isLoading, refetch } = useCampaigns();
 
@@ -161,11 +164,30 @@ const OnlineGames = () => {
           title="Online Games"
           subtitle="Play from anywhere"
         >
-          <CampaignTable 
-            campaigns={campaigns || []} 
-            onJoinCampaign={handleJoinCampaign}
-            onLeaveCampaign={handleLeaveCampaign}
-          />
+          {user ? (
+            <CampaignTable 
+              campaigns={campaigns || []} 
+              onJoinCampaign={handleJoinCampaign}
+              onLeaveCampaign={handleLeaveCampaign}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center space-y-6 p-8 bg-white rounded-lg shadow-md">
+              <h2 className="text-2xl font-semibold text-center">
+                Discover Online Games
+              </h2>
+              <p className="text-gray-600 text-center max-w-md">
+                Join our network of tabletop gaming enthusiasts and start playing online.
+              </p>
+              <Button 
+                className="bg-gold text-black hover:bg-yellow-500 transition-colors"
+                size="lg"
+                onClick={() => navigate('/auth')}
+              >
+                <LogIn className="mr-2 h-4 w-4" />
+                Get Started
+              </Button>
+            </div>
+          )}
         </Section>
       </main>
     </div>
