@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-import { Mail, X } from "lucide-react";
+import { Mail, X, Check } from "lucide-react";
 import { Invite } from "@/types/invite";
 
 interface InviteActionsProps {
@@ -43,7 +43,7 @@ export const InviteActions = ({
   }
 
   if (type === 'received') {
-    if (invite.decision === 'Accepted') {
+    if (invite.status === 'accepted') {
       return (
         <Button
           variant="outline"
@@ -51,6 +51,7 @@ export const InviteActions = ({
           disabled
           className="bg-black text-white hover:bg-black"
         >
+          <Check className="h-4 w-4 mr-2" />
           Accepted
         </Button>
       );
