@@ -5,6 +5,7 @@ import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Profile from "@/pages/Profile";
 import Network from "@/pages/Network";
+import AcceptInvite from "@/pages/AcceptInvite";
 import MyGames from "@/pages/my/MyGames";
 import MyRetailers from "@/pages/my/MyRetailers";
 import MyTournaments from "@/pages/my/MyTournaments";
@@ -40,6 +41,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/accept-invite/:token" element={<AcceptInvite />} />
             <Route path="/my/profile" element={<Profile />} />
             <Route path="/my/network" element={<Network />} />
             <Route path="/my/games" element={<MyGames />} />
