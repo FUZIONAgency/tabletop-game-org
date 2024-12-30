@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { handleSponsorRequest } from "@/utils/sponsorRequests";
-import { useQuery } from "@tanstack/react-query";
 
 interface AdminProfile {
   id: string;
@@ -30,27 +29,20 @@ export const NetworkTree = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const { data: playerData } = useQuery({
-    queryKey: ['current-player', user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-      const { data, error } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user,
-  });
-
   useEffect(() => {
     const fetchNetwork = async () => {
-      if (!user || !playerData) return;
+      if (!user) return;
 
       try {
+        // Get current player's ID
+        const { data: playerData } = await supabase
+          .from('players')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+
+        if (!playerData) return;
+
         // Check for pending sponsor requests
         const { data: pendingRequests } = await supabase
           .from('player_relationships')
@@ -141,9 +133,18 @@ export const NetworkTree = () => {
     };
 
     const fetchActiveSponsor = async () => {
-      if (!user || !playerData) return;
+      if (!user) return;
 
       try {
+        const { data: playerData, error: playerError } = await supabase
+          .from('players')
+          .select('id')
+          .eq('auth_id', user.id)
+          .maybeSingle();
+
+        if (playerError) throw playerError;
+        if (!playerData) return;
+
         const { data: relationship, error: relationshipError } = await supabase
           .from('player_relationships')
           .select(`
@@ -185,7 +186,7 @@ export const NetworkTree = () => {
     fetchNetwork();
     fetchAdminProfiles();
     fetchActiveSponsor();
-  }, [user, playerData, toast]);
+  }, [user, toast]);
 
   const onSponsorRequest = async (adminProfileId: string) => {
     try {
@@ -209,11 +210,7 @@ export const NetworkTree = () => {
     console.log('New invite created:', invite);
   };
 
-  if (!network) {
-    return <div>Loading...</div>;
-  }
-
-  return (
+  return network ? (
     <NetworkNode
       node={network}
       activeSponsor={activeSponsor}
@@ -222,5 +219,5 @@ export const NetworkTree = () => {
       onInviteCreated={handleInviteCreated}
       hasPendingRequest={hasPendingRequest}
     />
-  );
+  ) : null;
 };
