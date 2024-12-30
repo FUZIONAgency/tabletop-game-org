@@ -2,9 +2,11 @@ import { NetworkNode } from "./NetworkNode";
 import { useAuth } from "@/contexts/auth";
 import { handleSponsorRequest } from "@/utils/sponsorRequests";
 import { useNetworkData } from "./useNetworkData";
+import { useToast } from "@/hooks/use-toast";
 
 export const NetworkTree = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const {
     network,
     hasPendingRequest,
