@@ -1,8 +1,6 @@
 import { SponsorNode } from "./SponsorNode";
 import { InviteNode } from "./InviteNode";
 import { PlayerNode } from "./PlayerNode";
-import { SponsorRequestCard } from "./SponsorRequestCard";
-import { AdminProfile, ActiveSponsor } from "./types";
 
 interface NetworkNodeProps {
   node: {
@@ -10,16 +8,14 @@ interface NetworkNodeProps {
     alias: string;
     children: any[];
   };
-  hasPendingRequest: boolean;
-  activeSponsor: ActiveSponsor | null;
-  adminProfiles: AdminProfile[];
+  activeSponsor: { uplineId: string; uplineUsername: string } | null;
+  adminProfiles: { id: string; username: string }[];
   onSponsorRequest: (adminProfileId: string) => void;
   onInviteCreated?: (invite: any) => void;
 }
 
 export const NetworkNode = ({ 
   node, 
-  hasPendingRequest,
   activeSponsor, 
   adminProfiles, 
   onSponsorRequest,
@@ -28,9 +24,7 @@ export const NetworkNode = ({
   const renderNode = () => {
     switch (node.id) {
       case "sponsor":
-        return hasPendingRequest ? (
-          <SponsorRequestCard hasPendingRequest={true} />
-        ) : (
+        return (
           <SponsorNode
             activeSponsor={activeSponsor}
             adminProfiles={adminProfiles}
@@ -64,7 +58,6 @@ export const NetworkNode = ({
               <NetworkNode
                 key={child.id}
                 node={child}
-                hasPendingRequest={hasPendingRequest}
                 activeSponsor={activeSponsor}
                 adminProfiles={adminProfiles}
                 onSponsorRequest={onSponsorRequest}
