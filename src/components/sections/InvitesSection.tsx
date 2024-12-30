@@ -22,7 +22,8 @@ interface Invite {
 }
 
 const InvitesSection = () => {
-  const [invites, setInvites] = useState<Invite[]>([]);
+  const [sentInvites, setSentInvites] = useState<Invite[]>([]);
+  const [receivedInvites, setReceivedInvites] = useState<Invite[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -35,17 +36,26 @@ const InvitesSection = () => {
       setIsLoading(true);
       setError(null);
 
-      const { data: invitesData, error: invitesError } = await supabase
+      // Fetch sent invites
+      const { data: sentData, error: sentError } = await supabase
         .from("invites")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (invitesError) {
-        throw invitesError;
-      }
+      if (sentError) throw sentError;
 
-      setInvites(invitesData || []);
+      // Fetch received invites
+      const { data: receivedData, error: receivedError } = await supabase
+        .from("invites")
+        .select("*")
+        .eq("email", user.email)
+        .order("created_at", { ascending: false });
+
+      if (receivedError) throw receivedError;
+
+      setSentInvites(sentData || []);
+      setReceivedInvites(receivedData || []);
     } catch (err) {
       console.error("Error fetching invites:", err);
       setError("Failed to load invites. Please try again later.");
@@ -56,10 +66,10 @@ const InvitesSection = () => {
 
   useEffect(() => {
     fetchInvites();
-  }, [user?.id]);
+  }, [user?.id, user?.email]);
 
   const handleInviteCreated = (newInvite: Invite) => {
-    setInvites((prev) => [newInvite, ...prev]);
+    setSentInvites((prev) => [newInvite, ...prev]);
   };
 
   if (isLoading) {
@@ -89,31 +99,43 @@ const InvitesSection = () => {
   }
 
   return (
-    <div className="space-y-8 mt-16">
-      <div className="flex items-center justify-between">
+    <div className="space-y-12 mt-16">
+      {/* Sent Invites Section */}
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            <h3 className="text-xl font-semibold">Invitations You've Sent</h3>
+          </div>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                New Invite
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Send New Invite</DialogTitle>
+              </DialogHeader>
+              <InviteForm
+                onInviteCreated={handleInviteCreated}
+                onClose={() => setIsOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+        <InviteList invites={sentInvites} onInviteUpdate={fetchInvites} />
+      </div>
+
+      {/* Received Invites Section */}
+      <div className="space-y-8">
         <div className="flex items-center gap-2">
           <Mail className="h-5 w-5" />
-          <h3 className="text-xl font-semibold">Your Invites</h3>
+          <h3 className="text-xl font-semibold">Invitations You've Received</h3>
         </div>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              New Invite
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Send New Invite</DialogTitle>
-            </DialogHeader>
-            <InviteForm
-              onInviteCreated={handleInviteCreated}
-              onClose={() => setIsOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        <InviteList invites={receivedInvites} onInviteUpdate={fetchInvites} />
       </div>
-      <InviteList invites={invites} onInviteUpdate={fetchInvites} />
     </div>
   );
 };
