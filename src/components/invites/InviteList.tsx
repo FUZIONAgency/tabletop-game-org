@@ -5,6 +5,7 @@ import { Mail, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
 import { format } from "date-fns";
+import { useAuth } from "@/contexts/auth";
 
 interface Invite {
   id: string;
@@ -16,11 +17,14 @@ interface Invite {
   date_sent: string | null;
   date_read: string | null;
   date_decided: string | null;
+  decision: string | null;
+  user_id: string;
 }
 
 interface InviteListProps {
   invites: Invite[];
   onInviteUpdate: () => void;
+  type: 'sent' | 'received';
 }
 
 const getStatusColor = (status: string) => {
@@ -36,8 +40,9 @@ const getStatusColor = (status: string) => {
   return colors[status] || "bg-gray-500";
 };
 
-export const InviteList = ({ invites, onInviteUpdate }: InviteListProps) => {
+export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleResendInvite = async (invite: Invite) => {
     try {
@@ -102,6 +107,59 @@ export const InviteList = ({ invites, onInviteUpdate }: InviteListProps) => {
     }
   };
 
+  const handleDecideInvite = async (invite: Invite, decision: 'Accepted' | 'Declined') => {
+    try {
+      // First update the invite with the decision
+      const { error: inviteError } = await supabase
+        .from("invites")
+        .update({ 
+          decision,
+          date_decided: new Date().toISOString()
+        })
+        .eq("id", invite.id);
+
+      if (inviteError) throw inviteError;
+
+      // If accepted, create a player relationship
+      if (decision === 'Accepted') {
+        // Get the current user's player record
+        const { data: playerData, error: playerError } = await supabase
+          .from("players")
+          .select("id")
+          .eq("auth_id", user?.id)
+          .single();
+
+        if (playerError) throw playerError;
+
+        // Create the player relationship
+        const { error: relationshipError } = await supabase
+          .from("player_relationships")
+          .insert({
+            upline_id: invite.user_id,
+            downline_id: playerData.id,
+            type: 'requested sponsor of',
+            status: 'active'
+          });
+
+        if (relationshipError) throw relationshipError;
+      }
+
+      toast({
+        title: "Success",
+        description: `Invite has been ${decision.toLowerCase()} successfully.`,
+      });
+
+      onInviteUpdate();
+    } catch (error) {
+      console.error("Error handling invite decision:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to ${decision.toLowerCase()} invite. Please try again.`,
+      });
+    }
+  };
+
   return (
     <div className="grid gap-4">
       {invites.map((invite) => (
@@ -127,7 +185,7 @@ export const InviteList = ({ invites, onInviteUpdate }: InviteListProps) => {
               >
                 {invite.status}
               </Badge>
-              {invite.status === "unsent" && (
+              {type === 'sent' && invite.status === "unsent" && (
                 <>
                   <Button
                     variant="outline"
@@ -146,6 +204,25 @@ export const InviteList = ({ invites, onInviteUpdate }: InviteListProps) => {
                   >
                     <X className="h-4 w-4" />
                     Cancel
+                  </Button>
+                </>
+              )}
+              {type === 'received' && !invite.decision && (
+                <>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleDecideInvite(invite, 'Accepted')}
+                    className="bg-green-500 hover:bg-green-600"
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDecideInvite(invite, 'Declined')}
+                  >
+                    Decline
                   </Button>
                 </>
               )}

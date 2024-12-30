@@ -722,6 +722,7 @@ export type Database = {
           date_decided: string | null
           date_read: string | null
           date_sent: string | null
+          decision: string | null
           email: string
           first_name: string | null
           id: string
@@ -740,6 +741,7 @@ export type Database = {
           date_decided?: string | null
           date_read?: string | null
           date_sent?: string | null
+          decision?: string | null
           email: string
           first_name?: string | null
           id?: string
@@ -758,6 +760,7 @@ export type Database = {
           date_decided?: string | null
           date_read?: string | null
           date_sent?: string | null
+          decision?: string | null
           email?: string
           first_name?: string | null
           id?: string

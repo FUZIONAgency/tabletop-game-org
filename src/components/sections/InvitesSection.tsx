@@ -125,7 +125,7 @@ const InvitesSection = () => {
             </DialogContent>
           </Dialog>
         </div>
-        <InviteList invites={sentInvites} onInviteUpdate={fetchInvites} />
+        <InviteList invites={sentInvites} onInviteUpdate={fetchInvites} type="sent" />
       </div>
 
       {/* Received Invites Section */}
@@ -134,7 +134,7 @@ const InvitesSection = () => {
           <Mail className="h-5 w-5" />
           <h3 className="text-xl font-semibold">Invitations You've Received</h3>
         </div>
-        <InviteList invites={receivedInvites} onInviteUpdate={fetchInvites} />
+        <InviteList invites={receivedInvites} onInviteUpdate={fetchInvites} type="received" />
       </div>
     </div>
   );
