@@ -1,6 +1,10 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/auth";
 import { SponsorNode } from "./SponsorNode";
 import { InviteNode } from "./InviteNode";
 import { PlayerNode } from "./PlayerNode";
+import { Card } from "../ui/card";
 
 interface NetworkNodeProps {
   node: {
@@ -14,6 +18,13 @@ interface NetworkNodeProps {
   onInviteCreated?: (invite: any) => void;
 }
 
+interface Relationship {
+  id: string;
+  upline: {
+    alias: string;
+  };
+}
+
 export const NetworkNode = ({ 
   node, 
   activeSponsor, 
@@ -21,6 +32,40 @@ export const NetworkNode = ({
   onSponsorRequest,
   onInviteCreated 
 }: NetworkNodeProps) => {
+  const [relationships, setRelationships] = useState<Relationship[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchRelationships = async () => {
+      if (!user) return;
+
+      const { data: playerData } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (!playerData) return;
+
+      const { data: relationshipsData } = await supabase
+        .from('player_relationships')
+        .select(`
+          id,
+          upline:players!player_relationships_upline_id_fkey(
+            alias
+          )
+        `)
+        .eq('downline_id', playerData.id)
+        .eq('status', 'active');
+
+      if (relationshipsData) {
+        setRelationships(relationshipsData);
+      }
+    };
+
+    fetchRelationships();
+  }, [user]);
+
   const renderNode = () => {
     switch (node.id) {
       case "sponsor":
@@ -35,7 +80,19 @@ export const NetworkNode = ({
       case "right":
         return <InviteNode onInviteCreated={onInviteCreated} />;
       case "root":
-        return <PlayerNode isRoot />;
+        return (
+          <div className="space-y-4">
+            <PlayerNode isRoot />
+            {relationships.map((rel) => (
+              <Card 
+                key={rel.id} 
+                className="p-4 bg-green-500 text-white w-32 text-center"
+              >
+                {rel.upline.alias}
+              </Card>
+            ))}
+          </div>
+        );
       default:
         return <PlayerNode />;
     }
