@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 const HeroSection = () => {
   const { role, user } = useAuth();
   const [pendingInvite, setPendingInvite] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -15,24 +16,46 @@ const HeroSection = () => {
     const checkForInvite = async () => {
       if (!user?.email) return;
 
-      const { data: invite } = await supabase
-        .from("invites")
-        .select("*")
-        .eq("email", user.email)
-        .is("accepted_at", null)
-        .maybeSingle();
+      try {
+        const { data: invite, error } = await supabase
+          .from("invites")
+          .select("*")
+          .eq("email", user.email)
+          .is("accepted_at", null)
+          .maybeSingle();
 
-      setPendingInvite(invite);
+        if (error) throw error;
+        setPendingInvite(invite);
+      } catch (error) {
+        console.error("Error checking for invite:", error);
+      }
     };
 
     checkForInvite();
   }, [user?.email]);
 
   const handleAcceptInvite = async () => {
-    if (!user?.id || !pendingInvite) return;
+    if (!user?.id || !pendingInvite || isProcessing) return;
 
+    setIsProcessing(true);
     try {
       const now = new Date().toISOString();
+      
+      // Get all required data in a single query
+      const { data: playerData, error: playerError } = await supabase
+        .from("players")
+        .select(`
+          id,
+          inviter:players!inner(
+            id,
+            auth_id
+          )
+        `)
+        .eq("auth_id", user.id)
+        .eq("inviter.auth_id", pendingInvite.user_id)
+        .single();
+
+      if (playerError) throw playerError;
       
       // Update invite status
       const { error: inviteError } = await supabase
@@ -41,42 +64,25 @@ const HeroSection = () => {
           status: "accepted",
           decision: "accepted",
           accepted_at: now,
+          accepted_by_player_id: playerData.id
         })
         .eq("id", pendingInvite.id);
 
       if (inviteError) throw inviteError;
 
-      // Get the current player's ID
-      const { data: playerData } = await supabase
-        .from("players")
-        .select("id")
-        .eq("auth_id", user.id)
-        .maybeSingle();
+      // Create relationship
+      const { error: relationshipError } = await supabase
+        .from("player_relationships")
+        .insert([
+          {
+            upline_id: playerData.inviter.id,
+            downline_id: playerData.id,
+            status: "active",
+            type: "requested sponsor of"
+          }
+        ]);
 
-      if (playerData) {
-        // Get the inviter's player record
-        const { data: inviterData } = await supabase
-          .from("players")
-          .select("id")
-          .eq("auth_id", pendingInvite.user_id)
-          .maybeSingle();
-
-        if (inviterData) {
-          // Create relationship
-          const { error: relationshipError } = await supabase
-            .from("player_relationships")
-            .insert([
-              {
-                upline_id: inviterData.id,
-                downline_id: playerData.id,
-                status: "active",
-                type: "requested sponsor of"
-              }
-            ]);
-
-          if (relationshipError) throw relationshipError;
-        }
-      }
+      if (relationshipError) throw relationshipError;
 
       toast({
         title: "Success",
@@ -88,9 +94,11 @@ const HeroSection = () => {
       console.error("Error accepting invite:", error);
       toast({
         title: "Error",
-        description: "Failed to accept invitation",
+        description: "Failed to accept invitation. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -120,8 +128,9 @@ const HeroSection = () => {
             size="lg"
             className="bg-forest-green hover:bg-forest-green/90 text-white animate-fadeIn"
             onClick={handleAcceptInvite}
+            disabled={isProcessing}
           >
-            Accept Your Invitation
+            {isProcessing ? "Processing..." : "Accept Your Invitation"}
           </Button>
         ) : (
           <Button
