@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Trees, Plus, Link2 } from "lucide-react";
-import { Card } from "../ui/card";
+import { Trees } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { handleSponsorRequest } from "@/utils/sponsorRequests";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { NetworkNode } from "../network/NetworkNode";
 
 interface NetworkNode {
   id: string;
@@ -37,7 +31,6 @@ const NetworkSection = () => {
 
   useEffect(() => {
     const fetchNetwork = async () => {
-      // This is a placeholder - implement actual network fetching logic
       const mockNetwork = {
         id: "sponsor",
         alias: "Request a Sponsor",
@@ -70,7 +63,7 @@ const NetworkSection = () => {
         .from('profiles')
         .select('id, username')
         .eq('role', 'admin')
-        .neq('id', user.id); // Exclude the current user
+        .neq('id', user.id);
 
       if (error) {
         console.error('Error fetching admin profiles:', error);
@@ -83,7 +76,6 @@ const NetworkSection = () => {
     const fetchActiveSponsor = async () => {
       if (!user) return;
 
-      // First get the current player's ID
       const { data: playerData } = await supabase
         .from('players')
         .select('id')
@@ -92,7 +84,6 @@ const NetworkSection = () => {
 
       if (!playerData) return;
 
-      // Then fetch the active sponsor relationship
       const { data: relationship } = await supabase
         .from('player_relationships')
         .select(`
@@ -106,7 +97,6 @@ const NetworkSection = () => {
         .single();
 
       if (relationship) {
-        // Get the sponsor's username from profiles
         const { data: sponsorProfile } = await supabase
           .from('profiles')
           .select('username')
@@ -145,63 +135,9 @@ const NetworkSection = () => {
     }
   };
 
-  const renderNode = (node: NetworkNode) => {
-    return (
-      <div key={node.id} className="flex flex-col items-center relative">
-        <Card className={`p-4 mb-4 w-32 text-center relative z-10 ${
-          node.id === "sponsor" && activeSponsor 
-            ? "bg-forest-green text-white hover:bg-forest-green/90" 
-            : "bg-white hover:bg-yellow-100"
-        } transition-colors duration-200`}>
-          {node.id === "sponsor" ? (
-            activeSponsor ? (
-              <div className="flex items-center justify-center gap-1">
-                <Trees className="h-4 w-4" />
-                {activeSponsor.uplineUsername}
-              </div>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
-                  <Link2 className="h-4 w-4" />
-                  {node.alias}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {adminProfiles.map((profile) => (
-                    <DropdownMenuItem
-                      key={profile.id}
-                      onClick={() => onSponsorRequest(profile.id)}
-                    >
-                      {profile.username}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )
-          ) : node.id === "left" || node.id === "right" ? (
-            <a href="#" className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
-              <Plus className="h-4 w-4" />
-              {node.alias}
-            </a>
-          ) : (
-            <p className="font-medium">{node.alias}</p>
-          )}
-        </Card>
-        {node.children.length > 0 && (
-          <>
-            <div className="w-[2px] h-8 border-l-2 border-dashed border-gray-300" />
-            <div className="flex gap-8 mt-4 relative">
-              {node.children.length > 1 && (
-                <div 
-                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4 h-[2px] border-t-2 border-dashed border-gray-300" 
-                  style={{ width: 'calc(100% - 2rem)' }} 
-                />
-              )}
-              {node.children.map((child) => renderNode(child))}
-            </div>
-          </>
-        )}
-      </div>
-    );
+  const handleInviteCreated = (invite: any) => {
+    // Refresh the network view or update state as needed
+    console.log('New invite created:', invite);
   };
 
   return (
@@ -211,7 +147,15 @@ const NetworkSection = () => {
         <h3 className="text-xl font-semibold">Your Network</h3>
       </div>
       <div className="flex justify-center">
-        {network && renderNode(network)}
+        {network && (
+          <NetworkNode
+            node={network}
+            activeSponsor={activeSponsor}
+            adminProfiles={adminProfiles}
+            onSponsorRequest={onSponsorRequest}
+            onInviteCreated={handleInviteCreated}
+          />
+        )}
       </div>
     </div>
   );
