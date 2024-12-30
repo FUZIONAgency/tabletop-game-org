@@ -53,6 +53,7 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         gold: "#D4AF37",
+        "forest-green": "#228B22",
       },
       keyframes: {
         "accordion-down": {

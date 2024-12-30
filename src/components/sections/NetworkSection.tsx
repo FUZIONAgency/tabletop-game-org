@@ -23,9 +23,15 @@ interface AdminProfile {
   username: string;
 }
 
+interface ActiveSponsor {
+  uplineId: string;
+  uplineUsername: string;
+}
+
 const NetworkSection = () => {
   const [network, setNetwork] = useState<NetworkNode | null>(null);
   const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([]);
+  const [activeSponsor, setActiveSponsor] = useState<ActiveSponsor | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -74,8 +80,51 @@ const NetworkSection = () => {
       setAdminProfiles(profiles || []);
     };
 
+    const fetchActiveSponsor = async () => {
+      if (!user) return;
+
+      // First get the current player's ID
+      const { data: playerData } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (!playerData) return;
+
+      // Then fetch the active sponsor relationship
+      const { data: relationship } = await supabase
+        .from('player_relationships')
+        .select(`
+          upline_id,
+          players!player_relationships_upline_id_fkey (
+            auth_id
+          )
+        `)
+        .eq('downline_id', playerData.id)
+        .eq('status', 'active')
+        .single();
+
+      if (relationship) {
+        // Get the sponsor's username from profiles
+        const { data: sponsorProfile } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', relationship.players.auth_id)
+          .single();
+
+        if (sponsorProfile) {
+          setActiveSponsor({
+            uplineId: relationship.upline_id,
+            uplineUsername: sponsorProfile.username
+          });
+        }
+      }
+    };
+
     fetchNetwork();
     fetchAdminProfiles();
+    fetchActiveSponsor();
   }, [user]);
 
   const onSponsorRequest = async (adminProfileId: string) => {
@@ -99,24 +148,35 @@ const NetworkSection = () => {
   const renderNode = (node: NetworkNode) => {
     return (
       <div key={node.id} className="flex flex-col items-center relative">
-        <Card className="p-4 mb-4 w-32 text-center relative z-10 bg-white hover:bg-yellow-100 transition-colors duration-200">
+        <Card className={`p-4 mb-4 w-32 text-center relative z-10 ${
+          node.id === "sponsor" && activeSponsor 
+            ? "bg-forest-green text-white hover:bg-forest-green/90" 
+            : "bg-white hover:bg-yellow-100"
+        } transition-colors duration-200`}>
           {node.id === "sponsor" ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
-                <Link2 className="h-4 w-4" />
-                {node.alias}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {adminProfiles.map((profile) => (
-                  <DropdownMenuItem
-                    key={profile.id}
-                    onClick={() => onSponsorRequest(profile.id)}
-                  >
-                    {profile.username}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            activeSponsor ? (
+              <div className="flex items-center justify-center gap-1">
+                <Trees className="h-4 w-4" />
+                {activeSponsor.uplineUsername}
+              </div>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
+                  <Link2 className="h-4 w-4" />
+                  {node.alias}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {adminProfiles.map((profile) => (
+                    <DropdownMenuItem
+                      key={profile.id}
+                      onClick={() => onSponsorRequest(profile.id)}
+                    >
+                      {profile.username}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )
           ) : node.id === "left" || node.id === "right" ? (
             <a href="#" className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
               <Plus className="h-4 w-4" />
