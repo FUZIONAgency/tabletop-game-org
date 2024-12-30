@@ -80,12 +80,16 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
   const handleDecideInvite = async (invite: Invite, decision: 'Accepted' | 'Declined') => {
     try {
+      console.log('Starting invite decision process...', { invite, decision });
+
       // Get the current user's player record
       const { data: currentPlayer, error: playerError } = await supabase
         .from("players")
         .select("id")
         .eq("auth_id", user?.id)
         .maybeSingle();
+
+      console.log('Current player query result:', { currentPlayer, playerError });
 
       if (playerError) throw playerError;
       if (!currentPlayer) throw new Error("Player record not found");
@@ -96,6 +100,8 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
         .select("id")
         .eq("auth_id", invite.user_id)
         .maybeSingle();
+
+      console.log('Inviter player query result:', { inviterPlayer, inviterError });
 
       if (inviterError) throw inviterError;
       if (!inviterPlayer) throw new Error("Inviter player record not found");
@@ -110,10 +116,17 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
         })
         .eq("id", invite.id);
 
+      console.log('Invite update result:', { inviteError });
+
       if (inviteError) throw inviteError;
 
       // If accepted, create a player relationship
       if (decision === 'Accepted') {
+        console.log('Creating player relationship...', {
+          upline_id: inviterPlayer.id,
+          downline_id: currentPlayer.id
+        });
+
         const { error: relationshipError } = await supabase
           .from("player_relationships")
           .insert({
@@ -122,6 +135,8 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
             type: 'requested sponsor of',
             status: 'active'
           });
+
+        console.log('Player relationship creation result:', { relationshipError });
 
         if (relationshipError) throw relationshipError;
       }
