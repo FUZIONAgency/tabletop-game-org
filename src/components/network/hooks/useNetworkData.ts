@@ -79,7 +79,7 @@ export const useNetworkData = (userId: string | undefined) => {
         // Create network structure
         const mockNetwork = {
           id: "sponsor",
-          alias: hasPendingRequest ? "In Review" : "Request a Sponsor",
+          alias: pendingRequests ? "In Review" : "Request a Sponsor",
           children: [
             {
               id: "root",
