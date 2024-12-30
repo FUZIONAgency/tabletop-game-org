@@ -58,7 +58,7 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
         .from("invites")
         .delete()
         .eq("id", inviteId)
-        .eq("user_id", user?.id); // Add this line to ensure users can only delete their own invites
+        .eq("user_id", user?.id);
 
       if (error) throw error;
 
@@ -80,12 +80,33 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
   const handleDecideInvite = async (invite: Invite, decision: 'Accepted' | 'Declined') => {
     try {
+      // Get the current user's player record
+      const { data: currentPlayer, error: playerError } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", user?.id)
+        .maybeSingle();
+
+      if (playerError) throw playerError;
+      if (!currentPlayer) throw new Error("Player record not found");
+
+      // Get the inviter's player record
+      const { data: inviterPlayer, error: inviterError } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", invite.user_id)
+        .maybeSingle();
+
+      if (inviterError) throw inviterError;
+      if (!inviterPlayer) throw new Error("Inviter player record not found");
+
       // First update the invite with the decision
       const { error: inviteError } = await supabase
         .from("invites")
         .update({ 
           decision,
-          date_decided: new Date().toISOString()
+          date_decided: new Date().toISOString(),
+          accepted_by_player_id: currentPlayer.id
         })
         .eq("id", invite.id);
 
@@ -93,21 +114,11 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
       // If accepted, create a player relationship
       if (decision === 'Accepted') {
-        // Get the current user's player record
-        const { data: playerData, error: playerError } = await supabase
-          .from("players")
-          .select("id")
-          .eq("auth_id", user?.id)
-          .single();
-
-        if (playerError) throw playerError;
-
-        // Create the player relationship
         const { error: relationshipError } = await supabase
           .from("player_relationships")
           .insert({
-            upline_id: invite.user_id,
-            downline_id: playerData.id,
+            upline_id: inviterPlayer.id,
+            downline_id: currentPlayer.id,
             type: 'requested sponsor of',
             status: 'active'
           });
