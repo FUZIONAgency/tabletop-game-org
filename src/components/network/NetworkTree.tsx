@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { handleSponsorRequest } from "@/utils/sponsorRequests"; // Import the utility function
 
 interface AdminProfile {
   id: string;
