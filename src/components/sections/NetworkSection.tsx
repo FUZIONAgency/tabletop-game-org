@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Trees, Plus, Link2 } from "lucide-react";
 import { Card } from "../ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { handleSponsorRequest } from "@/utils/sponsorRequests";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,71 +75,10 @@ const NetworkSection = () => {
     fetchAdminProfiles();
   }, [user]);
 
-  const handleSponsorRequest = async (adminProfileId: string) => {
+  const onSponsorRequest = async (adminProfileId: string) => {
     try {
-      // First get the player ID for the current user
-      const { data: playerData, error: playerError } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user?.id)
-        .single();
-
-      if (playerError) throw playerError;
-
-      // Get or create a player record for the admin
-      const { data: adminPlayer, error: adminPlayerError } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', adminProfileId)
-        .maybeSingle();
-
-      if (adminPlayerError) throw adminPlayerError;
-
-      if (!adminPlayer) {
-        // Create a player record for the admin if it doesn't exist
-        const { data: newAdminPlayer, error: createError } = await supabase
-          .from('players')
-          .insert([
-            {
-              auth_id: adminProfileId,
-              alias: 'Admin', // You might want to use their username here
-              email: user?.email,
-            }
-          ])
-          .select('id')
-          .single();
-
-        if (createError) throw createError;
-
-        // Create the relationship with the new admin player
-        const { error: relationshipError } = await supabase
-          .from('player_relationships')
-          .insert([
-            {
-              upline_id: newAdminPlayer.id,
-              downline_id: playerData.id,
-              type: 'requested sponsor of',
-              status: 'pending'
-            }
-          ]);
-
-        if (relationshipError) throw relationshipError;
-      } else {
-        // Create the relationship with the existing admin player
-        const { error: relationshipError } = await supabase
-          .from('player_relationships')
-          .insert([
-            {
-              upline_id: adminPlayer.id,
-              downline_id: playerData.id,
-              type: 'requested sponsor of',
-              status: 'pending'
-            }
-          ]);
-
-        if (relationshipError) throw relationshipError;
-      }
-
+      await handleSponsorRequest(adminProfileId, user);
+      
       toast({
         title: "Success",
         description: "Sponsor request sent successfully",
@@ -147,7 +87,7 @@ const NetworkSection = () => {
       console.error('Error requesting sponsor:', error);
       toast({
         title: "Error",
-        description: "Failed to send sponsor request",
+        description: error instanceof Error ? error.message : "Failed to send sponsor request",
         variant: "destructive",
       });
     }
@@ -167,7 +107,7 @@ const NetworkSection = () => {
                 {adminProfiles.map((profile) => (
                   <DropdownMenuItem
                     key={profile.id}
-                    onClick={() => handleSponsorRequest(profile.id)}
+                    onClick={() => onSponsorRequest(profile.id)}
                   >
                     {profile.username}
                   </DropdownMenuItem>
