@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +11,7 @@ const AcceptInvite = () => {
   const { token } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [invite, setInvite] = useState<any>(null);
   const [inviter, setInviter] = useState<any>(null);
@@ -53,7 +54,11 @@ const AcceptInvite = () => {
   }, [token, navigate, toast]);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      // Store the current path for redirect after login
+      navigate("/auth", { state: { returnTo: location.pathname } });
+      return;
+    }
 
     const fetchCurrentPlayer = async () => {
       const { data: playerData } = await supabase
@@ -70,12 +75,28 @@ const AcceptInvite = () => {
     };
 
     fetchCurrentPlayer();
-  }, [user]);
+  }, [user, navigate, location.pathname]);
 
   const handleAcceptInvite = async () => {
     if (!currentPlayer || !invite || !inviter) return;
 
     try {
+      const now = new Date().toISOString();
+      
+      // Update invite status
+      const { error: inviteError } = await supabase
+        .from("invites")
+        .update({
+          status: "accepted",
+          decision: "accepted",
+          accepted_at: now,
+          accepted_by_player_id: currentPlayer.id
+        })
+        .eq("token", token);
+
+      if (inviteError) throw inviteError;
+
+      // Create relationship
       const { error: relationshipError } = await supabase
         .from("player_relationships")
         .insert([
@@ -88,17 +109,6 @@ const AcceptInvite = () => {
         ]);
 
       if (relationshipError) throw relationshipError;
-
-      const { error: inviteError } = await supabase
-        .from("invites")
-        .update({
-          status: "accepted",
-          accepted_at: new Date().toISOString(),
-          accepted_by_player_id: currentPlayer.id
-        })
-        .eq("token", token);
-
-      if (inviteError) throw inviteError;
 
       toast({
         title: "Success",
@@ -117,7 +127,6 @@ const AcceptInvite = () => {
   };
 
   if (!user) {
-    navigate("/auth", { state: { returnTo: `/accept-invite/${token}` } });
     return null;
   }
 
