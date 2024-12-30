@@ -118,15 +118,19 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
       // First update the invite with the decision and status
       const now = new Date().toISOString();
+      const updateData = {
+        decision: decision.toLowerCase(),
+        status: decision.toLowerCase(),
+        date_decided: now,
+        accepted_at: decision === 'Accepted' ? now : null,
+        accepted_by_player_id: decision === 'Accepted' ? currentPlayer.id : null
+      };
+
+      console.log('Updating invite with data:', { updateData, inviteId: invite.id });
+
       const { error: inviteError } = await supabase
         .from("invites")
-        .update({ 
-          decision: decision.toLowerCase(),
-          status: decision.toLowerCase(),
-          date_decided: now,
-          accepted_at: decision === 'Accepted' ? now : null,
-          accepted_by_player_id: decision === 'Accepted' ? currentPlayer.id : null
-        })
+        .update(updateData)
         .eq("id", invite.id);
 
       console.log('Invite update result:', { inviteError });
