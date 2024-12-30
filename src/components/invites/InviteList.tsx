@@ -1,8 +1,13 @@
-import { useAuth } from "@/contexts/auth";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "../ui/use-toast";
-import { Invite } from "@/types/invite";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+import { useAuth } from "@/contexts/auth";
+import { useToast } from "@/hooks/use-toast";
 import { InviteCard } from "./InviteCard";
+import { Invite } from "@/types/invite";
+import { InviteDecisionButtons } from "./InviteDecisionButtons";
 
 interface InviteListProps {
   invites: Invite[];
@@ -11,8 +16,27 @@ interface InviteListProps {
 }
 
 export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) => {
-  const { toast } = useToast();
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
+
+  // Fetch current player's ID
+  useQuery({
+    queryKey: ['current-player', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", user.id)
+        .single();
+
+      if (error) throw error;
+      setCurrentPlayerId(data.id);
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const handleResendInvite = async (invite: Invite) => {
     try {
@@ -78,102 +102,6 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
     }
   };
 
-  const handleDecideInvite = async (invite: Invite, decision: 'Accepted' | 'Declined') => {
-    try {
-      console.log('Starting invite decision process...', { invite, decision });
-
-      // Get the current user's player record
-      const { data: currentPlayer, error: playerError } = await supabase
-        .from("players")
-        .select("id")
-        .eq("auth_id", user?.id)
-        .maybeSingle();
-
-      console.log('Current player query result:', { currentPlayer, playerError });
-
-      if (playerError) throw playerError;
-      if (!currentPlayer) throw new Error("Player record not found");
-
-      // Get the inviter's player record
-      const { data: inviterPlayer, error: inviterError } = await supabase
-        .from("players")
-        .select("id")
-        .eq("auth_id", invite.user_id)
-        .maybeSingle();
-
-      console.log('Inviter player query result:', { inviterPlayer, inviterError });
-
-      if (inviterError) throw inviterError;
-      if (!inviterPlayer) throw new Error("Inviter player record not found");
-
-      const now = new Date().toISOString();
-
-      // Update the invite first
-      const { error: inviteError } = await supabase
-        .from("invites")
-        .update({ 
-          status: decision === 'Accepted' ? 'accepted' : 'declined',
-          decision: decision.toLowerCase(),
-          date_decided: now,
-          accepted_at: decision === 'Accepted' ? now : null,
-          accepted_by_player_id: decision === 'Accepted' ? currentPlayer.id : null
-        })
-        .eq("id", invite.id);
-
-      console.log('Invite update result:', { inviteError });
-
-      if (inviteError) throw inviteError;
-
-      // If accepted, create a player relationship
-      if (decision === 'Accepted') {
-        // First check if a relationship already exists
-        const { data: existingRelationship, error: checkError } = await supabase
-          .from("player_relationships")
-          .select("*")
-          .eq("upline_id", inviterPlayer.id)
-          .eq("downline_id", currentPlayer.id)
-          .maybeSingle();
-
-        if (checkError) throw checkError;
-
-        // Only create the relationship if it doesn't exist
-        if (!existingRelationship) {
-          console.log('Creating player relationship...', {
-            upline_id: inviterPlayer.id,
-            downline_id: currentPlayer.id
-          });
-
-          const { error: relationshipError } = await supabase
-            .from("player_relationships")
-            .insert({
-              upline_id: inviterPlayer.id,
-              downline_id: currentPlayer.id,
-              type: 'requested sponsor of',
-              status: 'active'
-            });
-
-          console.log('Player relationship creation result:', { relationshipError });
-
-          if (relationshipError) throw relationshipError;
-        }
-      }
-
-      toast({
-        title: "Success",
-        description: `Invite has been ${decision.toLowerCase()} successfully.`,
-      });
-
-      onInviteUpdate();
-    } catch (error) {
-      console.error("Error handling invite decision:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: `Failed to ${decision.toLowerCase()} invite. Please try again.`,
-      });
-    }
-  };
-
   return (
     <div className="grid gap-4">
       {invites.map((invite) => (
@@ -183,7 +111,15 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
           type={type}
           onResend={handleResendInvite}
           onCancel={handleCancelInvite}
-          onDecide={handleDecideInvite}
+          decisionButtons={
+            type === 'received' && currentPlayerId ? (
+              <InviteDecisionButtons
+                invite={invite}
+                currentPlayerId={currentPlayerId}
+                onSuccess={onInviteUpdate}
+              />
+            ) : null
+          }
         />
       ))}
       {invites.length === 0 && (
