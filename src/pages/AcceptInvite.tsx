@@ -25,7 +25,7 @@ const AcceptInvite = () => {
         .from("invites")
         .select("*, user_id")
         .eq("token", token)
-        .single();
+        .maybeSingle();
 
       if (inviteError || !inviteData) {
         toast({
@@ -44,7 +44,7 @@ const AcceptInvite = () => {
         .from("players")
         .select("*")
         .eq("auth_id", inviteData.user_id)
-        .single();
+        .maybeSingle();
 
       setInviter(inviterData);
     };
@@ -60,7 +60,7 @@ const AcceptInvite = () => {
         .from("players")
         .select("*")
         .eq("auth_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (playerData) {
         setCurrentPlayer(playerData);
