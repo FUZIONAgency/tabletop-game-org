@@ -35,7 +35,7 @@ export const NetworkNode = ({
 
   const handleNodeClick = (nodeId: string) => {
     if (nodeId === "root") {
-      navigate("/profile");
+      navigate("/my/profile");
     }
   };
 
