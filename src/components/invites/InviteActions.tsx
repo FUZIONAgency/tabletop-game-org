@@ -17,7 +17,7 @@ export const InviteActions = ({
   onCancel,
   onDecide 
 }: InviteActionsProps) => {
-  if (type === 'sent' && invite.status === "unsent") {
+  if (type === 'sent') {
     return (
       <>
         <Button

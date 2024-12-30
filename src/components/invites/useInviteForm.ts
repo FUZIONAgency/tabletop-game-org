@@ -90,7 +90,7 @@ export const useInviteForm = ({ onInviteCreated, onClose }: UseInviteFormProps) 
             first_name: data.firstName,
             last_name: data.lastName,
             cell: data.cell,
-            status: "unsent",
+            status: "sent",
           },
         ])
         .select()
