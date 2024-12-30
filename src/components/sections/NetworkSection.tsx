@@ -58,10 +58,13 @@ const NetworkSection = () => {
     };
 
     const fetchAdminProfiles = async () => {
+      if (!user) return;
+      
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('id, username')
-        .eq('role', 'admin');
+        .eq('role', 'admin')
+        .neq('id', user.id); // Exclude the current user
 
       if (error) {
         console.error('Error fetching admin profiles:', error);
