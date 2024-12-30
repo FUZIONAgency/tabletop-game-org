@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, UserPlus } from "lucide-react";
@@ -8,18 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "../ui/button";
 import { InviteForm } from "../invites/InviteForm";
 import { InviteList } from "../invites/InviteList";
-
-interface Invite {
-  id: string;
-  email: string;
-  status: string;
-  first_name: string | null;
-  last_name: string | null;
-  cell: string | null;
-  date_sent: string | null;
-  date_read: string | null;
-  date_decided: string | null;
-}
+import { Invite } from "@/types/invite";
 
 const InvitesSection = () => {
   const [sentInvites, setSentInvites] = useState<Invite[]>([]);
