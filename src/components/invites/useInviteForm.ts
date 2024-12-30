@@ -40,6 +40,7 @@ export const useInviteForm = ({ onInviteCreated, onClose }: UseInviteFormProps) 
           to: data.email,
           firstName: data.firstName,
           lastName: data.lastName,
+          token: invite.token,
         },
       });
 

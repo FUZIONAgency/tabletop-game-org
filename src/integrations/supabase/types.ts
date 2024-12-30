@@ -715,6 +715,8 @@ export type Database = {
       }
       invites: {
         Row: {
+          accepted_at: string | null
+          accepted_by_player_id: string | null
           cell: string | null
           created_at: string | null
           date_decided: string | null
@@ -726,10 +728,13 @@ export type Database = {
           is_opt_out: boolean | null
           last_name: string | null
           status: string
+          token: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          accepted_at?: string | null
+          accepted_by_player_id?: string | null
           cell?: string | null
           created_at?: string | null
           date_decided?: string | null
@@ -741,10 +746,13 @@ export type Database = {
           is_opt_out?: boolean | null
           last_name?: string | null
           status?: string
+          token?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Update: {
+          accepted_at?: string | null
+          accepted_by_player_id?: string | null
           cell?: string | null
           created_at?: string | null
           date_decided?: string | null
@@ -756,10 +764,19 @@ export type Database = {
           is_opt_out?: boolean | null
           last_name?: string | null
           status?: string
+          token?: string | null
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invites_accepted_by_player_id_fkey"
+            columns: ["accepted_by_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       link_types: {
         Row: {

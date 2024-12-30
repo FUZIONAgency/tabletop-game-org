@@ -12,6 +12,7 @@ interface EmailRequest {
   to: string;
   firstName: string;
   lastName: string;
+  token: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -38,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p>Hello ${emailRequest.firstName} ${emailRequest.lastName},</p>
           <p>You've been invited to join the Tabletop Game Organization!</p>
           <p>Please click the link below to accept your invitation.</p>
-          <a href="https://tabletopgame.org/auth">Accept Invitation</a>
+          <a href="https://tabletopgame.org/accept-invite/${emailRequest.token}">Accept Invitation</a>
         `,
       }),
     });
