@@ -20,7 +20,7 @@ interface NetworkNodeProps {
 
 interface Relationship {
   id: string;
-  upline: {
+  downline: {
     alias: string;
   };
 }
@@ -51,11 +51,11 @@ export const NetworkNode = ({
         .from('player_relationships')
         .select(`
           id,
-          upline:players!player_relationships_upline_id_fkey(
+          downline:players!player_relationships_downline_id_fkey(
             alias
           )
         `)
-        .eq('downline_id', playerData.id)
+        .eq('upline_id', playerData.id)
         .eq('status', 'active');
 
       if (relationshipsData) {
@@ -86,9 +86,9 @@ export const NetworkNode = ({
             {relationships.map((rel) => (
               <Card 
                 key={rel.id} 
-                className="p-4 bg-green-500 text-white w-32 text-center"
+                className="p-4 bg-forest-green text-white w-32 text-center"
               >
-                {rel.upline.alias}
+                {rel.downline.alias}
               </Card>
             ))}
           </div>
