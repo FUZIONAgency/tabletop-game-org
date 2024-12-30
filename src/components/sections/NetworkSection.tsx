@@ -74,7 +74,7 @@ const NetworkSection = () => {
     fetchAdminProfiles();
   }, [user]);
 
-  const handleSponsorRequest = async (sponsorId: string) => {
+  const handleSponsorRequest = async (adminProfileId: string) => {
     try {
       // First get the player ID for the current user
       const { data: playerData, error: playerError } = await supabase
@@ -85,19 +85,59 @@ const NetworkSection = () => {
 
       if (playerError) throw playerError;
 
-      // Create the relationship
-      const { error: relationshipError } = await supabase
-        .from('player_relationships')
-        .insert([
-          {
-            upline_id: sponsorId,
-            downline_id: playerData.id,
-            type: 'requested sponsor of',
-            status: 'pending'
-          }
-        ]);
+      // Get or create a player record for the admin
+      const { data: adminPlayer, error: adminPlayerError } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', adminProfileId)
+        .maybeSingle();
 
-      if (relationshipError) throw relationshipError;
+      if (adminPlayerError) throw adminPlayerError;
+
+      if (!adminPlayer) {
+        // Create a player record for the admin if it doesn't exist
+        const { data: newAdminPlayer, error: createError } = await supabase
+          .from('players')
+          .insert([
+            {
+              auth_id: adminProfileId,
+              alias: 'Admin', // You might want to use their username here
+              email: user?.email,
+            }
+          ])
+          .select('id')
+          .single();
+
+        if (createError) throw createError;
+
+        // Create the relationship with the new admin player
+        const { error: relationshipError } = await supabase
+          .from('player_relationships')
+          .insert([
+            {
+              upline_id: newAdminPlayer.id,
+              downline_id: playerData.id,
+              type: 'requested sponsor of',
+              status: 'pending'
+            }
+          ]);
+
+        if (relationshipError) throw relationshipError;
+      } else {
+        // Create the relationship with the existing admin player
+        const { error: relationshipError } = await supabase
+          .from('player_relationships')
+          .insert([
+            {
+              upline_id: adminPlayer.id,
+              downline_id: playerData.id,
+              type: 'requested sponsor of',
+              status: 'pending'
+            }
+          ]);
+
+        if (relationshipError) throw relationshipError;
+      }
 
       toast({
         title: "Success",
