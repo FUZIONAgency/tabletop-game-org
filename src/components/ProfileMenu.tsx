@@ -31,13 +31,25 @@ const ProfileMenu = () => {
 
   const handleLogout = async () => {
     try {
+      // First clear any local state/storage if needed
+      localStorage.removeItem('supabase.auth.token');
+      
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("Logout error:", error);
+        // Still navigate to auth page even if there's an error
+        navigate('/auth');
+        toast.error("There was an issue logging out, but you've been redirected to the login page");
+        return;
+      }
+      
       navigate('/auth');
       toast.success("Logged out successfully");
     } catch (error) {
-      console.error("Error logging out:", error);
-      toast.error("Error logging out");
+      console.error("Error in logout process:", error);
+      // Still navigate to auth page even if there's an error
+      navigate('/auth');
+      toast.error("There was an issue logging out, but you've been redirected to the login page");
     }
   };
 

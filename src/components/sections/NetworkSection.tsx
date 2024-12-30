@@ -59,63 +59,79 @@ const NetworkSection = () => {
     const fetchAdminProfiles = async () => {
       if (!user) return;
       
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('id, username')
-        .eq('role', 'admin')
-        .neq('id', user.id);
+      try {
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select('id, username')
+          .eq('role', 'admin');
 
-      if (error) {
+        if (error) throw error;
+        setAdminProfiles(profiles || []);
+      } catch (error) {
         console.error('Error fetching admin profiles:', error);
-        return;
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load admin profiles",
+        });
       }
-
-      setAdminProfiles(profiles || []);
     };
 
     const fetchActiveSponsor = async () => {
       if (!user) return;
 
-      const { data: playerData } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
+      try {
+        const { data: playerData, error: playerError } = await supabase
+          .from('players')
+          .select('id')
+          .eq('auth_id', user.id)
+          .maybeSingle();
 
-      if (!playerData) return;
+        if (playerError) throw playerError;
+        if (!playerData) return;
 
-      const { data: relationship } = await supabase
-        .from('player_relationships')
-        .select(`
-          upline_id,
-          players!player_relationships_upline_id_fkey (
-            auth_id
-          )
-        `)
-        .eq('downline_id', playerData.id)
-        .eq('status', 'active')
-        .single();
+        const { data: relationship, error: relationshipError } = await supabase
+          .from('player_relationships')
+          .select(`
+            upline_id,
+            players!player_relationships_upline_id_fkey (
+              auth_id
+            )
+          `)
+          .eq('downline_id', playerData.id)
+          .eq('status', 'active')
+          .maybeSingle();
 
-      if (relationship) {
-        const { data: sponsorProfile } = await supabase
+        if (relationshipError) throw relationshipError;
+        if (!relationship) return;
+
+        const { data: sponsorProfile, error: sponsorError } = await supabase
           .from('profiles')
           .select('username')
           .eq('id', relationship.players.auth_id)
-          .single();
+          .maybeSingle();
 
+        if (sponsorError) throw sponsorError;
         if (sponsorProfile) {
           setActiveSponsor({
             uplineId: relationship.upline_id,
             uplineUsername: sponsorProfile.username
           });
         }
+      } catch (error) {
+        console.error('Error fetching active sponsor:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load sponsor information",
+        });
       }
     };
 
     fetchNetwork();
     fetchAdminProfiles();
     fetchActiveSponsor();
-  }, [user]);
+  }, [user, toast]);
 
   const onSponsorRequest = async (adminProfileId: string) => {
     try {
@@ -136,7 +152,6 @@ const NetworkSection = () => {
   };
 
   const handleInviteCreated = (invite: any) => {
-    // Refresh the network view or update state as needed
     console.log('New invite created:', invite);
   };
 
