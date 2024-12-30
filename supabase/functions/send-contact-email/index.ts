@@ -3,9 +3,9 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 interface ContactMessage {
@@ -17,8 +17,8 @@ interface ContactMessage {
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
@@ -68,24 +68,21 @@ const handler = async (req: Request): Promise<Response> => {
     if (res.ok) {
       const data = await res.json();
       return new Response(JSON.stringify(data), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
       });
     } else {
       const error = await res.text();
       return new Response(JSON.stringify({ error }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
   } catch (error: any) {
     console.error("Error in send-contact-email function:", error);
     return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 };
