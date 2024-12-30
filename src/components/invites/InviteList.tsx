@@ -116,11 +116,12 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
       if (checkError) throw checkError;
 
-      // First update the invite with the decision
+      // First update the invite with the decision and status
       const { error: inviteError } = await supabase
         .from("invites")
         .update({ 
           decision,
+          status: decision === 'Accepted' ? 'accepted' : 'declined',
           date_decided: new Date().toISOString(),
           accepted_by_player_id: currentPlayer.id
         })
