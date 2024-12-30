@@ -106,6 +106,16 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
       if (inviterError) throw inviterError;
       if (!inviterPlayer) throw new Error("Inviter player record not found");
 
+      // First check if a relationship already exists
+      const { data: existingRelationship, error: checkError } = await supabase
+        .from("player_relationships")
+        .select("*")
+        .eq("upline_id", inviterPlayer.id)
+        .eq("downline_id", currentPlayer.id)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
       // First update the invite with the decision
       const { error: inviteError } = await supabase
         .from("invites")
@@ -120,8 +130,8 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
       if (inviteError) throw inviteError;
 
-      // If accepted, create a player relationship
-      if (decision === 'Accepted') {
+      // If accepted and no existing relationship, create a player relationship
+      if (decision === 'Accepted' && !existingRelationship) {
         console.log('Creating player relationship...', {
           upline_id: inviterPlayer.id,
           downline_id: currentPlayer.id
