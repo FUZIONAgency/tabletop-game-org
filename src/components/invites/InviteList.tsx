@@ -106,14 +106,24 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
       if (inviterError) throw inviterError;
       if (!inviterPlayer) throw new Error("Inviter player record not found");
 
+      // First check if a relationship already exists
+      const { data: existingRelationship, error: checkError } = await supabase
+        .from("player_relationships")
+        .select("*")
+        .eq("upline_id", inviterPlayer.id)
+        .eq("downline_id", currentPlayer.id)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
       const now = new Date().toISOString();
 
-      // Update the invite first
+      // First update the invite with the decision and status
       const { error: inviteError } = await supabase
         .from("invites")
         .update({ 
+          decision: decision === 'Accepted' ? 'accepted' : 'declined',
           status: decision === 'Accepted' ? 'accepted' : 'declined',
-          decision: decision.toLowerCase(),
           date_decided: now,
           accepted_at: decision === 'Accepted' ? now : null,
           accepted_by_player_id: decision === 'Accepted' ? currentPlayer.id : null
@@ -124,38 +134,25 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
 
       if (inviteError) throw inviteError;
 
-      // If accepted, create a player relationship
-      if (decision === 'Accepted') {
-        // First check if a relationship already exists
-        const { data: existingRelationship, error: checkError } = await supabase
+      // If accepted and no existing relationship, create a player relationship
+      if (decision === 'Accepted' && !existingRelationship) {
+        console.log('Creating player relationship...', {
+          upline_id: inviterPlayer.id,
+          downline_id: currentPlayer.id
+        });
+
+        const { error: relationshipError } = await supabase
           .from("player_relationships")
-          .select("*")
-          .eq("upline_id", inviterPlayer.id)
-          .eq("downline_id", currentPlayer.id)
-          .maybeSingle();
-
-        if (checkError) throw checkError;
-
-        // Only create the relationship if it doesn't exist
-        if (!existingRelationship) {
-          console.log('Creating player relationship...', {
+          .insert({
             upline_id: inviterPlayer.id,
-            downline_id: currentPlayer.id
+            downline_id: currentPlayer.id,
+            type: 'requested sponsor of',
+            status: 'active'
           });
 
-          const { error: relationshipError } = await supabase
-            .from("player_relationships")
-            .insert({
-              upline_id: inviterPlayer.id,
-              downline_id: currentPlayer.id,
-              type: 'requested sponsor of',
-              status: 'active'
-            });
+        console.log('Player relationship creation result:', { relationshipError });
 
-          console.log('Player relationship creation result:', { relationshipError });
-
-          if (relationshipError) throw relationshipError;
-        }
+        if (relationshipError) throw relationshipError;
       }
 
       toast({
