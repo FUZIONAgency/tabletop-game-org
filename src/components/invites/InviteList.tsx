@@ -1,31 +1,14 @@
-import { Card } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Mail, X } from "lucide-react";
+import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "../ui/use-toast";
-import { format } from "date-fns";
-import { useAuth } from "@/contexts/auth";
-import { Invite } from "@/types/invite";  // Import the new type
+import { Invite } from "@/types/invite";
+import { InviteCard } from "./InviteCard";
 
 interface InviteListProps {
   invites: Invite[];
   onInviteUpdate: () => void;
   type: 'sent' | 'received';
 }
-
-const getStatusColor = (status: string) => {
-  const colors: Record<string, string> = {
-    unsent: "bg-gray-500",
-    sent: "bg-blue-500",
-    read: "bg-yellow-500",
-    clicked: "bg-purple-500",
-    accepted: "bg-green-500",
-    declined: "bg-red-500",
-    canceled: "bg-gray-700",
-  };
-  return colors[status] || "bg-gray-500";
-};
 
 export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) => {
   const { toast } = useToast();
@@ -150,72 +133,14 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
   return (
     <div className="grid gap-4">
       {invites.map((invite) => (
-        <Card key={invite.id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="font-medium">
-                {invite.first_name
-                  ? `${invite.first_name} ${invite.last_name}`
-                  : invite.email}
-              </p>
-              <p className="text-sm text-muted-foreground">{invite.email}</p>
-              {invite.date_sent && (
-                <p className="text-sm text-muted-foreground">
-                  Sent: {format(new Date(invite.date_sent), "MMM d, yyyy 'at' h:mm a")}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className={`${getStatusColor(invite.status)} text-white`}
-              >
-                {invite.status}
-              </Badge>
-              {type === 'sent' && invite.status === "unsent" && (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleResendInvite(invite)}
-                    className="flex items-center gap-1"
-                  >
-                    <Mail className="h-4 w-4" />
-                    Resend
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleCancelInvite(invite.id)}
-                    className="flex items-center gap-1"
-                  >
-                    <X className="h-4 w-4" />
-                    Cancel
-                  </Button>
-                </>
-              )}
-              {type === 'received' && !invite.decision && (
-                <>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => handleDecideInvite(invite, 'Accepted')}
-                    className="bg-green-500 hover:bg-green-600"
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDecideInvite(invite, 'Declined')}
-                  >
-                    Decline
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </Card>
+        <InviteCard
+          key={invite.id}
+          invite={invite}
+          type={type}
+          onResend={handleResendInvite}
+          onCancel={handleCancelInvite}
+          onDecide={handleDecideInvite}
+        />
       ))}
       {invites.length === 0 && (
         <p className="text-center text-muted-foreground py-8">
