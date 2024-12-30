@@ -57,7 +57,8 @@ export const InviteList = ({ invites, onInviteUpdate, type }: InviteListProps) =
       const { error } = await supabase
         .from("invites")
         .delete()
-        .eq("id", inviteId);
+        .eq("id", inviteId)
+        .eq("user_id", user?.id); // Add this line to ensure users can only delete their own invites
 
       if (error) throw error;
 
