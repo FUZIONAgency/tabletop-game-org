@@ -3,6 +3,13 @@ import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Trees, Plus, Link2 } from "lucide-react";
 import { Card } from "../ui/card";
+import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NetworkNode {
   id: string;
@@ -10,9 +17,16 @@ interface NetworkNode {
   children: NetworkNode[];
 }
 
+interface AdminProfile {
+  id: string;
+  username: string;
+}
+
 const NetworkSection = () => {
   const [network, setNetwork] = useState<NetworkNode | null>(null);
+  const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([]);
   const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchNetwork = async () => {
@@ -42,18 +56,84 @@ const NetworkSection = () => {
       setNetwork(mockNetwork);
     };
 
+    const fetchAdminProfiles = async () => {
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .eq('role', 'admin');
+
+      if (error) {
+        console.error('Error fetching admin profiles:', error);
+        return;
+      }
+
+      setAdminProfiles(profiles || []);
+    };
+
     fetchNetwork();
+    fetchAdminProfiles();
   }, [user]);
+
+  const handleSponsorRequest = async (sponsorId: string) => {
+    try {
+      // First get the player ID for the current user
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user?.id)
+        .single();
+
+      if (playerError) throw playerError;
+
+      // Create the relationship
+      const { error: relationshipError } = await supabase
+        .from('player_relationships')
+        .insert([
+          {
+            upline_id: sponsorId,
+            downline_id: playerData.id,
+            type: 'requested sponsor of',
+            status: 'pending'
+          }
+        ]);
+
+      if (relationshipError) throw relationshipError;
+
+      toast({
+        title: "Success",
+        description: "Sponsor request sent successfully",
+      });
+    } catch (error) {
+      console.error('Error requesting sponsor:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send sponsor request",
+        variant: "destructive",
+      });
+    }
+  };
 
   const renderNode = (node: NetworkNode) => {
     return (
       <div key={node.id} className="flex flex-col items-center relative">
         <Card className="p-4 mb-4 w-32 text-center relative z-10 bg-white hover:bg-yellow-100 transition-colors duration-200">
           {node.id === "sponsor" ? (
-            <a href="#" className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
-              <Link2 className="h-4 w-4" />
-              {node.alias}
-            </a>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
+                <Link2 className="h-4 w-4" />
+                {node.alias}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {adminProfiles.map((profile) => (
+                  <DropdownMenuItem
+                    key={profile.id}
+                    onClick={() => handleSponsorRequest(profile.id)}
+                  >
+                    {profile.username}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : node.id === "left" || node.id === "right" ? (
             <a href="#" className="flex items-center justify-center gap-1 text-primary hover:text-primary/80">
               <Plus className="h-4 w-4" />
@@ -65,14 +145,13 @@ const NetworkSection = () => {
         </Card>
         {node.children.length > 0 && (
           <>
-            {/* Vertical line from parent to children */}
             <div className="w-[2px] h-8 border-l-2 border-dashed border-gray-300" />
-            
-            {/* Container for children */}
             <div className="flex gap-8 mt-4 relative">
-              {/* Horizontal line connecting children */}
               {node.children.length > 1 && (
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4 h-[2px] border-t-2 border-dashed border-gray-300" style={{ width: 'calc(100% - 2rem)' }} />
+                <div 
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4 h-[2px] border-t-2 border-dashed border-gray-300" 
+                  style={{ width: 'calc(100% - 2rem)' }} 
+                />
               )}
               {node.children.map((child) => renderNode(child))}
             </div>
