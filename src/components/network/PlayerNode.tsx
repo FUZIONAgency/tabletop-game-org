@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 interface PlayerNodeProps {
   isRoot?: boolean;
+  isDownline?: boolean;
+  alias?: string;
 }
 
-export const PlayerNode = ({ isRoot }: PlayerNodeProps) => {
+export const PlayerNode = ({ isRoot, isDownline, alias }: PlayerNodeProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -17,11 +19,14 @@ export const PlayerNode = ({ isRoot }: PlayerNodeProps) => {
   return (
     <Card 
       className={`p-4 mb-4 w-32 text-center ${
-        isRoot ? "bg-white hover:bg-gold cursor-pointer" : "bg-white"
+        isRoot ? "bg-white hover:bg-gold cursor-pointer" : 
+        isDownline ? "bg-[#1A1F2C] text-white" : "bg-white"
       }`}
       onClick={handleClick}
     >
-      <p className="font-medium">{isRoot ? "You" : "Player"}</p>
+      <p className="font-medium">
+        {isRoot ? "You" : isDownline ? alias : "Player"}
+      </p>
     </Card>
   );
 };

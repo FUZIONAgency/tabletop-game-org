@@ -37,7 +37,7 @@ export const NetworkNode = ({
       case "root":
         return <PlayerNode isRoot />;
       default:
-        return <PlayerNode />;
+        return <PlayerNode isDownline alias={node.alias} />;
     }
   };
 
