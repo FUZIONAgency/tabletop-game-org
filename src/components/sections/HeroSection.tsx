@@ -39,23 +39,25 @@ const HeroSection = () => {
 
     setIsProcessing(true);
     try {
-      const now = new Date().toISOString();
-      
-      // Get all required data in a single query
-      const { data: playerData, error: playerError } = await supabase
+      // First get the current player's ID
+      const { data: currentPlayer, error: currentPlayerError } = await supabase
         .from("players")
-        .select(`
-          id,
-          inviter:players!inner(
-            id,
-            auth_id
-          )
-        `)
+        .select("id")
         .eq("auth_id", user.id)
-        .eq("inviter.auth_id", pendingInvite.user_id)
         .single();
 
-      if (playerError) throw playerError;
+      if (currentPlayerError) throw currentPlayerError;
+
+      // Get the inviter's player ID
+      const { data: inviter, error: inviterError } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", pendingInvite.user_id)
+        .single();
+
+      if (inviterError) throw inviterError;
+
+      const now = new Date().toISOString();
       
       // Update invite status
       const { error: inviteError } = await supabase
@@ -64,7 +66,7 @@ const HeroSection = () => {
           status: "accepted",
           decision: "accepted",
           accepted_at: now,
-          accepted_by_player_id: playerData.id
+          accepted_by_player_id: currentPlayer.id
         })
         .eq("id", pendingInvite.id);
 
@@ -75,8 +77,8 @@ const HeroSection = () => {
         .from("player_relationships")
         .insert([
           {
-            upline_id: playerData.inviter.id,
-            downline_id: playerData.id,
+            upline_id: inviter.id,
+            downline_id: currentPlayer.id,
             status: "active",
             type: "requested sponsor of"
           }
