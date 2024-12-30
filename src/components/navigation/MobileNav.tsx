@@ -23,6 +23,7 @@ import {
   Gift,
   Box,
   Settings,
+  LogIn,
 } from "lucide-react";
 
 interface MobileNavProps {
@@ -86,21 +87,32 @@ const MobileNav = ({
             <EarnNav activeSection={activeSection} scrollToSection={scrollToSection} />
           </div>
           
-          {user && (
-            <div className="border-t pt-4 mt-4">
-              {profileMenuItems.map((item) => (
-                <Button
-                  key={item.label}
-                  variant="ghost"
-                  className="w-full justify-start gap-2 px-2 text-black hover:bg-gray-100"
-                  onClick={item.onClick || (() => navigate(item.path))}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              ))}
-            </div>
-          )}
+          <div className="border-t pt-4 mt-4">
+            {user ? (
+              <>
+                {profileMenuItems.map((item) => (
+                  <Button
+                    key={item.label}
+                    variant="ghost"
+                    className="w-full justify-start gap-2 px-2 text-black hover:bg-gray-100"
+                    onClick={item.onClick || (() => navigate(item.path))}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Button>
+                ))}
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2 px-2 text-black hover:bg-gray-100"
+                onClick={() => navigate('/auth')}
+              >
+                <LogIn className="h-4 w-4" />
+                Login
+              </Button>
+            )}
+          </div>
         </nav>
       </SheetContent>
     </Sheet>

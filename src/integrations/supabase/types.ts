@@ -1001,6 +1001,33 @@ export type Database = {
           },
         ]
       }
+      person: {
+        Row: {
+          cell: string | null
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+        }
+        Insert: {
+          cell?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+        }
+        Update: {
+          cell?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+        }
+        Relationships: []
+      }
       player_exam_answers: {
         Row: {
           boolean_answer: boolean | null
@@ -1488,16 +1515,111 @@ export type Database = {
         }
         Relationships: []
       }
+      retailer_person_roles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      retailer_persons: {
+        Row: {
+          created_at: string
+          id: string
+          person_id: string | null
+          retailer_id: string | null
+          role_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          person_id?: string | null
+          retailer_id?: string | null
+          role_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          person_id?: string | null
+          retailer_id?: string | null
+          role_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retailer_persons_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "person"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retailer_persons_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retailer_persons_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "retailer_person_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retailer_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
       retailers: {
         Row: {
           address: string
+          address_1: string | null
           carousel_image: string | null
           city: string
+          country_id: string | null
           created_at: string | null
           description: string | null
           email: string | null
           hours_of_operation: Json | null
           id: string
+          import_first_name: string | null
+          import_gama_id: string | null
+          import_has_purchased_amount: number | null
+          import_is_tax_exempt: string | null
+          import_last_name: string | null
+          import_opt_in_email: string | null
+          import_opt_in_sms: string | null
+          import_order_count: number | null
           is_featured: boolean | null
           lat: number
           lng: number
@@ -1507,19 +1629,30 @@ export type Database = {
           state: string
           status: string | null
           store_photo: string | null
+          type_id: string | null
           updated_at: string | null
           website_url: string | null
           zip: string
         }
         Insert: {
           address: string
+          address_1?: string | null
           carousel_image?: string | null
           city: string
+          country_id?: string | null
           created_at?: string | null
           description?: string | null
           email?: string | null
           hours_of_operation?: Json | null
           id?: string
+          import_first_name?: string | null
+          import_gama_id?: string | null
+          import_has_purchased_amount?: number | null
+          import_is_tax_exempt?: string | null
+          import_last_name?: string | null
+          import_opt_in_email?: string | null
+          import_opt_in_sms?: string | null
+          import_order_count?: number | null
           is_featured?: boolean | null
           lat: number
           lng: number
@@ -1529,19 +1662,30 @@ export type Database = {
           state: string
           status?: string | null
           store_photo?: string | null
+          type_id?: string | null
           updated_at?: string | null
           website_url?: string | null
           zip: string
         }
         Update: {
           address?: string
+          address_1?: string | null
           carousel_image?: string | null
           city?: string
+          country_id?: string | null
           created_at?: string | null
           description?: string | null
           email?: string | null
           hours_of_operation?: Json | null
           id?: string
+          import_first_name?: string | null
+          import_gama_id?: string | null
+          import_has_purchased_amount?: number | null
+          import_is_tax_exempt?: string | null
+          import_last_name?: string | null
+          import_opt_in_email?: string | null
+          import_opt_in_sms?: string | null
+          import_order_count?: number | null
           is_featured?: boolean | null
           lat?: number
           lng?: number
@@ -1551,6 +1695,7 @@ export type Database = {
           state?: string
           status?: string | null
           store_photo?: string | null
+          type_id?: string | null
           updated_at?: string | null
           website_url?: string | null
           zip?: string
