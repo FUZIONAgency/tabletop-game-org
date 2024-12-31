@@ -39,6 +39,21 @@ const CampaignDetail = () => {
     enabled: !!id,
   });
 
+  const { data: confirmedPlayersCount } = useQuery({
+    queryKey: ['campaign-players-count', id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('campaign_players')
+        .select('*', { count: 'exact', head: true })
+        .eq('campaign_id', id)
+        .eq('status', 'active');
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!id,
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -80,7 +95,7 @@ const CampaignDetail = () => {
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
                       <Users className="w-5 h-5" />
-                      {campaign.min_players}-{campaign.max_players} players
+                      {confirmedPlayersCount} / {campaign.max_players} players
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar className="w-5 h-5" />
