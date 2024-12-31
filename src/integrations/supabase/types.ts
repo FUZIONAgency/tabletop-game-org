@@ -636,6 +636,24 @@ export type Database = {
           },
         ]
       }
+      game_system_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       game_systems: {
         Row: {
           created_at: string
@@ -643,8 +661,10 @@ export type Database = {
           id: string
           logo_image_url: string | null
           name: string
+          order: number | null
           status: string | null
           type: string | null
+          type_id: string
           updated_at: string | null
           video_url: string | null
         }
@@ -654,8 +674,10 @@ export type Database = {
           id?: string
           logo_image_url?: string | null
           name: string
+          order?: number | null
           status?: string | null
           type?: string | null
+          type_id?: string
           updated_at?: string | null
           video_url?: string | null
         }
@@ -665,12 +687,22 @@ export type Database = {
           id?: string
           logo_image_url?: string | null
           name?: string
+          order?: number | null
           status?: string | null
           type?: string | null
+          type_id?: string
           updated_at?: string | null
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "game_systems_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "game_system_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inventory: {
         Row: {
