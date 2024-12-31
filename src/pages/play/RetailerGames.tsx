@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogIn, Store } from "lucide-react";
+import { Loader2, LogIn, Plus, Store } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useRetailerCampaigns } from "@/hooks/useRetailerCampaigns";
@@ -26,7 +26,6 @@ const RetailerGames = () => {
     }
 
     try {
-      // First check if there are any existing players
       const { data: existingPlayers } = await supabase
         .from("campaign_players")
         .select("*")
@@ -34,7 +33,6 @@ const RetailerGames = () => {
 
       const roleType = existingPlayers && existingPlayers.length === 0 ? "owner" : "player";
 
-      // Get the player record for the current user
       const { data: playerData, error: playerError } = await supabase
         .from("players")
         .select("id")
@@ -52,7 +50,6 @@ const RetailerGames = () => {
         return;
       }
 
-      // Check if the user is already in the campaign
       const { data: existingPlayer } = await supabase
         .from("campaign_players")
         .select("*")
@@ -69,7 +66,6 @@ const RetailerGames = () => {
         return;
       }
 
-      // Join the campaign
       const { error: joinError } = await supabase
         .from("campaign_players")
         .insert({
@@ -164,13 +160,21 @@ const RetailerGames = () => {
           title="Retailer Games"
           subtitle="Play at your local game store"
         >
-          <div className="mb-6 flex justify-end">
+          <div className="mb-6 flex justify-between items-center">
             <Button
               onClick={() => navigate('/my/retailers')}
               className="bg-gold hover:bg-yellow-500 text-black"
             >
               <Store className="mr-2 h-4 w-4" />
               Link a Retailer
+            </Button>
+            
+            <Button
+              onClick={() => navigate('/my/games')}
+              className="bg-gold hover:bg-yellow-500 text-black"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add a Game
             </Button>
           </div>
           
