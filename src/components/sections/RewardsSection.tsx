@@ -1,7 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/auth";
 
 const RewardsSection = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleStartEarning = () => {
+    if (user) {
+      navigate("/my/earnings");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center">
       <div className="relative">
@@ -27,7 +40,10 @@ const RewardsSection = () => {
             </li>
           ))}
         </ul>
-        <Button className="bg-gold hover:bg-gold/90 text-black">
+        <Button 
+          className="bg-gold hover:bg-gold/90 text-black"
+          onClick={handleStartEarning}
+        >
           Start Earning
         </Button>
       </div>
