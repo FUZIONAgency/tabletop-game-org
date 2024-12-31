@@ -1,59 +1,43 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOut, User, Gamepad, Store, Trophy, Tent, Package, Users, TestTube, DollarSign, Gift, Box, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/contexts/auth";
-import {
-  User,
-  Gamepad,
-  Store,
-  Trophy,
-  Tent,
-  Package,
-  Users,
-  LogOut,
-  TestTube,
-  DollarSign,
-  Gift,
-  Box,
-  Settings,
-  Receipt,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const ProfileMenu = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem('supabase.auth.token');
-      
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error);
-        navigate('/auth');
-        toast.error("There was an issue logging out, but you've been redirected to the login page");
-        return;
-      }
-      
+      if (error) throw error;
       navigate('/auth');
-      toast.success("Logged out successfully");
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
     } catch (error) {
-      console.error("Error in logout process:", error);
-      navigate('/auth');
-      toast.error("There was an issue logging out, but you've been redirected to the login page");
+      console.error("Error logging out:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to log out",
+      });
     }
   };
 
   const menuItems = [
     { label: "My Profile", icon: User, path: "/my/profile" },
-    { label: "My Games", icon: Gamepad, path: "/my/games" },
+    { label: "My Game Systems", icon: Gamepad, path: "/my/game_systems" },
     { label: "My Retailers", icon: Store, path: "/my/retailers" },
     { label: "My Tournaments", icon: Trophy, path: "/my/tournaments" },
     { label: "My Conventions", icon: Tent, path: "/my/conventions" },
@@ -61,34 +45,40 @@ const ProfileMenu = () => {
     { label: "My Team", icon: Users, path: "/my/network" },
     { label: "My Exams", icon: TestTube, path: "/my/exams" },
     { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
-    { label: "My Purchases", icon: Receipt, path: "/my/purchases" },
     { label: "My Fundraisers", icon: Gift, path: "/my/fundraisers" },
     { label: "My Inventory", icon: Box, path: "/my/inventory" },
     { label: "My Equipment", icon: Settings, path: "/my/equipment" },
-    { label: "Logout", icon: LogOut, onClick: handleLogout },
   ];
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="focus:outline-none">
-        <Avatar className="h-8 w-8 hover:ring-2 hover:ring-gold transition-all">
-          <AvatarImage src={user?.user_metadata?.avatar_url} />
-          <AvatarFallback className="bg-gold text-black">
-            {user?.email?.[0]?.toUpperCase() || "U"}
-          </AvatarFallback>
-        </Avatar>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <User className="h-4 w-4 text-white" />
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white">
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">My Account</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {menuItems.map((item) => (
           <DropdownMenuItem
-            key={item.label}
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={item.onClick || (() => navigate(item.path))}
+            key={item.path}
+            className="cursor-pointer"
+            onClick={() => navigate(item.path)}
           >
-            <item.icon className="h-4 w-4" />
-            {item.label}
+            <item.icon className="mr-2 h-4 w-4" />
+            <span>{item.label}</span>
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
