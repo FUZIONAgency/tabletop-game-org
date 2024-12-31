@@ -20,7 +20,8 @@ const MyEarnings = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_player_earnings_metrics');
       if (error) throw error;
-      return data as EarningsMetrics;
+      // Get the first row from the array since we know we'll only get one row
+      return (data?.[0] || {}) as EarningsMetrics;
     }
   });
 
