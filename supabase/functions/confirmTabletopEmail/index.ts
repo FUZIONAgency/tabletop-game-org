@@ -25,6 +25,10 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Sending password reset email to:", to);
     console.log("Reset link:", resetLink);
 
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not set");
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
