@@ -88,14 +88,14 @@ export const GameSystemCard = ({ gameSystem }: { gameSystem?: GameSystem }) => {
         <Card className="cursor-pointer">
           <CardContent className="flex items-center justify-between p-6">
             <div>
-              <h3 className="text-lg font-semibold">Add More Game Systems</h3>
+              <h3 className="text-lg font-semibold">Add Game System</h3>
             </div>
             <Button 
               className="bg-gold hover:bg-gold/90 text-white"
               onClick={() => setIsOpen(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Games
+              Add Game System
             </Button>
           </CardContent>
         </Card>
