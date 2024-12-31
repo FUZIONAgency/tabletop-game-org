@@ -71,9 +71,8 @@ const Auth = () => {
         });
       }
 
-      // Handle auth errors from the session
-      const errorMessage = session?.error?.message || 
-                          session?.user?.user_metadata?.error?.message;
+      // Handle auth errors from user metadata or error events
+      const errorMessage = session?.user?.user_metadata?.error?.message;
       
       if (errorMessage) {
         console.error("Auth error:", errorMessage);
