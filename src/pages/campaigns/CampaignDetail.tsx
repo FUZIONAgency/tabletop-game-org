@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Calendar, Users } from "lucide-react";
 import { format } from "date-fns";
+import { SessionList } from "@/components/campaigns/SessionList";
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -95,7 +96,7 @@ const CampaignDetail = () => {
               </div>
 
               {campaign.retailer && (
-                <div className="border rounded-lg p-6">
+                <div className="border rounded-lg p-6 mb-8">
                   <h2 className="text-xl font-semibold mb-4">Location</h2>
                   <p className="font-medium text-lg">{campaign.retailer.name}</p>
                   <p className="text-gray-600">{campaign.retailer.address}</p>
@@ -104,6 +105,11 @@ const CampaignDetail = () => {
                   </p>
                 </div>
               )}
+
+              <div className="border rounded-lg p-6">
+                <h2 className="text-xl font-semibold mb-4">Sessions</h2>
+                <SessionList campaignId={campaign.id} />
+              </div>
             </div>
           ) : (
             <p className="text-gray-500">Campaign not found.</p>
