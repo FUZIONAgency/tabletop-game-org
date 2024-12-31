@@ -4,18 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Search, X } from "lucide-react";
+import { AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { RetailerCard } from "@/components/retailers/RetailerCard";
 
 const MyRetailers = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const { data: retailers, isLoading, error, refetch } = useQuery({
+  const { data: retailers, isLoading, error } = useQuery({
     queryKey: ['my-retailers', user?.id],
     queryFn: async () => {
       const { data: playerData, error: playerError } = await supabase
@@ -47,39 +44,6 @@ const MyRetailers = () => {
     },
     enabled: !!user,
   });
-
-  const handleUnlink = async (retailerId: string) => {
-    try {
-      const { data: playerData } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user?.id)
-        .maybeSingle();
-
-      if (!playerData) return;
-
-      const { error } = await supabase
-        .from('player_retailers')
-        .delete()
-        .match({ player_id: playerData.id, retailer_id: retailerId });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Retailer unlinked successfully",
-      });
-
-      refetch();
-    } catch (error) {
-      console.error('Error unlinking retailer:', error);
-      toast({
-        title: "Error",
-        description: "Failed to unlink retailer",
-        variant: "destructive",
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -117,13 +81,22 @@ const MyRetailers = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {retailers?.map((retailer) => (
-                <RetailerCard
-                  key={retailer.id}
-                  retailer={retailer}
-                  isLinked={true}
-                  onLink={() => {}}
-                  onUnlink={handleUnlink}
-                />
+                <div key={retailer.id} className="border rounded-lg overflow-hidden shadow-sm">
+                  {retailer.store_photo && (
+                    <img 
+                      src={retailer.store_photo} 
+                      alt={retailer.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg mb-2">{retailer.name}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{retailer.description}</p>
+                    <p className="text-sm text-gray-500">
+                      {retailer.address}, {retailer.city}, {retailer.state}
+                    </p>
+                  </div>
+                </div>
               ))}
             </div>
           )}
