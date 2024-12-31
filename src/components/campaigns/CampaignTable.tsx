@@ -122,7 +122,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="bg-yellow-500 hover:bg-yellow-600"
+                      className="bg-gold hover:bg-yellow-600"
                       onClick={() => handleEditCampaign(campaign.id)}
                     >
                       <Pencil className="h-4 w-4 text-black" />
