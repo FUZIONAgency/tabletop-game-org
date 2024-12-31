@@ -4,10 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const MyRetailers = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: retailers, isLoading, error } = useQuery({
     queryKey: ['my-retailers', user?.id],
@@ -47,7 +50,16 @@ const MyRetailers = () => {
       <Navigation />
       <main className="flex-grow bg-white">
         <div className="container mx-auto px-4 pt-24 pb-12">
-          <h1 className="text-3xl font-bold mb-8">My Retailers</h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold">My Retailers</h1>
+            <Button 
+              onClick={() => navigate('/retailers/search')} 
+              className="bg-gold hover:bg-yellow-500 text-black"
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Search Retailers
+            </Button>
+          </div>
           
           {error && (
             <Alert variant="destructive" className="mb-6">
