@@ -20,11 +20,43 @@ const Auth = () => {
     // Listen for auth state changes and errors
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_OUT") {
         // Handle sign out
       } else if (event === "PASSWORD_RECOVERY") {
         // Handle password recovery
+        const email = session?.user?.email;
+        if (email) {
+          try {
+            const { error } = await supabase.functions.invoke("confirmTabletopEmail", {
+              body: {
+                to: [email],
+                resetLink: window.location.href,
+              },
+            });
+
+            if (error) {
+              console.error("Error sending reset email:", error);
+              toast({
+                title: "Error",
+                description: "Failed to send password reset email. Please try again.",
+                variant: "destructive",
+              });
+            } else {
+              toast({
+                title: "Email Sent",
+                description: "Check your email for password reset instructions.",
+              });
+            }
+          } catch (error) {
+            console.error("Error invoking edge function:", error);
+            toast({
+              title: "Error",
+              description: "An unexpected error occurred. Please try again.",
+              variant: "destructive",
+            });
+          }
+        }
       } else if (event === "SIGNED_IN") {
         // Handle successful sign in
       } else if (!session && event === "INITIAL_SESSION") {
