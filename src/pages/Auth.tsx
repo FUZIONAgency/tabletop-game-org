@@ -39,7 +39,7 @@ const Auth = () => {
               console.error("Error sending reset email:", error);
               toast({
                 title: "Error",
-                description: "Failed to send password reset email. Please try again.",
+                description: `Failed to send password reset email: ${error.message}`,
                 variant: "destructive",
               });
             } else {
@@ -48,44 +48,69 @@ const Auth = () => {
                 description: "Check your email for password reset instructions.",
               });
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error("Error invoking edge function:", error);
             toast({
               title: "Error",
-              description: "An unexpected error occurred. Please try again.",
+              description: `An unexpected error occurred: ${error.message}`,
               variant: "destructive",
             });
           }
         }
       } else if (event === "SIGNED_IN") {
         // Handle successful sign in
+      } else if (event === "SIGNED_UP") {
+        toast({
+          title: "Account Created",
+          description: "Please check your email to verify your account.",
+        });
+      } else if (event === "USER_UPDATED") {
+        // Handle user data update
+        console.log('User data updated');
       } else if (!session && event === "INITIAL_SESSION") {
-        // Handle invalid credentials or other auth errors
-        const authError = (session as any)?.error?.message;
-        if (authError?.includes("Invalid login credentials")) {
-          toast({
-            title: "Login Failed",
-            description: "The email or password you entered is incorrect. Please try again.",
-            variant: "destructive",
-          });
-        } else if (authError?.includes("Email not confirmed")) {
-          toast({
-            title: "Email Not Verified",
-            description: "Please check your email and click the confirmation link to verify your account.",
-            variant: "destructive",
-          });
-        } else if (authError) {
-          toast({
-            title: "Authentication Error",
-            description: authError,
-            variant: "destructive",
-          });
+        // Handle auth errors more specifically
+        const authError = (session as any)?.error;
+        if (authError) {
+          console.error("Auth error:", authError);
+          if (authError.message?.includes("User already registered")) {
+            toast({
+              title: "Account Exists",
+              description: "An account with this email already exists. Please try logging in instead.",
+              variant: "destructive",
+            });
+          } else if (authError.message?.includes("Invalid login credentials")) {
+            toast({
+              title: "Login Failed",
+              description: "The email or password you entered is incorrect. Please try again.",
+              variant: "destructive",
+            });
+          } else if (authError.message?.includes("Email not confirmed")) {
+            toast({
+              title: "Email Not Verified",
+              description: "Please check your email and click the confirmation link to verify your account.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Authentication Error",
+              description: authError.message || "An unexpected error occurred",
+              variant: "destructive",
+            });
+          }
         }
+      }
+    });
+
+    // Add error listener for sign-up specifically
+    const authListener = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_UP') {
+        console.log('Sign up attempted:', session);
       }
     });
 
     return () => {
       subscription.unsubscribe();
+      authListener.data.subscription.unsubscribe();
     };
   }, [user, navigate, toast]);
 
