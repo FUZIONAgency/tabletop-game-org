@@ -15,7 +15,7 @@ export const useConventionCampaigns = () => {
         .eq("auth_id", user?.id)
         .maybeSingle();
 
-      // Get all campaigns with game system information and owner alias
+      // Get all campaigns with game system information, owner alias, and campaign players
       const { data: campaigns, error } = await supabase
         .from("campaigns")
         .select(`
@@ -32,11 +32,14 @@ export const useConventionCampaigns = () => {
 
       if (error) throw error;
 
-      // Add is_member flag and owner_alias
+      // Add is_member flag and owner_alias, and check if current player is owner
       return campaigns.map(campaign => ({
         ...campaign,
         is_member: campaign.campaign_players.some(
           player => player.player_id === playerData?.id
+        ),
+        is_owner: campaign.campaign_players.some(
+          player => player.player_id === playerData?.id && player.role_type === 'owner'
         ),
         owner_alias: campaign.owner[0]?.player?.alias || null
       }));
