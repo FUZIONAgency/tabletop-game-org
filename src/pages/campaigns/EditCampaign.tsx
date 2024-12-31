@@ -48,19 +48,21 @@ const EditCampaign = () => {
           )
         `)
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data as Campaign;
     },
-    onSuccess: (data) => {
-      // Pre-fill form with existing data
-      setValue('title', data.title);
-      setValue('description', data.description || '');
-      setValue('type', data.type || '');
-      setValue('min_players', data.min_players);
-      setValue('max_players', data.max_players);
-      setValue('price', data.price);
+    meta: {
+      onSuccess: (data: Campaign) => {
+        // Pre-fill form with existing data
+        setValue('title', data.title);
+        setValue('description', data.description || '');
+        setValue('type', data.type || '');
+        setValue('min_players', data.min_players);
+        setValue('max_players', data.max_players);
+        setValue('price', data.price);
+      }
     }
   });
 
