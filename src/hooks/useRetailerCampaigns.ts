@@ -16,13 +16,21 @@ export const useRetailerCampaigns = () => {
         .maybeSingle();
 
       // Get the campaign type id for standard (retailer) games
-      const { data: typeData } = await supabase
+      const { data: typeData, error: typeError } = await supabase
         .from("campaign_types")
         .select("id")
         .eq("name", "Retailer")
-        .single();
+        .maybeSingle();
 
-      if (!typeData) throw new Error("Campaign type not found");
+      if (typeError) {
+        console.error("Error fetching campaign type:", typeError);
+        throw new Error("Failed to fetch campaign type");
+      }
+
+      if (!typeData) {
+        console.error("Campaign type 'Retailer' not found");
+        return []; // Return empty array if type not found
+      }
 
       // Get all campaigns with game system information and owner alias
       const { data: campaigns, error } = await supabase

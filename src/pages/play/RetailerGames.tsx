@@ -10,16 +10,38 @@ import { useCampaignActions } from "@/hooks/useCampaignActions";
 
 const RetailerGames = () => {
   const { user } = useAuth();
-  const { data: campaigns, isLoading, refetch } = useRetailerCampaigns();
+  const { data: campaigns, isLoading, error } = useRetailerCampaigns();
   const {
     handleJoinCampaign,
     handleLeaveCampaign
-  } = useCampaignActions(refetch);
+  } = useCampaignActions(() => {
+    // Refetch after actions
+    refetch();
+  });
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-16">
+          <Section
+            id="retailer-games"
+            title="Error"
+            subtitle="There was an error loading the games"
+          >
+            <p className="text-red-500">
+              {error instanceof Error ? error.message : "An unknown error occurred"}
+            </p>
+          </Section>
+        </main>
       </div>
     );
   }
