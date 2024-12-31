@@ -1,5 +1,6 @@
 import { Store, Users, Dices } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const GamesSection = () => {
   const navigate = useNavigate();

@@ -8,19 +8,20 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AuthUserCard from "./auth/AuthUserCard";
 import ProfileCard from "./player/ProfileCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MyPlayerSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user?.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -28,7 +29,7 @@ const MyPlayerSection = () => {
     enabled: !!user?.id
   });
 
-  const { data: gameSystems, isLoading } = useQuery({
+  const { data: gameSystems, isLoading: gameSystemsLoading } = useQuery({
     queryKey: ['game_systems'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -41,8 +42,20 @@ const MyPlayerSection = () => {
     }
   });
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (profileLoading || gameSystemsLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-[200px] w-full" />
+          <Skeleton className="h-[200px] w-full" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-[200px] w-full" />
+          <Skeleton className="h-[200px] w-full" />
+          <Skeleton className="h-[200px] w-full" />
+        </div>
+      </div>
+    );
   }
 
   return (
