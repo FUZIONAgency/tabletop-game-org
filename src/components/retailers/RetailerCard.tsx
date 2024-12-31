@@ -5,9 +5,10 @@ interface RetailerCardProps {
   retailer: any;
   distance?: number;
   onLink: (retailerId: string) => void;
+  isLinked?: boolean;
 }
 
-export const RetailerCard = ({ retailer, distance, onLink }: RetailerCardProps) => {
+export const RetailerCard = ({ retailer, distance, onLink, isLinked }: RetailerCardProps) => {
   return (
     <Card>
       {retailer.store_photo && (
@@ -32,9 +33,14 @@ export const RetailerCard = ({ retailer, distance, onLink }: RetailerCardProps) 
         )}
         <Button
           onClick={() => onLink(retailer.id)}
-          className="w-full bg-gold hover:bg-yellow-500 text-black"
+          className={`w-full ${
+            isLinked 
+              ? 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed' 
+              : 'bg-gold hover:bg-yellow-500 text-black'
+          }`}
+          disabled={isLinked}
         >
-          Link Retailer
+          {isLinked ? 'Already Linked' : 'Link Retailer'}
         </Button>
       </CardContent>
     </Card>

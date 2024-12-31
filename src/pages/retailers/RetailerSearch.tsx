@@ -1,139 +1,145 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { RetailerCard } from "@/components/retailers/RetailerCard";
 import { RetailerSearchControls } from "@/components/retailers/RetailerSearchControls";
 import { calculateDistance } from "@/utils/distance";
 
-const RetailerSearch = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [rangeInMiles, setRangeInMiles] = useState("50");
+export default function RetailerSearch() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [retailers, setRetailers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [miles, setMiles] = useState<number>(50);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [linkedRetailers, setLinkedRetailers] = useState<string[]>([]);
 
   useEffect(() => {
+    // Get user's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation({
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           });
         },
         (error) => {
           console.error("Error getting location:", error);
-          toast({
-            title: "Location Access Required",
-            description: "Please enable location access to see nearby retailers",
-            variant: "destructive",
-          });
         }
       );
     }
-  }, [toast]);
 
-  const { data: retailers, isLoading } = useQuery({
-    queryKey: ['retailers', searchQuery, userLocation, rangeInMiles],
-    queryFn: async () => {
-      let query = supabase
-        .from('retailers')
-        .select('*')
-        .eq('status', 'active');
+    // Fetch linked retailers
+    const fetchLinkedRetailers = async () => {
+      if (!user) return;
 
-      if (searchQuery) {
-        query = query.or(`name.ilike.%${searchQuery}%,city.ilike.%${searchQuery}%,state.ilike.%${searchQuery}%`);
+      try {
+        const { data: playerData } = await supabase
+          .from("players")
+          .select("id")
+          .eq("auth_id", user.id)
+          .single();
+
+        if (playerData) {
+          const { data: linkedData } = await supabase
+            .from("player_retailers")
+            .select("retailer_id")
+            .eq("player_id", playerData.id);
+
+          setLinkedRetailers(linkedData?.map(link => link.retailer_id) || []);
+        }
+      } catch (error) {
+        console.error("Error fetching linked retailers:", error);
+      }
+    };
+
+    fetchLinkedRetailers();
+  }, [user]);
+
+  const handleSearch = async (query: string, rangeInMiles: number) => {
+    try {
+      let retailersQuery = supabase
+        .from("retailers")
+        .select("*")
+        .order("name");
+
+      if (query) {
+        retailersQuery = retailersQuery.or(
+          `name.ilike.%${query}%,city.ilike.%${query}%,state.ilike.%${query}%`
+        );
       }
 
-      const { data, error } = await query;
-      
+      const { data, error } = await retailersQuery;
+
       if (error) throw error;
 
-      // Filter retailers by distance if user location is available and range is valid
-      if (userLocation && data && Number(rangeInMiles) > 0) {
-        const filteredData = data.filter(retailer => {
+      let filteredRetailers = data || [];
+
+      if (userLocation && rangeInMiles > 0) {
+        filteredRetailers = filteredRetailers.filter((retailer) => {
           const distance = calculateDistance(
             userLocation.lat,
             userLocation.lng,
             retailer.lat,
             retailer.lng
           );
-          return distance <= Number(rangeInMiles);
+          return distance <= rangeInMiles;
         });
-        return filteredData;
       }
 
-      return data || [];
-    },
-    enabled: true,
-  });
+      setRetailers(filteredRetailers);
+    } catch (error) {
+      console.error("Error fetching retailers:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch retailers. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
-  const handleLinkRetailer = async (retailerId: string) => {
+  const handleLink = async (retailerId: string) => {
     if (!user) {
       toast({
-        title: "Authentication Required",
-        description: "Please sign in to link retailers",
+        title: "Error",
+        description: "You must be logged in to link a retailer.",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const { data: playerData, error: playerError } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user.id)
-        .maybeSingle();
+      const { data: playerData } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", user.id)
+        .single();
 
-      if (playerError) throw playerError;
-      if (!playerData) {
-        toast({
-          title: "Profile Required",
-          description: "Please create your player profile first",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (!playerData) throw new Error("Player not found");
 
-      const { data: existingLink } = await supabase
-        .from('player_retailers')
-        .select('*')
-        .eq('player_id', playerData.id)
-        .eq('retailer_id', retailerId)
-        .maybeSingle();
+      const { error } = await supabase.from("player_retailers").insert({
+        player_id: playerData.id,
+        retailer_id: retailerId,
+      });
 
-      if (existingLink) {
-        toast({
-          title: "Already Linked",
-          description: "This retailer is already linked to your account",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { error: linkError } = await supabase
-        .from('player_retailers')
-        .insert({
-          player_id: playerData.id,
-          retailer_id: retailerId,
-          status: 'active'
-        });
-
-      if (linkError) throw linkError;
+      if (error) throw error;
 
       toast({
         title: "Success",
         description: "Retailer linked successfully",
       });
 
-      navigate('/my/retailers');
+      // Update linked retailers list
+      setLinkedRetailers([...linkedRetailers, retailerId]);
+
+      // Navigate back to My Retailers page
+      navigate("/my/retailers");
     } catch (error) {
-      console.error('Error linking retailer:', error);
+      console.error("Error linking retailer:", error);
       toast({
         title: "Error",
         description: "Failed to link retailer. Please try again.",
@@ -142,60 +148,46 @@ const RetailerSearch = () => {
     }
   };
 
-  const handleRangeUpdate = () => {
-    const range = Number(rangeInMiles);
-    if (isNaN(range) || range < 0) {
-      toast({
-        title: "Invalid Range",
-        description: "Please enter a valid number of miles",
-        variant: "destructive",
-      });
-      return;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="flex flex-col space-y-6">
-          <h1 className="text-3xl font-bold">Search Retailers</h1>
-          
-          <RetailerSearchControls
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            rangeInMiles={rangeInMiles}
-            onRangeChange={setRangeInMiles}
-            onRangeUpdate={handleRangeUpdate}
-          />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Search Retailers</h1>
+      
+      <RetailerSearchControls
+        searchQuery={searchQuery}
+        miles={miles}
+        onSearchChange={setSearchQuery}
+        onMilesChange={setMiles}
+        onSearch={() => handleSearch(searchQuery, miles)}
+      />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {retailers?.map((retailer) => (
-              <RetailerCard
-                key={retailer.id}
-                retailer={retailer}
-                distance={
-                  userLocation
-                    ? calculateDistance(
-                        userLocation.lat,
-                        userLocation.lng,
-                        retailer.lat,
-                        retailer.lng
-                      )
-                    : undefined
-                }
-                onLink={handleLinkRetailer}
-              />
-            ))}
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {retailers.map((retailer) => {
+          const distance = userLocation
+            ? calculateDistance(
+                userLocation.lat,
+                userLocation.lng,
+                retailer.lat,
+                retailer.lng
+              )
+            : undefined;
 
-          {retailers?.length === 0 && !isLoading && (
-            <p className="text-center text-gray-500">No retailers found</p>
-          )}
-        </div>
-      </main>
+          return (
+            <RetailerCard
+              key={retailer.id}
+              retailer={retailer}
+              distance={distance}
+              onLink={handleLink}
+              isLinked={linkedRetailers.includes(retailer.id)}
+            />
+          );
+        })}
+      </div>
+
+      {retailers.length === 0 && (
+        <p className="text-center text-gray-500 mt-8">
+          No retailers found. Try adjusting your search criteria.
+        </p>
+      )}
     </div>
   );
-};
-
-export default RetailerSearch;
+}
