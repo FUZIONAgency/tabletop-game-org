@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, LogIn } from "lucide-react";
+import { Loader2, LogIn, Store } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
 import { useRetailerCampaigns } from "@/hooks/useRetailerCampaigns";
@@ -164,6 +164,16 @@ const RetailerGames = () => {
           title="Retailer Games"
           subtitle="Play at your local game store"
         >
+          <div className="mb-6 flex justify-end">
+            <Button
+              onClick={() => navigate('/my/retailers')}
+              className="bg-gold hover:bg-yellow-500 text-black"
+            >
+              <Store className="mr-2 h-4 w-4" />
+              Link a Retailer
+            </Button>
+          </div>
+          
           {user ? (
             <CampaignTable 
               campaigns={campaigns || []} 
