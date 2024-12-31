@@ -32,11 +32,14 @@ export const useCampaigns = () => {
 
       if (error) throw error;
 
-      // Add is_member flag and owner_alias
+      // Add is_member and is_owner flags
       return campaigns.map(campaign => ({
         ...campaign,
         is_member: campaign.campaign_players.some(
           player => player.player_id === playerData?.id
+        ),
+        is_owner: campaign.campaign_players.some(
+          player => player.player_id === playerData?.id && player.role_type === 'owner'
         ),
         owner_alias: campaign.owner[0]?.player?.alias || null
       }));
