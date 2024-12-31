@@ -8,6 +8,7 @@ import { AlertCircle, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { RetailerCard } from "@/components/retailers/RetailerCard";
 
 const MyRetailers = () => {
   const { user } = useAuth();
@@ -116,29 +117,13 @@ const MyRetailers = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {retailers?.map((retailer) => (
-                <div key={retailer.id} className="border rounded-lg overflow-hidden shadow-sm">
-                  {retailer.store_photo && (
-                    <img 
-                      src={retailer.store_photo} 
-                      alt={retailer.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
-                  <div className="p-4 relative">
-                    <h3 className="font-semibold text-lg mb-2">{retailer.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{retailer.description}</p>
-                    <p className="text-sm text-gray-500">
-                      {retailer.address}, {retailer.city}, {retailer.state}
-                    </p>
-                    <Button
-                      onClick={() => handleUnlink(retailer.id)}
-                      className="absolute bottom-4 right-4 p-2 bg-gold hover:bg-yellow-500 text-black"
-                      size="icon"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                <RetailerCard
+                  key={retailer.id}
+                  retailer={retailer}
+                  isLinked={true}
+                  onLink={() => {}}
+                  onUnlink={handleUnlink}
+                />
               ))}
             </div>
           )}
