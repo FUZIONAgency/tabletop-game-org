@@ -71,9 +71,9 @@ const Auth = () => {
         });
       }
 
-      // Handle auth errors
-      if (session?.error) {
-        const error = session.error as AuthError;
+      // Handle auth errors from the session
+      if (session?.user?.user_metadata?.error) {
+        const error = session.user.user_metadata.error as AuthError;
         console.error("Auth error:", error);
         
         if (error.message?.includes("User already registered")) {
