@@ -230,6 +230,24 @@ export type Database = {
           },
         ]
       }
+      campaign_types: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       campaigns: {
         Row: {
           created_at: string
@@ -243,6 +261,7 @@ export type Database = {
           status: string | null
           title: string
           type: string | null
+          type_id: string
         }
         Insert: {
           created_at?: string
@@ -256,6 +275,7 @@ export type Database = {
           status?: string | null
           title: string
           type?: string | null
+          type_id?: string
         }
         Update: {
           created_at?: string
@@ -269,6 +289,7 @@ export type Database = {
           status?: string | null
           title?: string
           type?: string | null
+          type_id?: string
         }
         Relationships: [
           {
@@ -283,6 +304,13 @@ export type Database = {
             columns: ["retailer_id"]
             isOneToOne: false
             referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaigns_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_types"
             referencedColumns: ["id"]
           },
         ]

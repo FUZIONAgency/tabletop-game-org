@@ -14,11 +14,12 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 type FormData = {
   title: string;
   description: string;
-  type: string;
+  type_id: string;
   min_players: number;
   max_players: number;
   price: number;
@@ -35,10 +36,23 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
     defaultValues: {
       title: campaign.title,
       description: campaign.description || '',
-      type: campaign.type || '',
+      type_id: campaign.type_id || '',
       min_players: campaign.min_players,
       max_players: campaign.max_players,
       price: campaign.price,
+    }
+  });
+
+  const { data: campaignTypes } = useQuery({
+    queryKey: ['campaignTypes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('campaign_types')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -49,7 +63,7 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
         .update({
           title: data.title,
           description: data.description,
-          type: data.type,
+          type_id: data.type_id,
           min_players: data.min_players,
           max_players: data.max_players,
           price: data.price,
@@ -92,18 +106,20 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="type">Type</Label>
+        <Label htmlFor="type_id">Type</Label>
         <Select
-          onValueChange={(value) => setValue("type", value)}
-          defaultValue={campaign.type || ""}
+          onValueChange={(value) => setValue("type_id", value)}
+          defaultValue={campaign.type_id || ""}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="online">Online</SelectItem>
-            <SelectItem value="retailer">Retailer</SelectItem>
-            <SelectItem value="convention">Convention</SelectItem>
+            {campaignTypes?.map((type) => (
+              <SelectItem key={type.id} value={type.id}>
+                {type.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
