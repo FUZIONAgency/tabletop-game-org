@@ -34,6 +34,7 @@ import RetailerSearch from "@/pages/retailers/RetailerSearch";
 import RetailerDetail from "@/pages/retailers/RetailerDetail";
 import CampaignDetail from "@/pages/campaigns/CampaignDetail";
 import MyPurchases from "@/pages/my/MyPurchases";
+import EditCampaign from "@/pages/campaigns/EditCampaign";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function App() {
             <Route path="/my/profile" element={<Profile />} />
             <Route path="/my/network" element={<Network />} />
             <Route path="/my/games" element={<MyGames />} />
+            <Route path="/my/games/:id/edit" element={<EditCampaign />} />
             <Route path="/my/exams" element={<MyExams />} />
             <Route path="/my/exams/:examId" element={<TakeExam />} />
             <Route path="/my/retailers" element={<MyRetailers />} />
