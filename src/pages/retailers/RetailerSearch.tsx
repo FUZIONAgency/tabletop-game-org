@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { RetailerCard } from "@/components/retailers/RetailerCard";
+import { RetailerSearchControls } from "@/components/retailers/RetailerSearchControls";
+import { calculateDistance } from "@/utils/distance";
 
 const RetailerSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,7 +18,6 @@ const RetailerSearch = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Get user's location when component mounts
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -56,8 +54,8 @@ const RetailerSearch = () => {
       
       if (error) throw error;
 
-      // Filter retailers by distance if user location is available
-      if (userLocation && data) {
+      // Filter retailers by distance if user location is available and range is valid
+      if (userLocation && data && Number(rangeInMiles) > 0) {
         const filteredData = data.filter(retailer => {
           const distance = calculateDistance(
             userLocation.lat,
@@ -75,22 +73,6 @@ const RetailerSearch = () => {
     enabled: true,
   });
 
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 3959; // Earth's radius in miles
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const toRad = (value: number) => {
-    return (value * Math.PI) / 180;
-  };
-
   const handleLinkRetailer = async (retailerId: string) => {
     if (!user) {
       toast({
@@ -102,7 +84,6 @@ const RetailerSearch = () => {
     }
 
     try {
-      // Get the player ID for the current user
       const { data: playerData, error: playerError } = await supabase
         .from('players')
         .select('id')
@@ -119,7 +100,6 @@ const RetailerSearch = () => {
         return;
       }
 
-      // Check if the retailer is already linked
       const { data: existingLink } = await supabase
         .from('player_retailers')
         .select('*')
@@ -136,7 +116,6 @@ const RetailerSearch = () => {
         return;
       }
 
-      // Create the link
       const { error: linkError } = await supabase
         .from('player_retailers')
         .insert({
@@ -152,7 +131,6 @@ const RetailerSearch = () => {
         description: "Retailer linked successfully",
       });
 
-      // Navigate back to My Retailers page
       navigate('/my/retailers');
     } catch (error) {
       console.error('Error linking retailer:', error);
@@ -165,9 +143,8 @@ const RetailerSearch = () => {
   };
 
   const handleRangeUpdate = () => {
-    // Validate range input
     const range = Number(rangeInMiles);
-    if (isNaN(range) || range <= 0) {
+    if (isNaN(range) || range < 0) {
       toast({
         title: "Invalid Range",
         description: "Please enter a valid number of miles",
@@ -175,7 +152,6 @@ const RetailerSearch = () => {
       });
       return;
     }
-    // The query will automatically re-run due to the queryKey including rangeInMiles
   };
 
   return (
@@ -185,68 +161,31 @@ const RetailerSearch = () => {
         <div className="flex flex-col space-y-6">
           <h1 className="text-3xl font-bold">Search Retailers</h1>
           
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                type="text"
-                placeholder="Search by name, city, or state..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder="Range in miles..."
-                value={rangeInMiles}
-                onChange={(e) => setRangeInMiles(e.target.value)}
-                className="w-32"
-              />
-              <Button 
-                onClick={handleRangeUpdate}
-                className="bg-gold hover:bg-yellow-500 text-black whitespace-nowrap"
-              >
-                Range in Miles
-              </Button>
-            </div>
-          </div>
+          <RetailerSearchControls
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            rangeInMiles={rangeInMiles}
+            onRangeChange={setRangeInMiles}
+            onRangeUpdate={handleRangeUpdate}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {retailers?.map((retailer) => (
-              <Card key={retailer.id}>
-                {retailer.store_photo && (
-                  <img
-                    src={retailer.store_photo}
-                    alt={retailer.name}
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
-                )}
-                <CardHeader>
-                  <CardTitle>{retailer.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">{retailer.description}</p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    {retailer.address}, {retailer.city}, {retailer.state}
-                  </p>
-                  {userLocation && (
-                    <p className="text-sm text-gray-500 mb-4">
-                      Distance: {calculateDistance(
+              <RetailerCard
+                key={retailer.id}
+                retailer={retailer}
+                distance={
+                  userLocation
+                    ? calculateDistance(
                         userLocation.lat,
                         userLocation.lng,
                         retailer.lat,
                         retailer.lng
-                      ).toFixed(1)} miles
-                    </p>
-                  )}
-                  <Button
-                    onClick={() => handleLinkRetailer(retailer.id)}
-                    className="w-full bg-gold hover:bg-yellow-500 text-black"
-                  >
-                    Link Retailer
-                  </Button>
-                </CardContent>
-              </Card>
+                      )
+                    : undefined
+                }
+                onLink={handleLinkRetailer}
+              />
             ))}
           </div>
 
