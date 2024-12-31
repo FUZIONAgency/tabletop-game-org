@@ -218,6 +218,13 @@ export type Database = {
             foreignKeyName: "campaign_players_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "campaign_players_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
@@ -776,6 +783,13 @@ export type Database = {
             foreignKeyName: "invites_accepted_by_player_id_fkey"
             columns: ["accepted_by_player_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "invites_accepted_by_player_id_fkey"
+            columns: ["accepted_by_player_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
@@ -1107,6 +1121,13 @@ export type Database = {
             foreignKeyName: "player_exam_answers_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "player_exam_answers_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
@@ -1145,6 +1166,13 @@ export type Database = {
             foreignKeyName: "player_exams_approval_player_id_fkey"
             columns: ["approval_player_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "player_exams_approval_player_id_fkey"
+            columns: ["approval_player_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
@@ -1154,6 +1182,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "exams"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_exams_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "player_exams_player_id_fkey"
@@ -1235,8 +1270,22 @@ export type Database = {
             foreignKeyName: "player_ratings_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "player_ratings_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_ratings_rating_player_id_fkey"
+            columns: ["rating_player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "player_ratings_rating_player_id_fkey"
@@ -1280,8 +1329,22 @@ export type Database = {
             foreignKeyName: "player_relationships_downline_id_fkey"
             columns: ["downline_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "player_relationships_downline_id_fkey"
+            columns: ["downline_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_relationships_upline_id_fkey"
+            columns: ["upline_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "player_relationships_upline_id_fkey"
@@ -1318,6 +1381,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "player_retailers_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
           {
             foreignKeyName: "player_retailers_player_id_fkey"
             columns: ["player_id"]
@@ -1363,6 +1433,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "player_sessions_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
           {
             foreignKeyName: "player_sessions_player_id_fkey"
             columns: ["player_id"]
@@ -1989,6 +2066,13 @@ export type Database = {
             foreignKeyName: "tournament_entries_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "tournament_entries_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
@@ -2112,7 +2196,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      player_earnings_metrics: {
+        Row: {
+          auth_id: string | null
+          player_id: string | null
+          total_convention_games: number | null
+          total_game_sessions: number | null
+          total_online_games: number | null
+          total_retailer_games: number | null
+          total_retailers: number | null
+          total_tournaments: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_distance: {
@@ -2123,6 +2219,19 @@ export type Database = {
           lng2: number
         }
         Returns: number
+      }
+      get_player_earnings_metrics: {
+        Args: {
+          auth_uid: string
+        }
+        Returns: {
+          total_game_sessions: number
+          total_retailers: number
+          total_tournaments: number
+          total_online_games: number
+          total_retailer_games: number
+          total_convention_games: number
+        }[]
       }
       get_schema_cards: {
         Args: {
