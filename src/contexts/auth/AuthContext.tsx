@@ -8,25 +8,38 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  role: string | null;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   isLoading: true,
+  role: null,
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        setRole(profile?.role ?? null);
+      }
+      
       setIsLoading(false);
     }).catch((error) => {
       console.error("Error getting session:", error);
@@ -39,6 +52,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        setRole(profile?.role ?? null);
+      } else {
+        setRole(null);
+      }
+      
       setIsLoading(false);
 
       if (event === 'SIGNED_OUT') {
@@ -71,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         session,
         isLoading,
+        role,
       }}
     >
       {children}
