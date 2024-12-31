@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Campaign } from "@/types/campaign";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ interface EditCampaignFormProps {
 
 export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { register, handleSubmit, setValue } = useForm<FormData>({
     defaultValues: {
@@ -42,6 +43,9 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
       price: campaign.price,
     }
   });
+
+  // Get the return path from state, fallback to /my/games if not set
+  const returnPath = location.state?.from || '/my/games';
 
   const { data: campaignTypes } = useQuery({
     queryKey: ['campaignTypes'],
@@ -77,7 +81,7 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
         description: "Campaign updated successfully",
       });
 
-      navigate('/my/games');
+      navigate(returnPath);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -173,7 +177,7 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
         <Button 
           type="button" 
           variant="outline"
-          onClick={() => navigate('/my/games')}
+          onClick={() => navigate(returnPath)}
         >
           Cancel
         </Button>

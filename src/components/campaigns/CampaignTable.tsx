@@ -6,7 +6,7 @@ import { Campaign } from "@/types/campaign";
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Pencil } from "lucide-react";
 import { SessionList } from "./SessionList";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface CampaignTableProps {
   campaigns: Campaign[];
@@ -16,6 +16,7 @@ interface CampaignTableProps {
 
 export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: CampaignTableProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [dialogAction, setDialogAction] = useState<'join' | 'leave'>('join');
@@ -52,7 +53,9 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
   };
 
   const handleEditCampaign = (campaignId: string) => {
-    navigate(`/my/games/${campaignId}/edit`);
+    navigate(`/my/games/${campaignId}/edit`, {
+      state: { from: location.pathname }
+    });
   };
 
   return (
