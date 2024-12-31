@@ -15,25 +15,30 @@ export const useConventionCampaigns = () => {
         .eq("auth_id", user?.id)
         .maybeSingle();
 
-      // Get all campaigns with game system information
+      // Get all campaigns with game system information and owner alias
       const { data: campaigns, error } = await supabase
         .from("campaigns")
         .select(`
           *,
           campaign_players!inner(*),
-          game_system:game_systems(name)
+          game_system:game_systems(name),
+          owner:campaign_players!inner(
+            player:players(alias)
+          )
         `)
         .eq("type", "convention")
+        .eq("campaign_players.role_type", "owner")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      // Add is_member flag
+      // Add is_member flag and owner_alias
       return campaigns.map(campaign => ({
         ...campaign,
         is_member: campaign.campaign_players.some(
           player => player.player_id === playerData?.id
-        )
+        ),
+        owner_alias: campaign.owner[0]?.player?.alias || null
       }));
     },
     enabled: !!user,

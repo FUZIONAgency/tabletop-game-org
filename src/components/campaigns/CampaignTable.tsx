@@ -60,6 +60,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
       <TableHeader>
         <TableRow>
           <TableHead className="w-[200px]"></TableHead>
+          <TableHead className="text-left">Owner</TableHead>
           <TableHead className="text-left">Title</TableHead>
           <TableHead className="text-left">Description</TableHead>
           <TableHead>Game System</TableHead>
@@ -129,6 +130,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
                   )}
                 </div>
               </TableCell>
+              <TableCell className="font-medium text-left">{campaign.owner_alias || 'N/A'}</TableCell>
               <TableCell className="font-medium text-left">{campaign.title}</TableCell>
               <TableCell className="text-left">{campaign.description}</TableCell>
               <TableCell>{campaign.game_system?.name || 'N/A'}</TableCell>
@@ -159,7 +161,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
             </TableRow>
             {expandedCampaigns.includes(campaign.id) && (
               <TableRow>
-                <TableCell colSpan={8} className="p-0">
+                <TableCell colSpan={9} className="p-0">
                   <div className="bg-gray-50 p-4">
                     <SessionList campaignId={campaign.id} />
                   </div>

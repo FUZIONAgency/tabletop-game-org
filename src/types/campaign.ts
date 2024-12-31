@@ -1,16 +1,12 @@
-export interface Campaign {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string | null;
-  created_at: string;
-  type: string | null;
-  min_players: number;
-  max_players: number;
-  price: number;
+import { Database } from "@/integrations/supabase/types";
+
+type GameSystem = {
+  name: string | null;
+};
+
+export type Campaign = Database["public"]["Tables"]["campaigns"]["Row"] & {
   is_member?: boolean;
   is_owner?: boolean;
-  game_system?: {
-    name: string;
-  };
-}
+  owner_alias?: string | null;
+  game_system?: GameSystem;
+};
