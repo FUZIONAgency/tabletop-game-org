@@ -45,6 +45,10 @@ const MyRetailers = () => {
     enabled: !!user,
   });
 
+  const handleRetailerClick = (retailerId: string) => {
+    navigate(`/retailers/${retailerId}`);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -81,7 +85,11 @@ const MyRetailers = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {retailers?.map((retailer) => (
-                <div key={retailer.id} className="border rounded-lg overflow-hidden shadow-sm">
+                <div 
+                  key={retailer.id} 
+                  className="border rounded-lg overflow-hidden shadow-sm cursor-pointer transition-shadow hover:shadow-md"
+                  onClick={() => handleRetailerClick(retailer.id)}
+                >
                   {retailer.store_photo && (
                     <img 
                       src={retailer.store_photo} 
