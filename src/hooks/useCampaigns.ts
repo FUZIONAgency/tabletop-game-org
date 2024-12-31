@@ -15,6 +15,15 @@ export const useCampaigns = () => {
         .eq("auth_id", user?.id)
         .maybeSingle();
 
+      // Get the campaign type id for online games
+      const { data: typeData } = await supabase
+        .from("campaign_types")
+        .select("id")
+        .eq("name", "Online")
+        .single();
+
+      if (!typeData) throw new Error("Campaign type not found");
+
       // Get all campaigns with game system information and owner alias
       const { data: campaigns, error } = await supabase
         .from("campaigns")
@@ -26,7 +35,7 @@ export const useCampaigns = () => {
             player:players(alias)
           )
         `)
-        .eq("type", "online")
+        .eq("type_id", typeData.id)
         .eq("campaign_players.role_type", "owner")
         .order("created_at", { ascending: false });
 

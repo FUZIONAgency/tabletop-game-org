@@ -15,7 +15,16 @@ export const useConventionCampaigns = () => {
         .eq("auth_id", user?.id)
         .maybeSingle();
 
-      // Get all campaigns with game system information, owner alias, and campaign players
+      // Get the campaign type id for convention games
+      const { data: typeData } = await supabase
+        .from("campaign_types")
+        .select("id")
+        .eq("name", "Convention")
+        .single();
+
+      if (!typeData) throw new Error("Campaign type not found");
+
+      // Get all campaigns with game system information and owner alias
       const { data: campaigns, error } = await supabase
         .from("campaigns")
         .select(`
@@ -26,13 +35,13 @@ export const useConventionCampaigns = () => {
             player:players(alias)
           )
         `)
-        .eq("type", "convention")
+        .eq("type_id", typeData.id)
         .eq("campaign_players.role_type", "owner")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      // Add is_member flag and owner_alias, and check if current player is owner
+      // Add is_member and is_owner flags
       return campaigns.map(campaign => ({
         ...campaign,
         is_member: campaign.campaign_players.some(
