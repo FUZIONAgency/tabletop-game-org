@@ -9,6 +9,7 @@ export interface Campaign {
   max_players: number;
   price: number;
   is_member?: boolean;
+  is_owner?: boolean;
   game_system?: {
     name: string;
   };

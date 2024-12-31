@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Campaign } from "@/types/campaign";
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil } from "lucide-react";
 import { SessionList } from "./SessionList";
+import { useNavigate } from "react-router-dom";
 
 interface CampaignTableProps {
   campaigns: Campaign[];
@@ -14,6 +15,7 @@ interface CampaignTableProps {
 }
 
 export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: CampaignTableProps) => {
+  const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [dialogAction, setDialogAction] = useState<'join' | 'leave'>('join');
@@ -49,11 +51,15 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
     );
   };
 
+  const handleEditCampaign = (campaignId: string) => {
+    navigate(`/my/games/${campaignId}`);
+  };
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]"></TableHead>
+          <TableHead className="w-[200px]"></TableHead>
           <TableHead className="text-left">Title</TableHead>
           <TableHead className="text-left">Description</TableHead>
           <TableHead>Game System</TableHead>
@@ -69,46 +75,59 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
           <>
             <TableRow key={campaign.id}>
               <TableCell>
-                <Dialog open={isDialogOpen && selectedCampaignId === campaign.id} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    {campaign.is_member ? (
-                      <Button 
-                        variant="default" 
-                        className="bg-black hover:bg-gray-800"
-                        onClick={() => handleActionClick(campaign.id, 'leave')}
-                      >
-                        Leave
-                      </Button>
-                    ) : (
-                      <Button 
-                        variant="default" 
-                        className="bg-yellow-500 hover:bg-yellow-600"
-                        onClick={() => handleActionClick(campaign.id, 'join')}
-                      >
-                        Join
-                      </Button>
-                    )}
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>{dialogAction === 'join' ? 'Join' : 'Leave'} Campaign</DialogTitle>
-                      <DialogDescription>
-                        Are you sure you want to {dialogAction} "{campaign.title}"?
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex justify-end gap-4 mt-4">
-                      <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                      </DialogClose>
-                      <Button
-                        variant="default"
-                        onClick={handleConfirmAction}
-                      >
-                        Confirm
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <div className="flex gap-2">
+                  <Dialog open={isDialogOpen && selectedCampaignId === campaign.id} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      {campaign.is_member ? (
+                        <Button 
+                          variant="default" 
+                          className="bg-black hover:bg-gray-800"
+                          onClick={() => handleActionClick(campaign.id, 'leave')}
+                        >
+                          Leave
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="default" 
+                          className="bg-yellow-500 hover:bg-yellow-600"
+                          onClick={() => handleActionClick(campaign.id, 'join')}
+                        >
+                          Join
+                        </Button>
+                      )}
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>{dialogAction === 'join' ? 'Join' : 'Leave'} Campaign</DialogTitle>
+                        <DialogDescription>
+                          Are you sure you want to {dialogAction} "{campaign.title}"?
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex justify-end gap-4 mt-4">
+                        <DialogClose asChild>
+                          <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button
+                          variant="default"
+                          onClick={handleConfirmAction}
+                        >
+                          Confirm
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  {campaign.is_owner && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="bg-yellow-500 hover:bg-yellow-600"
+                      onClick={() => handleEditCampaign(campaign.id)}
+                    >
+                      <Pencil className="h-4 w-4 text-black" />
+                    </Button>
+                  )}
+                </div>
               </TableCell>
               <TableCell className="font-medium text-left">{campaign.title}</TableCell>
               <TableCell className="text-left">{campaign.description}</TableCell>
