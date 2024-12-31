@@ -1,176 +1,66 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import { Campaign } from "@/types/campaign";
-import { useState } from "react";
-import { ChevronDown, ChevronUp, Pencil } from "lucide-react";
-import { SessionList } from "./SessionList";
 import { useNavigate } from "react-router-dom";
+import { Campaign } from "@/types/campaign";
+import { Button } from "@/components/ui/button";
+import { Edit } from "lucide-react";
 
 interface CampaignTableProps {
   campaigns: Campaign[];
-  onJoinCampaign: (campaignId: string) => Promise<void>;
-  onLeaveCampaign: (campaignId: string) => Promise<void>;
+  onJoinCampaign: (campaignId: string) => void;
+  onLeaveCampaign: (campaignId: string) => void;
 }
 
 export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: CampaignTableProps) => {
   const navigate = useNavigate();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
-  const [dialogAction, setDialogAction] = useState<'join' | 'leave'>('join');
-  const [expandedCampaigns, setExpandedCampaigns] = useState<string[]>([]);
 
-  if (campaigns.length === 0) {
-    return <p className="text-center text-gray-500">No online campaigns available.</p>;
-  }
-
-  const handleActionClick = (campaignId: string, action: 'join' | 'leave') => {
-    setSelectedCampaignId(campaignId);
-    setDialogAction(action);
-    setIsDialogOpen(true);
-  };
-
-  const handleConfirmAction = async () => {
-    if (selectedCampaignId) {
-      if (dialogAction === 'join') {
-        await onJoinCampaign(selectedCampaignId);
-      } else {
-        await onLeaveCampaign(selectedCampaignId);
-      }
-      setIsDialogOpen(false);
-      setSelectedCampaignId(null);
-    }
-  };
-
-  const toggleExpand = (campaignId: string) => {
-    setExpandedCampaigns(prev => 
-      prev.includes(campaignId) 
-        ? prev.filter(id => id !== campaignId)
-        : [...prev, campaignId]
-    );
-  };
-
-  const handleEditCampaign = (campaignId: string) => {
-    navigate(`/my/games/${campaignId}`);
+  const handleEditClick = (campaignId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/campaigns/${campaignId}/edit`);
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[200px]"></TableHead>
-          <TableHead className="text-left">Owner</TableHead>
-          <TableHead className="text-left">Title</TableHead>
-          <TableHead className="text-left">Description</TableHead>
-          <TableHead>Game System</TableHead>
-          <TableHead>Players</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Created</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {campaigns.map((campaign) => (
-          <>
-            <TableRow key={campaign.id}>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Dialog open={isDialogOpen && selectedCampaignId === campaign.id} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                      {campaign.is_member ? (
-                        <Button 
-                          variant="default" 
-                          className="bg-black hover:bg-gray-800"
-                          onClick={() => handleActionClick(campaign.id, 'leave')}
-                        >
-                          Leave
-                        </Button>
-                      ) : (
-                        <Button 
-                          variant="default" 
-                          className="bg-yellow-500 hover:bg-yellow-600"
-                          onClick={() => handleActionClick(campaign.id, 'join')}
-                        >
-                          Join
-                        </Button>
-                      )}
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{dialogAction === 'join' ? 'Join' : 'Leave'} Campaign</DialogTitle>
-                        <DialogDescription>
-                          Are you sure you want to {dialogAction} "{campaign.title}"?
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex justify-end gap-4 mt-4">
-                        <DialogClose asChild>
-                          <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <Button
-                          variant="default"
-                          onClick={handleConfirmAction}
-                        >
-                          Confirm
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  
-                  {campaign.is_owner && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-gold hover:bg-yellow-600"
-                      onClick={() => handleEditCampaign(campaign.id)}
-                    >
-                      <Pencil className="h-4 w-4 text-black" />
-                    </Button>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell className="font-medium text-left">{campaign.owner_alias || 'N/A'}</TableCell>
-              <TableCell className="font-medium text-left">{campaign.title}</TableCell>
-              <TableCell className="text-left">{campaign.description}</TableCell>
-              <TableCell>{campaign.game_system?.name || 'N/A'}</TableCell>
-              <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
-              <TableCell>${campaign.price}</TableCell>
-              <TableCell>
-                <Badge variant={campaign.status === "draft" ? "secondary" : "default"}>
-                  {campaign.status || "N/A"}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {new Date(campaign.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell>
+    <div className="space-y-4">
+      {campaigns.map((campaign) => (
+        <div
+          key={campaign.id}
+          className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => navigate(`/campaigns/${campaign.id}`)}
+        >
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h3 className="text-xl font-semibold">{campaign.title}</h3>
+              <p className="text-gray-600">{campaign.game_system?.name}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              {campaign.is_owner && (
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-black"
-                  onClick={() => toggleExpand(campaign.id)}
+                  onClick={(e) => handleEditClick(campaign.id, e)}
+                  className="bg-gold hover:bg-gold/90"
                 >
-                  {expandedCampaigns.includes(campaign.id) ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
+                  <Edit className="w-4 h-4" />
                 </Button>
-              </TableCell>
-            </TableRow>
-            {expandedCampaigns.includes(campaign.id) && (
-              <TableRow>
-                <TableCell colSpan={9} className="p-0">
-                  <div className="bg-gray-50 p-4">
-                    <SessionList campaignId={campaign.id} />
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </>
-        ))}
-      </TableBody>
-    </Table>
+              )}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  campaign.is_member
+                    ? onLeaveCampaign(campaign.id)
+                    : onJoinCampaign(campaign.id);
+                }}
+                variant={campaign.is_member ? "destructive" : "default"}
+              >
+                {campaign.is_member ? "Leave" : "Join"}
+              </Button>
+            </div>
+          </div>
+          <p className="text-gray-700 mb-4">{campaign.description}</p>
+          <div className="flex justify-between items-center text-sm text-gray-500">
+            <span>
+              Players: {campaign.min_players} - {campaign.max_players}
+            </span>
+            <span>${campaign.price}/session</span>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
