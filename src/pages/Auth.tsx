@@ -70,46 +70,42 @@ const Auth = () => {
           description: "Please check your email to verify your account.",
         });
       }
-    });
 
-    // Add error listener for auth state changes
-    const handleAuthError = (error: AuthError) => {
-      console.error("Auth error:", error);
-      if (error.message?.includes("User already registered")) {
-        toast({
-          title: "Account Exists",
-          description: "An account with this email already exists. Please try logging in instead.",
-          variant: "destructive",
-        });
-      } else if (error.message?.includes("Invalid login credentials")) {
-        toast({
-          title: "Login Failed",
-          description: "The email or password you entered is incorrect. Please try again.",
-          variant: "destructive",
-        });
-      } else if (error.message?.includes("Email not confirmed")) {
-        toast({
-          title: "Email Not Verified",
-          description: "Please check your email and click the confirmation link to verify your account.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Authentication Error",
-          description: error.message || "An unexpected error occurred",
-          variant: "destructive",
-        });
+      // Handle auth errors
+      if (session?.error) {
+        const error = session.error as AuthError;
+        console.error("Auth error:", error);
+        
+        if (error.message?.includes("User already registered")) {
+          toast({
+            title: "Account Exists",
+            description: "An account with this email already exists. Please try logging in instead.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes("Invalid login credentials")) {
+          toast({
+            title: "Login Failed",
+            description: "The email or password you entered is incorrect. Please try again.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes("Email not confirmed")) {
+          toast({
+            title: "Email Not Verified",
+            description: "Please check your email and click the confirmation link to verify your account.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Authentication Error",
+            description: error.message || "An unexpected error occurred",
+            variant: "destructive",
+          });
+        }
       }
-    };
-
-    // Subscribe to auth errors
-    const {
-      data: { subscription: errorSubscription },
-    } = supabase.auth.onError(handleAuthError);
+    });
 
     return () => {
       subscription.unsubscribe();
-      errorSubscription.unsubscribe();
     };
   }, [user, navigate, toast]);
 
