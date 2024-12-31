@@ -2,9 +2,10 @@ import { Shield } from "lucide-react";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthForm = () => {
-  // Get the current URL for redirect
+  const { toast } = useToast();
   const redirectTo = `${window.location.origin}/auth/callback`;
 
   return (
@@ -49,9 +50,6 @@ const AuthForm = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
-          onError={(error) => {
-            console.error("Auth Error:", error);
-          }}
         />
       </div>
     </div>
