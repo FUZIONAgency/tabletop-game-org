@@ -20,6 +20,7 @@ import {
   Gift,
   Box,
   Settings,
+  Receipt,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,13 +32,11 @@ const ProfileMenu = () => {
 
   const handleLogout = async () => {
     try {
-      // First clear any local state/storage if needed
       localStorage.removeItem('supabase.auth.token');
       
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Logout error:", error);
-        // Still navigate to auth page even if there's an error
         navigate('/auth');
         toast.error("There was an issue logging out, but you've been redirected to the login page");
         return;
@@ -47,7 +46,6 @@ const ProfileMenu = () => {
       toast.success("Logged out successfully");
     } catch (error) {
       console.error("Error in logout process:", error);
-      // Still navigate to auth page even if there's an error
       navigate('/auth');
       toast.error("There was an issue logging out, but you've been redirected to the login page");
     }
@@ -63,6 +61,7 @@ const ProfileMenu = () => {
     { label: "My Team", icon: Users, path: "/my/network" },
     { label: "My Exams", icon: TestTube, path: "/my/exams" },
     { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
+    { label: "My Purchases", icon: Receipt, path: "/my/purchases" },
     { label: "My Fundraisers", icon: Gift, path: "/my/fundraisers" },
     { label: "My Inventory", icon: Box, path: "/my/inventory" },
     { label: "My Equipment", icon: Settings, path: "/my/equipment" },

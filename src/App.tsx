@@ -33,6 +33,7 @@ import Contact from "@/pages/footer/Contact";
 import RetailerSearch from "@/pages/retailers/RetailerSearch";
 import RetailerDetail from "@/pages/retailers/RetailerDetail";
 import CampaignDetail from "@/pages/campaigns/CampaignDetail";
+import MyPurchases from "@/pages/my/MyPurchases";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ function App() {
             <Route path="/my/conventions" element={<MyConventions />} />
             <Route path="/my/products" element={<MyProducts />} />
             <Route path="/my/earnings" element={<MyEarnings />} />
+            <Route path="/my/purchases" element={<MyPurchases />} />
             <Route path="/my/fundraisers" element={<MyFundraisers />} />
             <Route path="/my/inventory" element={<MyInventory />} />
             <Route path="/my/equipment" element={<MyEquipment />} />
