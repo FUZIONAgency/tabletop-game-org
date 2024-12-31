@@ -1,16 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface RetailerCardProps {
   retailer: any;
   distance?: number;
   onLink: (retailerId: string) => void;
+  onUnlink?: (retailerId: string) => void;
   isLinked?: boolean;
 }
 
-export const RetailerCard = ({ retailer, distance, onLink, isLinked }: RetailerCardProps) => {
+export const RetailerCard = ({ retailer, distance, onLink, onUnlink, isLinked }: RetailerCardProps) => {
   return (
-    <Card>
+    <Card className="relative">
       {retailer.store_photo && (
         <img
           src={retailer.store_photo}
@@ -42,6 +44,15 @@ export const RetailerCard = ({ retailer, distance, onLink, isLinked }: RetailerC
         >
           {isLinked ? 'Already Linked' : 'Link Retailer'}
         </Button>
+        {isLinked && onUnlink && (
+          <Button
+            onClick={() => onUnlink(retailer.id)}
+            className="absolute bottom-4 right-4 p-2 bg-gold hover:bg-yellow-500 text-black"
+            size="icon"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

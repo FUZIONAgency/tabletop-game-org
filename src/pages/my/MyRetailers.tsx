@@ -7,12 +7,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const MyRetailers = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const { data: retailers, isLoading, error } = useQuery({
+  const { data: retailers, isLoading, error, refetch } = useQuery({
     queryKey: ['my-retailers', user?.id],
     queryFn: async () => {
       const { data: playerData, error: playerError } = await supabase
@@ -44,6 +46,39 @@ const MyRetailers = () => {
     },
     enabled: !!user,
   });
+
+  const handleUnlink = async (retailerId: string) => {
+    try {
+      const { data: playerData } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user?.id)
+        .maybeSingle();
+
+      if (!playerData) return;
+
+      const { error } = await supabase
+        .from('player_retailers')
+        .delete()
+        .match({ player_id: playerData.id, retailer_id: retailerId });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Retailer unlinked successfully",
+      });
+
+      refetch();
+    } catch (error) {
+      console.error('Error unlinking retailer:', error);
+      toast({
+        title: "Error",
+        description: "Failed to unlink retailer",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -89,12 +124,19 @@ const MyRetailers = () => {
                       className="w-full h-48 object-cover"
                     />
                   )}
-                  <div className="p-4">
+                  <div className="p-4 relative">
                     <h3 className="font-semibold text-lg mb-2">{retailer.name}</h3>
                     <p className="text-sm text-gray-600 mb-2">{retailer.description}</p>
                     <p className="text-sm text-gray-500">
                       {retailer.address}, {retailer.city}, {retailer.state}
                     </p>
+                    <Button
+                      onClick={() => handleUnlink(retailer.id)}
+                      className="absolute bottom-4 right-4 p-2 bg-gold hover:bg-yellow-500 text-black"
+                      size="icon"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}
