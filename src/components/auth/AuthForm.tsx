@@ -4,6 +4,9 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 
 const AuthForm = () => {
+  // Get the current URL for redirect
+  const redirectTo = `${window.location.origin}/auth/callback`;
+
   return (
     <div className="w-full max-w-md">
       <div className="bg-white rounded-lg shadow-xl p-8 animate-fadeIn" style={{ animationDelay: "0.6s" }}>
@@ -45,7 +48,10 @@ const AuthForm = () => {
             },
           }}
           providers={[]}
-          redirectTo={window.location.origin}
+          redirectTo={redirectTo}
+          onError={(error) => {
+            console.error("Auth Error:", error);
+          }}
         />
       </div>
     </div>
