@@ -30,6 +30,7 @@ import Ratings from "@/pages/qualify/Ratings";
 import PrivacyPolicy from "@/pages/footer/PrivacyPolicy";
 import Terms from "@/pages/footer/Terms";
 import Contact from "@/pages/footer/Contact";
+import RetailerSearch from "@/pages/retailers/RetailerSearch";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/retailers/search" element={<RetailerSearch />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
