@@ -10,7 +10,7 @@ import { useCampaignActions } from "@/hooks/useCampaignActions";
 
 const RetailerGames = () => {
   const { user } = useAuth();
-  const { data: campaigns, isLoading, error } = useRetailerCampaigns();
+  const { data: campaigns, isLoading, error, refetch } = useRetailerCampaigns();
   const {
     handleJoinCampaign,
     handleLeaveCampaign
