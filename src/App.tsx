@@ -32,6 +32,7 @@ import Terms from "@/pages/footer/Terms";
 import Contact from "@/pages/footer/Contact";
 import RetailerSearch from "@/pages/retailers/RetailerSearch";
 import RetailerDetail from "@/pages/retailers/RetailerDetail";
+import CampaignDetail from "@/pages/campaigns/CampaignDetail";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/retailers/search" element={<RetailerSearch />} />
             <Route path="/retailers/:id" element={<RetailerDetail />} />
+            <Route path="/campaigns/:id" element={<CampaignDetail />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
