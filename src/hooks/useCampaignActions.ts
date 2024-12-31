@@ -1,14 +1,25 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth"; // Import the useAuth hook
 
 export const useCampaignActions = (refetch: () => void) => {
+  const { user } = useAuth(); // Destructure user from useAuth
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [dialogAction, setDialogAction] = useState<'join' | 'leave'>('join');
   const { toast } = useToast();
 
   const handleJoinCampaign = async (campaignId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to join campaigns",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // First check if there are any existing players
       const { data: existingPlayers } = await supabase
@@ -22,7 +33,7 @@ export const useCampaignActions = (refetch: () => void) => {
       const { data: playerData, error: playerError } = await supabase
         .from("players")
         .select("id")
-        .eq("auth_id", user?.id)
+        .eq("auth_id", user.id)
         .maybeSingle();
 
       if (playerError) throw playerError;
@@ -82,11 +93,20 @@ export const useCampaignActions = (refetch: () => void) => {
   };
 
   const handleLeaveCampaign = async (campaignId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to leave campaigns",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { data: playerData } = await supabase
         .from("players")
         .select("id")
-        .eq("auth_id", user?.id)
+        .eq("auth_id", user.id)
         .maybeSingle();
 
       if (!playerData) {
