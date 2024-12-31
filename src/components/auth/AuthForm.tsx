@@ -8,6 +8,44 @@ const AuthForm = () => {
   const { toast } = useToast();
   const redirectTo = `${window.location.origin}/auth/callback`;
 
+  // Add auth state change listener
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN") {
+      toast({
+        title: "Success",
+        description: "Successfully signed in!",
+      });
+    } else if (event === "USER_UPDATED") {
+      toast({
+        title: "Account Updated",
+        description: "Your account has been updated.",
+      });
+    } else if (event === "PASSWORD_RECOVERY") {
+      toast({
+        title: "Password Recovery",
+        description: "Check your email for password reset instructions.",
+      });
+    }
+
+    // Handle auth errors
+    const errorMessage = session?.user?.user_metadata?.error?.message;
+    if (errorMessage) {
+      if (errorMessage.includes("invalid_credentials")) {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password. Please try again.",
+          variant: "destructive",
+        });
+      } else if (errorMessage.includes("Email not confirmed")) {
+        toast({
+          title: "Email Not Verified",
+          description: "Please check your email and verify your account before logging in.",
+          variant: "destructive",
+        });
+      }
+    }
+  });
+
   return (
     <div className="w-full max-w-md">
       <div className="bg-white rounded-lg shadow-xl p-8 animate-fadeIn" style={{ animationDelay: "0.6s" }}>
