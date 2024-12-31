@@ -4,6 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/auth";
 
 interface EarningsMetrics {
   total_game_sessions: number;
@@ -15,14 +16,22 @@ interface EarningsMetrics {
 }
 
 const MyEarnings = () => {
+  const { user } = useAuth();
+
   const { data: metrics, isLoading } = useQuery({
-    queryKey: ['earnings-metrics'],
+    queryKey: ['earnings-metrics', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_player_earnings_metrics');
+      if (!user?.id) throw new Error("User not authenticated");
+      
+      const { data, error } = await supabase.rpc(
+        'get_player_earnings_metrics',
+        { auth_uid: user.id }
+      );
+
       if (error) throw error;
-      // Get the first row from the array since we know we'll only get one row
       return (data?.[0] || {}) as EarningsMetrics;
-    }
+    },
+    enabled: !!user?.id,
   });
 
   const stats = [
