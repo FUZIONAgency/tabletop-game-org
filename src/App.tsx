@@ -6,6 +6,7 @@ import Auth from "@/pages/Auth";
 import Profile from "@/pages/Profile";
 import Network from "@/pages/Network";
 import AcceptInvite from "@/pages/AcceptInvite";
+import MyRetailers from "@/pages/my/MyRetailers";
 import MyGames from "@/pages/my/MyGames";
 import MyRetailers from "@/pages/my/MyRetailers";
 import MyTournaments from "@/pages/my/MyTournaments";
@@ -31,6 +32,7 @@ import PrivacyPolicy from "@/pages/footer/PrivacyPolicy";
 import Terms from "@/pages/footer/Terms";
 import Contact from "@/pages/footer/Contact";
 import RetailerSearch from "@/pages/retailers/RetailerSearch";
+import RetailerDetail from "@/pages/retailers/RetailerDetail";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +72,7 @@ function App() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/retailers/search" element={<RetailerSearch />} />
+            <Route path="/retailers/:id" element={<RetailerDetail />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
