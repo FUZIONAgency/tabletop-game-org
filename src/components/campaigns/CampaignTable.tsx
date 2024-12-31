@@ -52,7 +52,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
   };
 
   const handleEditCampaign = (campaignId: string) => {
-    navigate(`/campaigns/${campaignId}/edit`);
+    navigate(`/my/games/${campaignId}/edit`);
   };
 
   return (
