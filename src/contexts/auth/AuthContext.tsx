@@ -18,6 +18,112 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true
 });
 
+const fetchAndStoreUserData = async (userId: string, userEmail: string) => {
+  try {
+    // Fetch profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (profile) {
+      localStorage.setItem('user_profile', JSON.stringify(profile));
+    }
+
+    // Fetch player
+    const { data: player } = await supabase
+      .from('players')
+      .select('*')
+      .eq('auth_id', userId)
+      .single();
+    
+    if (player) {
+      localStorage.setItem('user_player', JSON.stringify(player));
+      const playerId = player.id;
+
+      // Fetch campaign players
+      const { data: campaignPlayers } = await supabase
+        .from('campaign_players')
+        .select('*')
+        .eq('player_id', playerId);
+      
+      if (campaignPlayers) {
+        localStorage.setItem('user_campaign_players', JSON.stringify(campaignPlayers));
+      }
+
+      // Fetch game accounts
+      const { data: gameAccounts } = await supabase
+        .from('player_game_accounts')
+        .select('*')
+        .eq('player_id', playerId);
+      
+      if (gameAccounts) {
+        localStorage.setItem('user_game_accounts', JSON.stringify(gameAccounts));
+      }
+
+      // Fetch ratings
+      const { data: ratings } = await supabase
+        .from('player_ratings')
+        .select('*')
+        .eq('player_id', playerId);
+      
+      if (ratings) {
+        localStorage.setItem('user_ratings', JSON.stringify(ratings));
+      }
+
+      // Fetch relationships
+      const { data: relationships } = await supabase
+        .from('player_relationships')
+        .select('*')
+        .or(`upline_id.eq.${playerId},downline_id.eq.${playerId}`);
+      
+      if (relationships) {
+        localStorage.setItem('user_relationships', JSON.stringify(relationships));
+      }
+
+      // Fetch retailers
+      const { data: retailers } = await supabase
+        .from('player_retailers')
+        .select('*')
+        .eq('player_id', playerId);
+      
+      if (retailers) {
+        localStorage.setItem('user_retailers', JSON.stringify(retailers));
+      }
+
+      // Fetch sessions
+      const { data: sessions } = await supabase
+        .from('player_sessions')
+        .select('*')
+        .eq('player_id', playerId);
+      
+      if (sessions) {
+        localStorage.setItem('user_sessions', JSON.stringify(sessions));
+      }
+    }
+
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    toast({
+      title: "Error",
+      description: "Failed to load user data",
+      variant: "destructive"
+    });
+  }
+};
+
+const clearUserData = () => {
+  localStorage.removeItem('user_profile');
+  localStorage.removeItem('user_player');
+  localStorage.removeItem('user_campaign_players');
+  localStorage.removeItem('user_game_accounts');
+  localStorage.removeItem('user_ratings');
+  localStorage.removeItem('user_relationships');
+  localStorage.removeItem('user_retailers');
+  localStorage.removeItem('user_sessions');
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -48,6 +154,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (mounted) {
               setRole(profile?.role ?? null);
             }
+
+            // Fetch and store user data
+            await fetchAndStoreUserData(session.user.id, session.user.email!);
           }
         }
       } catch (error) {
@@ -77,11 +186,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (mounted) {
               setRole(profile?.role ?? null);
             }
+
+            // Fetch and store user data on sign in
+            if (event === 'SIGNED_IN') {
+              await fetchAndStoreUserData(session.user.id, session.user.email!);
+            }
           } catch (error) {
             console.error("Error fetching profile:", error);
           }
         } else {
           setRole(null);
+          // Clear stored data on sign out
+          clearUserData();
         }
 
         if (event === 'SIGNED_OUT') {
