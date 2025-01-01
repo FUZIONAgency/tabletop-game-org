@@ -19,7 +19,7 @@ export const useNetworkData = (userId: string | undefined, updateTrigger: number
   const { toast } = useToast();
 
   const playerId = usePlayerData(userId);
-  const relationships = useRelationshipsData(playerId, updateTrigger);
+  const relationships = useRelationshipsData(playerId);
   const adminProfiles = useAdminProfiles();
   const downlines = useDownlineData(relationships, playerId);
 
@@ -30,12 +30,12 @@ export const useNetworkData = (userId: string | undefined, updateTrigger: number
       try {
         // Check for pending requests where player is upline
         const pendingRequest = relationships.find(
-          (r: any) => r.upline_id === playerId && r.status === 'pending'
+          (r) => r.upline_id === playerId && r.status === 'pending'
         );
 
         // Check for active sponsor
         const activeRelationship = relationships.find(
-          (r: any) => r.downline_id === playerId && r.status === 'active'
+          (r) => r.downline_id === playerId && r.status === 'active'
         );
 
         // Get active sponsor details if exists
@@ -100,7 +100,7 @@ export const useNetworkData = (userId: string | undefined, updateTrigger: number
     };
 
     buildNetworkData();
-  }, [playerId, relationships, adminProfiles, downlines, toast]);
+  }, [playerId, relationships, adminProfiles, downlines, toast, updateTrigger]);
 
   return networkData;
 };
