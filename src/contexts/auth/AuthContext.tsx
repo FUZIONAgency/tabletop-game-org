@@ -26,66 +26,74 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const navigate = useNavigate();
 
   useEffect(() => {
+    let mounted = true;
+
     // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        setRole(profile?.role ?? null);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+            setRole(profile?.role ?? null);
+          }
+          
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error getting session:", error);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-      
-      setIsLoading(false);
-    }).catch((error) => {
-      console.error("Error getting session:", error);
-      setIsLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        setRole(profile?.role ?? null);
-      } else {
-        setRole(null);
-      }
-      
-      setIsLoading(false);
+      if (mounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+          setRole(profile?.role ?? null);
+        } else {
+          setRole(null);
+        }
+        
+        setIsLoading(false);
 
-      if (event === 'SIGNED_OUT') {
-        navigate('/auth');
-        toast.success("Logged out successfully");
-      } else if (event === 'SIGNED_IN') {
-        // Get the return path from localStorage or default to '/'
-        const returnPath = localStorage.getItem('returnPath') || '/';
-        localStorage.removeItem('returnPath'); // Clean up
-        navigate(returnPath);
-        toast.success("Logged in successfully");
-      } else if (event === 'TOKEN_REFRESHED') {
-        // Handle successful token refresh
-        console.log('Token refreshed successfully');
-      } else if (event === 'USER_UPDATED') {
-        // Handle user data update
-        console.log('User data updated');
+        if (event === 'SIGNED_OUT') {
+          navigate('/auth');
+          toast.success("Logged out successfully");
+        } else if (event === 'SIGNED_IN') {
+          const returnPath = localStorage.getItem('returnPath') || '/';
+          localStorage.removeItem('returnPath');
+          navigate(returnPath);
+          toast.success("Logged in successfully");
+        }
       }
     });
 
-    // Cleanup subscription
+    // Cleanup subscription and mounted flag
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate]);
