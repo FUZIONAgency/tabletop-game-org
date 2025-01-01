@@ -19,4 +19,5 @@ export interface NetworkData {
   activeSponsor: ActiveSponsor | null;
   downlines: Downline[];
   hasPendingRequest: boolean;
+  pendingRelationshipId: string | null;
 }

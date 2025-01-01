@@ -7,18 +7,19 @@ import { useRelationshipsData } from "./useRelationshipsData";
 import { useAdminProfiles } from "./useAdminProfiles";
 import { useDownlineData } from "./useDownlineData";
 
-export const useNetworkData = (userId: string | undefined) => {
+export const useNetworkData = (userId: string | undefined, updateTrigger: number = 0) => {
   const [networkData, setNetworkData] = useState<NetworkData>({
     network: null,
     adminProfiles: [],
     activeSponsor: null,
     downlines: [],
-    hasPendingRequest: false
+    hasPendingRequest: false,
+    pendingRelationshipId: null
   });
   const { toast } = useToast();
 
   const playerId = usePlayerData(userId);
-  const relationships = useRelationshipsData(playerId);
+  const relationships = useRelationshipsData(playerId, updateTrigger);
   const adminProfiles = useAdminProfiles();
   const downlines = useDownlineData(relationships, playerId);
 
@@ -28,7 +29,7 @@ export const useNetworkData = (userId: string | undefined) => {
 
       try {
         // Check for pending requests where player is upline
-        const pendingRequests = relationships.find(
+        const pendingRequest = relationships.find(
           (r: any) => r.upline_id === playerId && r.status === 'pending'
         );
 
@@ -59,7 +60,7 @@ export const useNetworkData = (userId: string | undefined) => {
         // Create network structure
         const mockNetwork = {
           id: "sponsor",
-          alias: pendingRequests ? "In Review" : "Request a Sponsor",
+          alias: pendingRequest ? "In Review" : "Request a Sponsor",
           children: [
             {
               id: "root",
@@ -74,12 +75,7 @@ export const useNetworkData = (userId: string | undefined) => {
                   id: downline.id,
                   alias: downline.alias,
                   children: [],
-                })),
-                {
-                  id: "right",
-                  alias: "New Invite",
-                  children: [],
-                },
+                }))
               ],
             },
           ],
@@ -90,7 +86,8 @@ export const useNetworkData = (userId: string | undefined) => {
           adminProfiles,
           activeSponsor,
           downlines,
-          hasPendingRequest: !!pendingRequests
+          hasPendingRequest: !!pendingRequest,
+          pendingRelationshipId: pendingRequest?.id || null
         });
       } catch (error) {
         console.error('Error building network data:', error);
