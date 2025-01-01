@@ -1,22 +1,21 @@
-export interface AdminProfile {
-  id: string;
-  username: string;
-}
-
-export interface ActiveSponsor {
-  uplineId: string;
-  uplineUsername: string;
-}
-
-export interface Downline {
-  id: string;
-  alias: string;
-}
-
 export interface NetworkData {
-  network: any;
-  adminProfiles: AdminProfile[];
-  activeSponsor: ActiveSponsor | null;
-  downlines: Downline[];
+  network: {
+    id: string;
+    alias: string;
+    children: any[];
+  } | null;
+  adminProfiles: Array<{
+    id: string;
+    username: string;
+  }>;
+  activeSponsor: {
+    uplineId: string;
+    uplineUsername: string;
+  } | null;
+  downlines: Array<{
+    id: string;
+    alias: string;
+  }>;
   hasPendingRequest: boolean;
+  refetch: () => void;
 }
