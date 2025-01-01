@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NetworkData } from "../types/NetworkTypes";
@@ -12,9 +12,19 @@ export const useNetworkData = (userId: string | undefined) => {
     hasPendingRequest: false
   });
   const { toast } = useToast();
+  const lastFetchTime = useRef<number>(0);
+  const THROTTLE_TIME = 2000; // 2 seconds between fetches
 
   const fetchNetwork = useCallback(async () => {
     if (!userId) return;
+
+    // Implement throttling
+    const now = Date.now();
+    if (now - lastFetchTime.current < THROTTLE_TIME) {
+      console.log('Throttling network data fetch');
+      return;
+    }
+    lastFetchTime.current = now;
 
     try {
       // Get current player's ID
@@ -22,7 +32,7 @@ export const useNetworkData = (userId: string | undefined) => {
         .from('players')
         .select('id')
         .eq('auth_id', userId)
-        .single();
+        .maybeSingle();
 
       if (!playerData) return;
 
