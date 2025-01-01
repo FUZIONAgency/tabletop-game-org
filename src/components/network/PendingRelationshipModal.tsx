@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,7 +25,44 @@ export const PendingRelationshipModal = ({
   onStatusUpdate,
 }: PendingRelationshipModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [requestorEmail, setRequestorEmail] = useState<string>("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchRequestorEmail = async () => {
+      if (!relationshipId) return;
+
+      try {
+        // First get the relationship to find the downline_id
+        const { data: relationshipData, error: relationshipError } = await supabase
+          .from('player_relationships')
+          .select('downline_id')
+          .eq('id', relationshipId)
+          .single();
+
+        if (relationshipError) throw relationshipError;
+        if (!relationshipData) return;
+
+        // Then get the player's email using the downline_id
+        const { data: playerData, error: playerError } = await supabase
+          .from('players')
+          .select('email')
+          .eq('id', relationshipData.downline_id)
+          .single();
+
+        if (playerError) throw playerError;
+        if (playerData) {
+          setRequestorEmail(playerData.email || "");
+        }
+      } catch (error) {
+        console.error('Error fetching requestor email:', error);
+      }
+    };
+
+    if (isOpen) {
+      fetchRequestorEmail();
+    }
+  }, [relationshipId, isOpen]);
 
   const handleAccept = async () => {
     try {
@@ -88,8 +125,9 @@ export const PendingRelationshipModal = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Pending Relationship</DialogTitle>
-          <DialogDescription>
-            Would you like to accept or cancel this relationship?
+          <DialogDescription className="space-y-2">
+            <p>Would you like to accept or cancel this relationship request from:</p>
+            <p className="font-medium text-foreground">{requestorEmail}</p>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex gap-2">
