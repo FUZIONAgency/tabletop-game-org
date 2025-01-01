@@ -1,4 +1,4 @@
-import { Session } from "@supabase/supabase-js";
+import { Session, AuthChangeEvent } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthStateHandlerProps, InitAuthProps, UserRole } from "./types";
 
@@ -48,8 +48,8 @@ export function handleAuthStateChange({
   setIsLoading,
   mounted,
 }: AuthStateHandlerProps) {
-  return supabase.auth.onAuthStateChange(
-    async (event, session) => {
+  return supabase.auth.onAuthStateChange((event, session) => {
+    const handleChange = async () => {
       if (mounted) {
         if (session) {
           setSession(session);
@@ -81,19 +81,17 @@ export function handleAuthStateChange({
           setRole(null);
           clearUserData();
         }
-
         if (event === 'PASSWORD_RECOVERY') {
-          navigate('/auth', {
-            state: { mode: 'resetPassword' }
-          });
+          navigate('/auth');
         }
 
         if (mounted) {
           setIsLoading(false);
         }
       }
-    }
-  );
+    };
+    handleChange();
+  });
 }
 
 export async function fetchAndStoreUserData(userId: string) {
