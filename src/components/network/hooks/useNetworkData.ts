@@ -27,30 +27,37 @@ export const useNetworkData = (userId: string | undefined) => {
 
         if (!playerData) return;
 
-        // Get relationships from local storage
+        // Get relationships from local storage or fetch if not available
+        let relationships = [];
         const storedRelationships = localStorage.getItem('user_relationships');
-        let pendingRequests = null;
-        let activeRelationship = null;
-        let downlineData = [];
-
-        if (storedRelationships) {
-          const relationships = JSON.parse(storedRelationships);
+        
+        if (!storedRelationships) {
+          const { data: relationshipsData } = await supabase
+            .from('player_relationships')
+            .select('*');
           
-          // Check for pending requests where player is upline
-          pendingRequests = relationships.find(
-            (r: any) => r.upline_id === playerData.id && r.status === 'pending'
-          );
-
-          // Check for active sponsor
-          activeRelationship = relationships.find(
-            (r: any) => r.downline_id === playerData.id && r.status === 'active'
-          );
-
-          // Get downlines
-          downlineData = relationships.filter(
-            (r: any) => r.upline_id === playerData.id && r.status === 'active'
-          );
+          if (relationshipsData) {
+            relationships = relationshipsData;
+            localStorage.setItem('user_relationships', JSON.stringify(relationshipsData));
+          }
+        } else {
+          relationships = JSON.parse(storedRelationships);
         }
+
+        // Check for pending requests where player is upline
+        const pendingRequests = relationships.find(
+          (r: any) => r.upline_id === playerData.id && r.status === 'pending'
+        );
+
+        // Check for active sponsor
+        const activeRelationship = relationships.find(
+          (r: any) => r.downline_id === playerData.id && r.status === 'active'
+        );
+
+        // Get downlines
+        const downlineData = relationships.filter(
+          (r: any) => r.upline_id === playerData.id && r.status === 'active'
+        );
 
         // Fetch admin profiles
         const { data: profiles } = await supabase
