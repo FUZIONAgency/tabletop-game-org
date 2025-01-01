@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initializeAuth = async () => {
       try {
+        setIsLoading(true);
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -134,11 +135,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           } catch (error) {
             console.error("Error fetching profile:", error);
+          } finally {
+            setIsLoading(false);
           }
         } else {
           setRole(null);
           // Clear stored data on sign out
           clearUserData();
+          setIsLoading(false);
         }
 
         if (event === 'SIGNED_OUT') {
@@ -148,8 +152,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             description: "Logged out successfully"
           });
         }
-
-        setIsLoading(false);
       }
     );
 
