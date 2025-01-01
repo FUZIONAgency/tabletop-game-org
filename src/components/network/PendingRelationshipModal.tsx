@@ -78,6 +78,8 @@ export const PendingRelationshipModal = ({
         title: "Success",
         description: "Relationship accepted successfully",
       });
+      
+      // Call onStatusUpdate before closing the modal
       onStatusUpdate();
       onClose();
     } catch (error) {
@@ -106,6 +108,8 @@ export const PendingRelationshipModal = ({
         title: "Success",
         description: "Relationship cancelled successfully",
       });
+      
+      // Call onStatusUpdate before closing the modal
       onStatusUpdate();
       onClose();
     } catch (error) {
