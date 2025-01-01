@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NetworkData } from "../types/NetworkTypes";
+import { usePlayerData } from "./usePlayerData";
+import { useRelationshipsData } from "./useRelationshipsData";
+import { useAdminProfiles } from "./useAdminProfiles";
+import { useDownlineData } from "./useDownlineData";
 
 export const useNetworkData = (userId: string | undefined) => {
   const [networkData, setNetworkData] = useState<NetworkData>({
@@ -13,79 +17,25 @@ export const useNetworkData = (userId: string | undefined) => {
   });
   const { toast } = useToast();
 
+  const playerId = usePlayerData(userId);
+  const relationships = useRelationshipsData(playerId);
+  const adminProfiles = useAdminProfiles();
+  const downlines = useDownlineData(relationships, playerId);
+
   useEffect(() => {
-    const fetchNetwork = async () => {
-      if (!userId) return;
+    const buildNetworkData = async () => {
+      if (!playerId) return;
 
       try {
-        // Get current player's ID
-        const { data: playerData, error: playerError } = await supabase
-          .from('players')
-          .select('id')
-          .eq('auth_id', userId)
-          .single();
-
-        if (playerError) {
-          console.error('Error fetching player:', playerError);
-          return;
-        }
-
-        if (!playerData) {
-          console.log('No player data found');
-          return;
-        }
-
-        // Get relationships from local storage or fetch if not available
-        let relationships = [];
-        const storedRelationships = localStorage.getItem('user_relationships');
-        
-        if (!storedRelationships) {
-          const { data: relationshipsData, error: relationshipsError } = await supabase
-            .from('player_relationships')
-            .select('*');
-          
-          if (relationshipsError) {
-            console.error('Error fetching relationships:', relationshipsError);
-            relationships = [];
-          } else if (relationshipsData) {
-            relationships = relationshipsData;
-            localStorage.setItem('user_relationships', JSON.stringify(relationshipsData));
-          }
-        } else {
-          try {
-            relationships = JSON.parse(storedRelationships);
-          } catch (error) {
-            console.error('Error parsing stored relationships:', error);
-            relationships = [];
-            localStorage.removeItem('user_relationships');
-          }
-        }
-
         // Check for pending requests where player is upline
         const pendingRequests = relationships.find(
-          (r: any) => r.upline_id === playerData.id && r.status === 'pending'
+          (r: any) => r.upline_id === playerId && r.status === 'pending'
         );
 
         // Check for active sponsor
         const activeRelationship = relationships.find(
-          (r: any) => r.downline_id === playerData.id && r.status === 'active'
+          (r: any) => r.downline_id === playerId && r.status === 'active'
         );
-
-        // Get downlines
-        const downlineData = relationships.filter(
-          (r: any) => r.upline_id === playerData.id && r.status === 'active'
-        );
-
-        // Fetch admin profiles
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, username')
-          .eq('role', 'admin');
-
-        if (profilesError) {
-          console.error('Error fetching admin profiles:', profilesError);
-          return;
-        }
 
         // Get active sponsor details if exists
         let activeSponsor = null;
@@ -106,28 +56,6 @@ export const useNetworkData = (userId: string | undefined) => {
           }
         }
 
-        // Get downline details
-        const fetchedDownlines = [];
-        for (const relationship of downlineData) {
-          const { data: downlinePlayer, error: downlineError } = await supabase
-            .from('players')
-            .select('id, alias')
-            .eq('id', relationship.downline_id)
-            .single();
-
-          if (downlineError) {
-            console.error('Error fetching downline:', downlineError);
-            continue;
-          }
-
-          if (downlinePlayer) {
-            fetchedDownlines.push({
-              id: downlinePlayer.id,
-              alias: downlinePlayer.alias
-            });
-          }
-        }
-
         // Create network structure
         const mockNetwork = {
           id: "sponsor",
@@ -142,7 +70,7 @@ export const useNetworkData = (userId: string | undefined) => {
                   alias: "New Invite",
                   children: [],
                 },
-                ...fetchedDownlines.map(downline => ({
+                ...downlines.map(downline => ({
                   id: downline.id,
                   alias: downline.alias,
                   children: [],
@@ -159,13 +87,13 @@ export const useNetworkData = (userId: string | undefined) => {
 
         setNetworkData({
           network: mockNetwork,
-          adminProfiles: profiles || [],
+          adminProfiles,
           activeSponsor,
-          downlines: fetchedDownlines,
+          downlines,
           hasPendingRequest: !!pendingRequests
         });
       } catch (error) {
-        console.error('Error fetching network data:', error);
+        console.error('Error building network data:', error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -174,8 +102,8 @@ export const useNetworkData = (userId: string | undefined) => {
       }
     };
 
-    fetchNetwork();
-  }, [userId, toast]);
+    buildNetworkData();
+  }, [playerId, relationships, adminProfiles, downlines, toast]);
 
   return networkData;
 };
