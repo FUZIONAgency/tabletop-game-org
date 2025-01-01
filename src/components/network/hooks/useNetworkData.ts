@@ -27,11 +27,11 @@ export const useNetworkData = (userId: string | undefined) => {
 
         if (!playerData) return;
 
-        // Check for pending sponsor requests
+        // Check for pending sponsor requests where the player is the upline
         const { data: pendingRequests } = await supabase
           .from('player_relationships')
           .select()
-          .eq('downline_id', playerData.id)
+          .eq('upline_id', playerData.id)
           .eq('status', 'pending')
           .maybeSingle();
 

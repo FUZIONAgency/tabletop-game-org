@@ -30,6 +30,19 @@ export const NetworkTree = () => {
     console.log('New invite created:', invite);
   };
 
+  // If there's a pending relationship where the player is the upline, add it as a child to the root node
+  if (network?.children?.[0]?.id === "root") {
+    const pendingNode = {
+      id: "pending",
+      alias: "Pending Acceptance",
+      children: []
+    };
+    
+    if (hasPendingRequest) {
+      network.children[0].children = [pendingNode, ...network.children[0].children];
+    }
+  }
+
   return network ? (
     <NetworkNode
       node={network}
