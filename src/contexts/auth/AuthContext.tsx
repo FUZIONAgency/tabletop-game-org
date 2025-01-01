@@ -1,8 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { AuthContextType, UserRole } from "./types";
-import { clearUserData, fetchAndStoreUserData, handleAuthStateChange, initializeAuth } from "./authService";
+import { clearUserData, handleAuthStateChange, initializeAuth } from "./authService";
 
 export const AuthContext = createContext<AuthContextType>({
   session: null,
@@ -11,6 +11,14 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   signOut: async () => {},
 });
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();

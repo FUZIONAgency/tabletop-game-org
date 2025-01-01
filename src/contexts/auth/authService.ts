@@ -1,6 +1,6 @@
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthStateHandlerProps, InitAuthProps } from "./types";
+import { AuthStateHandlerProps, InitAuthProps, UserRole } from "./types";
 
 export async function initializeAuth(
   { setSession, setUser, setRole, setIsLoading }: InitAuthProps,
@@ -26,10 +26,10 @@ export async function initializeAuth(
         .maybeSingle();
 
       if (mounted) {
-        setRole(profile?.role ?? null);
+        setRole(profile?.role as UserRole ?? null);
       }
 
-      await fetchAndStoreUserData(session.user.id, session.user.email!);
+      await fetchAndStoreUserData(session.user.id);
     }
   } catch (error) {
     console.error('Error initializing auth:', error);
@@ -62,11 +62,11 @@ export function handleAuthStateChange({
             .maybeSingle();
 
           if (mounted) {
-            setRole(profile?.role ?? null);
+            setRole(profile?.role as UserRole ?? null);
           }
 
           if (event === 'SIGNED_IN') {
-            await fetchAndStoreUserData(session.user.id, session.user.email!);
+            await fetchAndStoreUserData(session.user.id);
             const returnPath = localStorage.getItem('returnPath') || '/';
             localStorage.removeItem('returnPath');
             navigate(returnPath);
@@ -96,7 +96,7 @@ export function handleAuthStateChange({
   );
 }
 
-export async function fetchAndStoreUserData(userId: string, email: string) {
+export async function fetchAndStoreUserData(userId: string) {
   try {
     const { data: player } = await supabase
       .from('players')
@@ -105,11 +105,19 @@ export async function fetchAndStoreUserData(userId: string, email: string) {
       .maybeSingle();
 
     if (!player) {
-      await supabase.from('players').insert({
-        auth_id: userId,
-        email: email,
-        alias: email
-      });
+      const { data: userEmail } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('id', userId)
+        .single();
+
+      if (userEmail?.email) {
+        await supabase.from('players').insert({
+          auth_id: userId,
+          email: userEmail.email,
+          alias: userEmail.email
+        });
+      }
     }
   } catch (error) {
     console.error('Error fetching user data:', error);
