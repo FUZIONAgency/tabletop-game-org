@@ -1,18 +1,28 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
+import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthContextType, Role } from "./types";
+import { AuthContextType, UserRole } from "./types";
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  session: null,
   role: "anonymous",
   isLoading: true,
+  signOut: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<Role>("anonymous");
+  const [session, setSession] = useState<Session | null>(null);
+  const [role, setRole] = useState<UserRole>("anonymous");
   const [isLoading, setIsLoading] = useState(true);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setRole("anonymous");
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -20,35 +30,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       try {
         // Get initial session
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
         
         if (mounted) {
-          if (session?.user) {
-            setUser(session.user);
+          if (currentSession?.user) {
+            setUser(currentSession.user);
+            setSession(currentSession);
             const { data: profile } = await supabase
               .from('profiles')
               .select('role')
-              .eq('id', session.user.id)
+              .eq('id', currentSession.user.id)
               .maybeSingle();
             
-            setRole(profile?.role || "user");
+            setRole(profile?.role as UserRole || "user");
           }
           setIsLoading(false);
         }
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
+          async (event, newSession) => {
             if (mounted) {
-              setUser(session?.user ?? null);
-              if (session?.user) {
+              setSession(newSession);
+              setUser(newSession?.user ?? null);
+              if (newSession?.user) {
                 const { data: profile } = await supabase
                   .from('profiles')
                   .select('role')
-                  .eq('id', session.user.id)
+                  .eq('id', newSession.user.id)
                   .maybeSingle();
                 
-                setRole(profile?.role || "user");
+                setRole(profile?.role as UserRole || "user");
               } else {
                 setRole("anonymous");
               }
@@ -73,7 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, isLoading }}>
+    <AuthContext.Provider value={{ user, session, role, isLoading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

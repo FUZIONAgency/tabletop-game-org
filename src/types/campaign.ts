@@ -1,12 +1,6 @@
-import { Database } from "@/integrations/supabase/types";
-
-type GameSystem = {
-  name: string | null;
-};
-
-export type Campaign = Database["public"]["Tables"]["campaigns"]["Row"] & {
-  is_member?: boolean;
-  is_owner?: boolean;
-  owner_alias?: string | null;
+export interface Campaign {
+  id: string;
+  title: string;
+  description?: string;
   game_system?: GameSystem;
-};
+}
