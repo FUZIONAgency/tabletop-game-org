@@ -1272,9 +1272,9 @@ export type Database = {
         Insert: {
           account_id: string
           created_at?: string | null
-          game_system_id?: string
+          game_system_id: string
           id?: string
-          player_id?: string
+          player_id: string
           status?: string | null
           updated_at?: string | null
         }
@@ -1293,6 +1293,20 @@ export type Database = {
             columns: ["game_system_id"]
             isOneToOne: false
             referencedRelation: "game_systems"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_game_accounts_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "player_game_accounts_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
             referencedColumns: ["id"]
           },
         ]
