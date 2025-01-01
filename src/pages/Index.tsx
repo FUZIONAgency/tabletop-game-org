@@ -11,12 +11,14 @@ import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
+    // Handle scroll to section if specified in location state
     if (location.state?.scrollTo) {
       const element = document.getElementById(location.state.scrollTo);
       if (element) {
@@ -26,6 +28,11 @@ const Index = () => {
       }
     }
   }, [location.state]);
+
+  useEffect(() => {
+    // Log authentication state for debugging
+    console.log("Auth state:", { isLoading, user });
+  }, [isLoading, user]);
 
   if (isLoading) {
     return (
@@ -51,7 +58,11 @@ const Index = () => {
           subtitle="QUALIFICATION"
           className="bg-gray-50"
         >
-          {user ? <MyPlayerSection /> : <SignUpSection />}
+          {user ? (
+            <MyPlayerSection />
+          ) : (
+            <SignUpSection />
+          )}
         </Section>
 
         {/* Games Section */}
