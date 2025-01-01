@@ -3,9 +3,20 @@ import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
-import { AuthContextType } from "./types";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export interface AuthContextType {
+  session: Session | null;
+  user: User | null;
+  role: string | null;
+  isLoading: boolean;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+  session: null,
+  user: null,
+  role: null,
+  isLoading: true
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -18,15 +29,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
 
     const initializeAuth = async () => {
-      if (!mounted) return;
-
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Session error:", error);
-          return;
-        }
+        if (error) throw error;
 
         if (mounted) {
           setSession(session);
@@ -53,7 +59,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
@@ -97,7 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    // Initialize auth
     initializeAuth();
 
     return () => {
