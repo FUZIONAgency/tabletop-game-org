@@ -14,38 +14,66 @@ export const useNetworkData = (userId: string | undefined) => {
   const { toast } = useToast();
   const lastFetchTime = useRef<number>(0);
   const THROTTLE_TIME = 2000; // 2 seconds between fetches
+  const cache = useRef<{
+    data: Omit<NetworkData, 'refetch'> | null;
+    timestamp: number;
+  }>({ data: null, timestamp: 0 });
+  const CACHE_DURATION = 30000; // Cache data for 30 seconds
 
   const fetchNetwork = useCallback(async () => {
     if (!userId) return;
 
-    // Only apply throttling for subsequent fetches, not the initial one
     const now = Date.now();
+
+    // Check cache first
+    if (cache.current.data && now - cache.current.timestamp < CACHE_DURATION) {
+      setNetworkData(cache.current.data);
+      return;
+    }
+
+    // Apply throttling for subsequent requests
     if (lastFetchTime.current !== 0 && now - lastFetchTime.current < THROTTLE_TIME) {
       console.log('Throttling network data fetch');
       return;
     }
-    lastFetchTime.current = now;
 
     try {
+      lastFetchTime.current = now;
+
       // Get current player's ID
-      const { data: playerData } = await supabase
+      const { data: playerData, error: playerError } = await supabase
         .from('players')
         .select('id')
         .eq('auth_id', userId)
         .maybeSingle();
 
-      if (!playerData) return;
+      if (playerError) {
+        throw new Error(`Error fetching player: ${playerError.message}`);
+      }
+
+      if (!playerData) {
+        toast({
+          title: "Profile not found",
+          description: "Please try refreshing the page",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Check for pending sponsor requests
-      const { data: pendingRequests } = await supabase
+      const { data: pendingRequests, error: pendingError } = await supabase
         .from('player_relationships')
         .select()
         .eq('downline_id', playerData.id)
         .eq('status', 'pending')
         .maybeSingle();
 
+      if (pendingError) {
+        console.error('Error checking pending requests:', pendingError);
+      }
+
       // Check for active sponsor
-      const { data: activeRelationship } = await supabase
+      const { data: activeRelationship, error: relationshipError } = await supabase
         .from('player_relationships')
         .select(`
           upline:players!player_relationships_upline_id_fkey (
@@ -57,8 +85,12 @@ export const useNetworkData = (userId: string | undefined) => {
         .eq('status', 'active')
         .maybeSingle();
 
+      if (relationshipError) {
+        console.error('Error checking active relationship:', relationshipError);
+      }
+
       // Fetch downlines
-      const { data: downlineData } = await supabase
+      const { data: downlineData, error: downlineError } = await supabase
         .from('player_relationships')
         .select(`
           downline:players!player_relationships_downline_id_fkey (
@@ -69,11 +101,19 @@ export const useNetworkData = (userId: string | undefined) => {
         .eq('upline_id', playerData.id)
         .eq('status', 'active');
 
+      if (downlineError) {
+        console.error('Error fetching downlines:', downlineError);
+      }
+
       // Fetch admin profiles
-      const { data: profiles } = await supabase
+      const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, username')
         .eq('role', 'admin');
+
+      if (profilesError) {
+        console.error('Error fetching admin profiles:', profilesError);
+      }
 
       const fetchedDownlines = downlineData?.map(d => ({
         id: d.downline.id,
@@ -114,25 +154,32 @@ export const useNetworkData = (userId: string | undefined) => {
         ],
       };
 
-      setNetworkData({
+      const newData = {
         network: mockNetwork,
         adminProfiles: profiles || [],
         activeSponsor,
         downlines: fetchedDownlines,
         hasPendingRequest: !!pendingRequests
-      });
+      };
+
+      // Update cache
+      cache.current = {
+        data: newData,
+        timestamp: now
+      };
+
+      setNetworkData(newData);
     } catch (error) {
       console.error('Error fetching network data:', error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to load network data",
+        title: "Network Error",
+        description: "Failed to load network data. Please try again later.",
       });
     }
   }, [userId, toast]);
 
   useEffect(() => {
-    // Ensure initial fetch happens
     fetchNetwork();
   }, [fetchNetwork]);
 

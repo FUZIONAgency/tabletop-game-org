@@ -5,6 +5,7 @@ import { handleSponsorRequest } from "@/utils/sponsorRequests";
 import { useNetworkData } from "./hooks/useNetworkData";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PendingDownline {
   id: string;
@@ -15,6 +16,7 @@ interface PendingDownline {
 export const NetworkTree = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
   const [pendingDownlines, setPendingDownlines] = useState<PendingDownline[]>([]);
   const { network, adminProfiles, activeSponsor, hasPendingRequest, refetch } = useNetworkData(user?.id);
 
@@ -26,7 +28,7 @@ export const NetworkTree = () => {
         .from('players')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!playerData) return;
 
@@ -58,6 +60,8 @@ export const NetworkTree = () => {
         description: "Failed to load pending relationships",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -91,7 +95,19 @@ export const NetworkTree = () => {
     refetch();
   };
 
-  return network ? (
+  if (isLoading || !network) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-32 w-32 mx-auto" />
+        <div className="flex justify-center gap-8">
+          <Skeleton className="h-32 w-32" />
+          <Skeleton className="h-32 w-32" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <NetworkNode
       node={network}
       activeSponsor={activeSponsor}
@@ -102,5 +118,5 @@ export const NetworkTree = () => {
       pendingDownlines={pendingDownlines}
       onRelationshipUpdated={handleRelationshipUpdated}
     />
-  ) : null;
+  );
 };
