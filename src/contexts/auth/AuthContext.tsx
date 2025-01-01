@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    const initializeAuth = async () => {
+    async function initializeAuth() {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -83,11 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .eq('id', session.user.id)
               .maybeSingle();
 
-            if (mounted) {
-              setRole(profile?.role ?? null);
-            }
-
-            // Fetch and store user data
+            setRole(profile?.role ?? null);
             await fetchAndStoreUserData(session.user.id, session.user.email!);
           }
         }
@@ -98,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setIsLoading(false);
         }
       }
-    };
+    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -120,7 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setRole(profile?.role ?? null);
             }
 
-            // Fetch and store user data on sign in
             if (event === 'SIGNED_IN') {
               await fetchAndStoreUserData(session.user.id, session.user.email!);
               const returnPath = localStorage.getItem('returnPath') || '/';
@@ -136,7 +131,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } else {
           setRole(null);
-          // Clear stored data on sign out
           clearUserData();
         }
 
@@ -148,7 +142,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
         }
 
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     );
 
