@@ -64,7 +64,7 @@ export const NetworkNode = ({
             )}
             {node.children.map((child) => (
               <NetworkNode
-                key={child.id}
+                key={child.id === "pending" ? `invite_${child.relationshipId}` : child.id}
                 node={child}
                 activeSponsor={activeSponsor}
                 adminProfiles={adminProfiles}
