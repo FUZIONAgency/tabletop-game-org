@@ -28,11 +28,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     let mounted = true;
 
-    // Get initial session
-    const initializeAuth = async () => {
+    async function initializeAuth() {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Set loading state immediately
+        if (mounted) setIsLoading(true);
+
+        // Get initial session
+        const { data: { session }, error } = await supabase.auth.getSession();
         
+        if (error) throw error;
+
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
@@ -45,53 +50,56 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
               .single();
             setRole(profile?.role ?? null);
           }
-          
-          setIsLoading(false);
         }
       } catch (error) {
-        console.error("Error getting session:", error);
-        if (mounted) {
+        console.error("Error initializing auth:", error);
+      } finally {
+        // Always set loading to false when done
+        if (mounted) setIsLoading(false);
+      }
+    }
+
+    // Initialize auth state
+    initializeAuth();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+
+        try {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+            setRole(profile?.role ?? null);
+          } else {
+            setRole(null);
+          }
+
+          if (event === 'SIGNED_OUT') {
+            navigate('/auth');
+            toast.success("Logged out successfully");
+          } else if (event === 'SIGNED_IN') {
+            const returnPath = localStorage.getItem('returnPath') || '/';
+            localStorage.removeItem('returnPath');
+            navigate(returnPath);
+            toast.success("Logged in successfully");
+          }
+        } catch (error) {
+          console.error("Error handling auth state change:", error);
+        } finally {
           setIsLoading(false);
         }
       }
-    };
+    );
 
-    initializeAuth();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-          setRole(profile?.role ?? null);
-        } else {
-          setRole(null);
-        }
-        
-        setIsLoading(false);
-
-        if (event === 'SIGNED_OUT') {
-          navigate('/auth');
-          toast.success("Logged out successfully");
-        } else if (event === 'SIGNED_IN') {
-          const returnPath = localStorage.getItem('returnPath') || '/';
-          localStorage.removeItem('returnPath');
-          navigate(returnPath);
-          toast.success("Logged in successfully");
-        }
-      }
-    });
-
-    // Cleanup subscription and mounted flag
+    // Cleanup
     return () => {
       mounted = false;
       subscription.unsubscribe();
