@@ -25,10 +25,10 @@ const AuthForm = () => {
         title: "Password Recovery",
         description: "Check your email for password reset instructions.",
       });
-    } else if (event === "USER_DELETED") {
+    } else if (event === "SIGNED_OUT") {
       toast({
-        title: "Account Deleted",
-        description: "Your account has been deleted.",
+        title: "Signed Out",
+        description: "You have been signed out.",
         variant: "destructive",
       });
     }
@@ -102,14 +102,6 @@ const AuthForm = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
-          onError={(error) => {
-            console.error("Auth error:", error);
-            toast({
-              title: "Authentication Error",
-              description: error.message || "An error occurred during authentication",
-              variant: "destructive",
-            });
-          }}
         />
       </div>
     </div>
