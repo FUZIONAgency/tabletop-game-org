@@ -18,6 +18,42 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true
 });
 
+// Function to fetch and store user data
+const fetchAndStoreUserData = async (userId: string, email: string) => {
+  try {
+    // Check if profile exists
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (!existingProfile) {
+      // Create profile if it doesn't exist
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: userId,
+            email: email,
+            role: 'user'
+          }
+        ]);
+
+      if (profileError) throw profileError;
+    }
+  } catch (error) {
+    console.error('Error fetching/storing user data:', error);
+    throw error;
+  }
+};
+
+// Function to clear user data
+const clearUserData = () => {
+  // Clear any stored user data from localStorage if needed
+  localStorage.removeItem('userData');
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
