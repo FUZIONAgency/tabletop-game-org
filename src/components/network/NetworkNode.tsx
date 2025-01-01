@@ -13,6 +13,12 @@ interface NetworkNodeProps {
   onSponsorRequest: (adminProfileId: string) => void;
   onInviteCreated?: (invite: any) => void;
   hasPendingRequest?: boolean;
+  pendingDownlines?: Array<{
+    id: string;
+    relationshipId: string;
+    alias: string;
+  }>;
+  onRelationshipUpdated?: () => void;
 }
 
 export const NetworkNode = ({ 
@@ -21,7 +27,9 @@ export const NetworkNode = ({
   adminProfiles, 
   onSponsorRequest,
   onInviteCreated,
-  hasPendingRequest 
+  hasPendingRequest,
+  pendingDownlines,
+  onRelationshipUpdated
 }: NetworkNodeProps) => {
   const renderNode = () => {
     switch (node.id) {
@@ -36,7 +44,13 @@ export const NetworkNode = ({
         );
       case "left":
       case "right":
-        return <InviteNode onInviteCreated={onInviteCreated} />;
+        return (
+          <InviteNode 
+            onInviteCreated={onInviteCreated}
+            pendingDownlines={pendingDownlines}
+            onRelationshipUpdated={onRelationshipUpdated}
+          />
+        );
       case "root":
         return <PlayerNode isRoot />;
       default:
@@ -66,6 +80,8 @@ export const NetworkNode = ({
                 onSponsorRequest={onSponsorRequest}
                 onInviteCreated={onInviteCreated}
                 hasPendingRequest={hasPendingRequest}
+                pendingDownlines={pendingDownlines}
+                onRelationshipUpdated={onRelationshipUpdated}
               />
             ))}
           </div>
