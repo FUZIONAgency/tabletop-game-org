@@ -1,12 +1,14 @@
 import { SponsorNode } from "./SponsorNode";
 import { InviteNode } from "./InviteNode";
 import { PlayerNode } from "./PlayerNode";
+import { PendingNode } from "./PendingNode";
 
 interface NetworkNodeProps {
   node: {
     id: string;
     alias: string;
     children: any[];
+    hasPendingAcceptance?: boolean;
   };
   activeSponsor: { uplineId: string; uplineUsername: string } | null;
   adminProfiles: { id: string; username: string }[];
@@ -39,6 +41,8 @@ export const NetworkNode = ({
         return <InviteNode onInviteCreated={onInviteCreated} />;
       case "root":
         return <PlayerNode isRoot />;
+      case "pending":
+        return <PendingNode />;
       default:
         return <PlayerNode isDownline alias={node.alias} />;
     }

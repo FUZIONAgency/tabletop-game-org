@@ -30,6 +30,19 @@ export const NetworkTree = () => {
     console.log('New invite created:', invite);
   };
 
+  // If there's a pending relationship, add it as a child to the root node
+  if (network && network.id === "root") {
+    const pendingNode = {
+      id: "pending",
+      alias: "Pending Acceptance",
+      children: []
+    };
+    
+    if (hasPendingRequest) {
+      network.children = [pendingNode, ...network.children];
+    }
+  }
+
   return network ? (
     <NetworkNode
       node={network}
