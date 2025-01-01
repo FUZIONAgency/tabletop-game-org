@@ -8,9 +8,9 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children }: PageLayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
       <Navigation />
-      <main className="flex-grow">
+      <main className="flex-grow relative z-0 pt-16">
         {children}
       </main>
       <Footer />
