@@ -27,38 +27,30 @@ export const useNetworkData = (userId: string | undefined) => {
 
         if (!playerData) return;
 
-        // Check for pending sponsor requests where the player is the upline
-        const { data: pendingRequests } = await supabase
-          .from('player_relationships')
-          .select()
-          .eq('upline_id', playerData.id)
-          .eq('status', 'pending')
-          .maybeSingle();
+        // Get relationships from local storage
+        const storedRelationships = localStorage.getItem('user_relationships');
+        let pendingRequests = null;
+        let activeRelationship = null;
+        let downlineData = [];
 
-        // Check for active sponsor
-        const { data: activeRelationship } = await supabase
-          .from('player_relationships')
-          .select(`
-            upline:players!player_relationships_upline_id_fkey (
-              id,
-              alias
-            )
-          `)
-          .eq('downline_id', playerData.id)
-          .eq('status', 'active')
-          .maybeSingle();
+        if (storedRelationships) {
+          const relationships = JSON.parse(storedRelationships);
+          
+          // Check for pending requests where player is upline
+          pendingRequests = relationships.find(
+            (r: any) => r.upline_id === playerData.id && r.status === 'pending'
+          );
 
-        // Fetch downlines
-        const { data: downlineData } = await supabase
-          .from('player_relationships')
-          .select(`
-            downline:players!player_relationships_downline_id_fkey (
-              id,
-              alias
-            )
-          `)
-          .eq('upline_id', playerData.id)
-          .eq('status', 'active');
+          // Check for active sponsor
+          activeRelationship = relationships.find(
+            (r: any) => r.downline_id === playerData.id && r.status === 'active'
+          );
+
+          // Get downlines
+          downlineData = relationships.filter(
+            (r: any) => r.upline_id === playerData.id && r.status === 'active'
+          );
+        }
 
         // Fetch admin profiles
         const { data: profiles } = await supabase
@@ -66,15 +58,39 @@ export const useNetworkData = (userId: string | undefined) => {
           .select('id, username')
           .eq('role', 'admin');
 
-        const fetchedDownlines = downlineData?.map(d => ({
-          id: d.downline.id,
-          alias: d.downline.alias
-        })) || [];
+        // Get active sponsor details if exists
+        let activeSponsor = null;
+        if (activeRelationship) {
+          const { data: sponsorData } = await supabase
+            .from('players')
+            .select('id, alias')
+            .eq('id', activeRelationship.upline_id)
+            .single();
 
-        const activeSponsor = activeRelationship ? {
-          uplineId: activeRelationship.upline.id,
-          uplineUsername: activeRelationship.upline.alias
-        } : null;
+          if (sponsorData) {
+            activeSponsor = {
+              uplineId: sponsorData.id,
+              uplineUsername: sponsorData.alias
+            };
+          }
+        }
+
+        // Get downline details
+        const fetchedDownlines = [];
+        for (const relationship of downlineData) {
+          const { data: downlinePlayer } = await supabase
+            .from('players')
+            .select('id, alias')
+            .eq('id', relationship.downline_id)
+            .single();
+
+          if (downlinePlayer) {
+            fetchedDownlines.push({
+              id: downlinePlayer.id,
+              alias: downlinePlayer.alias
+            });
+          }
+        }
 
         // Create network structure
         const mockNetwork = {
