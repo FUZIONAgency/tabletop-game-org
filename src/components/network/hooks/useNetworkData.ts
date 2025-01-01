@@ -18,9 +18,9 @@ export const useNetworkData = (userId: string | undefined) => {
   const fetchNetwork = useCallback(async () => {
     if (!userId) return;
 
-    // Implement throttling
+    // Only apply throttling for subsequent fetches, not the initial one
     const now = Date.now();
-    if (now - lastFetchTime.current < THROTTLE_TIME) {
+    if (lastFetchTime.current !== 0 && now - lastFetchTime.current < THROTTLE_TIME) {
       console.log('Throttling network data fetch');
       return;
     }
@@ -132,6 +132,7 @@ export const useNetworkData = (userId: string | undefined) => {
   }, [userId, toast]);
 
   useEffect(() => {
+    // Ensure initial fetch happens
     fetchNetwork();
   }, [fetchNetwork]);
 
