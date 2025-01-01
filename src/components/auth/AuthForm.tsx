@@ -8,7 +8,7 @@ const AuthForm = () => {
   const { toast } = useToast();
   const redirectTo = `${window.location.origin}/auth/callback`;
 
-  // Add auth state change listener
+  // Add auth state change listener with improved error handling
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === "SIGNED_IN") {
       toast({
@@ -25,21 +25,35 @@ const AuthForm = () => {
         title: "Password Recovery",
         description: "Check your email for password reset instructions.",
       });
+    } else if (event === "USER_DELETED") {
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been deleted.",
+        variant: "destructive",
+      });
     }
 
     // Handle auth errors
-    const errorMessage = session?.user?.user_metadata?.error?.message;
-    if (errorMessage) {
-      if (errorMessage.includes("invalid_credentials")) {
+    const error = session?.user?.user_metadata?.error;
+    if (error) {
+      console.error("Auth error:", error);
+      
+      if (error.message?.includes("invalid_credentials")) {
         toast({
           title: "Login Failed",
           description: "Invalid email or password. Please try again.",
           variant: "destructive",
         });
-      } else if (errorMessage.includes("Email not confirmed")) {
+      } else if (error.message?.includes("Email not confirmed")) {
         toast({
           title: "Email Not Verified",
           description: "Please check your email and verify your account before logging in.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Authentication Error",
+          description: error.message || "An error occurred during authentication",
           variant: "destructive",
         });
       }
@@ -88,6 +102,14 @@ const AuthForm = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
+          onError={(error) => {
+            console.error("Auth error:", error);
+            toast({
+              title: "Authentication Error",
+              description: error.message || "An error occurred during authentication",
+              variant: "destructive",
+            });
+          }}
         />
       </div>
     </div>
