@@ -19,29 +19,46 @@ export const useNetworkData = (userId: string | undefined) => {
 
       try {
         // Get current player's ID
-        const { data: playerData } = await supabase
+        const { data: playerData, error: playerError } = await supabase
           .from('players')
           .select('id')
           .eq('auth_id', userId)
           .single();
 
-        if (!playerData) return;
+        if (playerError) {
+          console.error('Error fetching player:', playerError);
+          return;
+        }
+
+        if (!playerData) {
+          console.log('No player data found');
+          return;
+        }
 
         // Get relationships from local storage or fetch if not available
         let relationships = [];
         const storedRelationships = localStorage.getItem('user_relationships');
         
         if (!storedRelationships) {
-          const { data: relationshipsData } = await supabase
+          const { data: relationshipsData, error: relationshipsError } = await supabase
             .from('player_relationships')
             .select('*');
           
-          if (relationshipsData) {
+          if (relationshipsError) {
+            console.error('Error fetching relationships:', relationshipsError);
+            relationships = [];
+          } else if (relationshipsData) {
             relationships = relationshipsData;
             localStorage.setItem('user_relationships', JSON.stringify(relationshipsData));
           }
         } else {
-          relationships = JSON.parse(storedRelationships);
+          try {
+            relationships = JSON.parse(storedRelationships);
+          } catch (error) {
+            console.error('Error parsing stored relationships:', error);
+            relationships = [];
+            localStorage.removeItem('user_relationships');
+          }
         }
 
         // Check for pending requests where player is upline
@@ -60,21 +77,28 @@ export const useNetworkData = (userId: string | undefined) => {
         );
 
         // Fetch admin profiles
-        const { data: profiles } = await supabase
+        const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('id, username')
           .eq('role', 'admin');
 
+        if (profilesError) {
+          console.error('Error fetching admin profiles:', profilesError);
+          return;
+        }
+
         // Get active sponsor details if exists
         let activeSponsor = null;
         if (activeRelationship) {
-          const { data: sponsorData } = await supabase
+          const { data: sponsorData, error: sponsorError } = await supabase
             .from('players')
             .select('id, alias')
             .eq('id', activeRelationship.upline_id)
             .single();
 
-          if (sponsorData) {
+          if (sponsorError) {
+            console.error('Error fetching sponsor:', sponsorError);
+          } else if (sponsorData) {
             activeSponsor = {
               uplineId: sponsorData.id,
               uplineUsername: sponsorData.alias
@@ -85,11 +109,16 @@ export const useNetworkData = (userId: string | undefined) => {
         // Get downline details
         const fetchedDownlines = [];
         for (const relationship of downlineData) {
-          const { data: downlinePlayer } = await supabase
+          const { data: downlinePlayer, error: downlineError } = await supabase
             .from('players')
             .select('id, alias')
             .eq('id', relationship.downline_id)
             .single();
+
+          if (downlineError) {
+            console.error('Error fetching downline:', downlineError);
+            continue;
+          }
 
           if (downlinePlayer) {
             fetchedDownlines.push({
