@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/auth";
 import { useToast } from "@/hooks/use-toast";
 import AuthFeatures from "@/components/auth/AuthFeatures";
 import AuthForm from "@/components/auth/AuthForm";
-import { AuthError } from "@supabase/supabase-js";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -73,29 +72,40 @@ const Auth = () => {
 
       // Handle auth errors from user metadata or error events
       const errorMessage = session?.user?.user_metadata?.error?.message;
+      const errorBody = session?.user?.user_metadata?.error?.body;
       
-      if (errorMessage) {
-        console.error("Auth error:", errorMessage);
+      if (errorMessage || errorBody) {
+        console.error("Auth error:", errorMessage || errorBody);
         
-        if (errorMessage.includes("Error sending confirmation email")) {
-          toast({
-            title: "Email Configuration Error",
-            description: "There was an issue with the email configuration. Please try again later or contact support.",
-            variant: "destructive",
-          });
-        } else if (errorMessage.includes("User already registered")) {
+        // Parse error body if it's a string
+        let parsedErrorBody;
+        if (typeof errorBody === 'string') {
+          try {
+            parsedErrorBody = JSON.parse(errorBody);
+          } catch (e) {
+            parsedErrorBody = null;
+          }
+        }
+
+        if (parsedErrorBody?.message?.includes("User already registered")) {
           toast({
             title: "Account Exists",
             description: "An account with this email already exists. Please try logging in instead.",
             variant: "destructive",
           });
-        } else if (errorMessage.includes("Invalid login credentials")) {
+        } else if (errorMessage?.includes("Error sending confirmation email")) {
+          toast({
+            title: "Email Configuration Error",
+            description: "There was an issue with the email configuration. Please try again later or contact support.",
+            variant: "destructive",
+          });
+        } else if (errorMessage?.includes("Invalid login credentials")) {
           toast({
             title: "Login Failed",
             description: "The email or password you entered is incorrect. Please try again.",
             variant: "destructive",
           });
-        } else if (errorMessage.includes("Email not confirmed")) {
+        } else if (errorMessage?.includes("Email not confirmed")) {
           toast({
             title: "Email Not Verified",
             description: "Please check your email and click the confirmation link to verify your account.",
@@ -104,7 +114,7 @@ const Auth = () => {
         } else {
           toast({
             title: "Authentication Error",
-            description: errorMessage || "An unexpected error occurred",
+            description: errorMessage || parsedErrorBody?.message || "An unexpected error occurred",
             variant: "destructive",
           });
         }
