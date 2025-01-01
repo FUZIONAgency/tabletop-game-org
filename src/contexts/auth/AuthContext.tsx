@@ -32,32 +32,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Auth initialization error:", error);
-          setIsLoading(false);
-          return;
-        }
+        if (error) throw error;
 
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
 
           if (session?.user) {
-            const { data: profile, error: profileError } = await supabase
+            const { data: profile } = await supabase
               .from('profiles')
               .select('role')
               .eq('id', session.user.id)
               .maybeSingle();
 
-            if (profileError) {
-              console.error("Profile fetch error:", profileError);
-            }
-
             if (mounted) {
               setRole(profile?.role ?? null);
             }
-          } else {
-            setRole(null);
           }
         }
       } catch (error) {
@@ -78,21 +68,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (session?.user) {
           try {
-            const { data: profile, error: profileError } = await supabase
+            const { data: profile } = await supabase
               .from('profiles')
               .select('role')
               .eq('id', session.user.id)
               .maybeSingle();
 
-            if (profileError) {
-              console.error("Profile fetch error:", profileError);
-            }
-
             if (mounted) {
               setRole(profile?.role ?? null);
             }
           } catch (error) {
-            console.error("Profile fetch error:", error);
+            console.error("Error fetching profile:", error);
           }
         } else {
           setRole(null);
@@ -128,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session,
     user,
     role,
-    isLoading
+    isLoading,
   };
 
   return (
@@ -140,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
