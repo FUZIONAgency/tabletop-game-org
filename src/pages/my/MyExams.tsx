@@ -1,8 +1,6 @@
 import { useAuth } from "@/contexts/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 import CompletedExams from "@/components/exams/CompletedExams";
 import AvailableExams from "@/components/exams/AvailableExams";
@@ -63,7 +61,7 @@ const MyExams = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Exam[];
     },
     enabled: !!playerGameAccounts?.length
   });
@@ -91,7 +89,7 @@ const MyExams = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as PlayerExam[];
     },
     enabled: !!player?.id
   });
@@ -105,7 +103,6 @@ const MyExams = () => {
         
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               There was an error loading your exams. Please try again later.
             </AlertDescription>

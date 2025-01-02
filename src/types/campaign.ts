@@ -16,4 +16,7 @@ export interface Campaign {
   status?: string | null;
   price: number;
   created_at?: string;
+  is_member?: boolean;
+  is_owner?: boolean;
+  owner_alias?: string;
 }
