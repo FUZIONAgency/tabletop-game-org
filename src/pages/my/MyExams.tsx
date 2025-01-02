@@ -6,6 +6,7 @@ import { AlertCircle } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 import CompletedExams from "@/components/exams/CompletedExams";
 import AvailableExams from "@/components/exams/AvailableExams";
+import { Exam, PlayerExam } from "@/types/exam";
 
 const MyExams = () => {
   const { user } = useAuth();
@@ -39,7 +40,7 @@ const MyExams = () => {
     enabled: !!player?.id
   });
 
-  const { data: availableExams, isLoading: isLoadingAvailable } = useQuery({
+  const { data: availableExams, isLoading: isLoadingAvailable } = useQuery<Exam[]>({
     queryKey: ['available-exams', playerGameAccounts],
     queryFn: async () => {
       if (!playerGameAccounts?.length) return [];
@@ -67,7 +68,7 @@ const MyExams = () => {
     enabled: !!playerGameAccounts?.length
   });
 
-  const { data: completedExams, isLoading: isLoadingCompleted, error } = useQuery({
+  const { data: completedExams, isLoading: isLoadingCompleted, error } = useQuery<PlayerExam[]>({
     queryKey: ['completed-exams', player?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -95,7 +96,7 @@ const MyExams = () => {
     enabled: !!player?.id
   });
 
-  const completedExamIds = completedExams?.map(exam => exam.exam?.id) || [];
+  const completedExamIds = completedExams?.map(exam => exam.exam.id) || [];
 
   return (
     <PageLayout>
