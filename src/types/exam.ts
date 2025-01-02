@@ -9,6 +9,6 @@ export interface Exam {
 
 export interface PlayerExam {
   id: string;
-  score: number;
+  score: number | null;
   exam: Exam;
 }
