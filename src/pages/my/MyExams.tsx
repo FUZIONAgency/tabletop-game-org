@@ -1,11 +1,10 @@
 import { useAuth } from "@/contexts/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 import CompletedExams from "@/components/exams/CompletedExams";
 import AvailableExams from "@/components/exams/AvailableExams";
+import { Exam, PlayerExam } from "@/types/exam";
 
 const MyExams = () => {
   const { user } = useAuth();
@@ -39,7 +38,7 @@ const MyExams = () => {
     enabled: !!player?.id
   });
 
-  const { data: availableExams, isLoading: isLoadingAvailable } = useQuery({
+  const { data: availableExams, isLoading: isLoadingAvailable } = useQuery<Exam[]>({
     queryKey: ['available-exams', playerGameAccounts],
     queryFn: async () => {
       if (!playerGameAccounts?.length) return [];
@@ -62,12 +61,12 @@ const MyExams = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Exam[];
     },
     enabled: !!playerGameAccounts?.length
   });
 
-  const { data: completedExams, isLoading: isLoadingCompleted, error } = useQuery({
+  const { data: completedExams, isLoading: isLoadingCompleted, error } = useQuery<PlayerExam[]>({
     queryKey: ['completed-exams', player?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -90,12 +89,12 @@ const MyExams = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as PlayerExam[];
     },
     enabled: !!player?.id
   });
 
-  const completedExamIds = completedExams?.map(exam => exam.exam?.id) || [];
+  const completedExamIds = completedExams?.map(exam => exam.exam.id) || [];
 
   return (
     <PageLayout>
@@ -104,7 +103,6 @@ const MyExams = () => {
         
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               There was an error loading your exams. Please try again later.
             </AlertDescription>

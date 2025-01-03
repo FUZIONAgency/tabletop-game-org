@@ -8,12 +8,14 @@ interface NetworkNodeProps {
     id: string;
     alias: string;
     children: any[];
+    relationshipId?: string;
   };
   activeSponsor: { uplineId: string; uplineUsername: string } | null;
   adminProfiles: { id: string; username: string }[];
   onSponsorRequest: (adminProfileId: string) => void;
   onInviteCreated?: (invite: any) => void;
   hasPendingRequest?: boolean;
+  onStatusUpdate?: () => void;
 }
 
 export const NetworkNode = ({ 
@@ -22,7 +24,8 @@ export const NetworkNode = ({
   adminProfiles, 
   onSponsorRequest,
   onInviteCreated,
-  hasPendingRequest 
+  hasPendingRequest,
+  onStatusUpdate 
 }: NetworkNodeProps) => {
   const renderNode = () => {
     switch (node.id) {
@@ -36,12 +39,11 @@ export const NetworkNode = ({
           />
         );
       case "left":
-      case "right":
         return <InviteNode onInviteCreated={onInviteCreated} />;
       case "root":
         return <PlayerNode isRoot />;
       case "pending":
-        return <PendingNode />;
+        return <PendingNode relationshipId={node.relationshipId!} onStatusUpdate={onStatusUpdate!} />;
       default:
         return <PlayerNode isDownline alias={node.alias} />;
     }
@@ -62,13 +64,14 @@ export const NetworkNode = ({
             )}
             {node.children.map((child) => (
               <NetworkNode
-                key={child.id}
+                key={child.id === "pending" ? `invite_${child.relationshipId}` : child.id}
                 node={child}
                 activeSponsor={activeSponsor}
                 adminProfiles={adminProfiles}
                 onSponsorRequest={onSponsorRequest}
                 onInviteCreated={onInviteCreated}
                 hasPendingRequest={hasPendingRequest}
+                onStatusUpdate={onStatusUpdate}
               />
             ))}
           </div>

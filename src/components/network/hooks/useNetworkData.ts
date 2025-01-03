@@ -7,13 +7,14 @@ import { useRelationshipsData } from "./useRelationshipsData";
 import { useAdminProfiles } from "./useAdminProfiles";
 import { useDownlineData } from "./useDownlineData";
 
-export const useNetworkData = (userId: string | undefined) => {
+export const useNetworkData = (userId: string | undefined, updateTrigger: number = 0) => {
   const [networkData, setNetworkData] = useState<NetworkData>({
     network: null,
     adminProfiles: [],
     activeSponsor: null,
     downlines: [],
-    hasPendingRequest: false
+    hasPendingRequest: false,
+    pendingRelationshipId: null
   });
   const { toast } = useToast();
 
@@ -28,13 +29,13 @@ export const useNetworkData = (userId: string | undefined) => {
 
       try {
         // Check for pending requests where player is upline
-        const pendingRequests = relationships.find(
-          (r: any) => r.upline_id === playerId && r.status === 'pending'
+        const pendingRequest = relationships.find(
+          (r) => r.upline_id === playerId && r.status === 'pending'
         );
 
         // Check for active sponsor
         const activeRelationship = relationships.find(
-          (r: any) => r.downline_id === playerId && r.status === 'active'
+          (r) => r.downline_id === playerId && r.status === 'active'
         );
 
         // Get active sponsor details if exists
@@ -59,7 +60,7 @@ export const useNetworkData = (userId: string | undefined) => {
         // Create network structure
         const mockNetwork = {
           id: "sponsor",
-          alias: pendingRequests ? "In Review" : "Request a Sponsor",
+          alias: pendingRequest ? "In Review" : "Request a Sponsor",
           children: [
             {
               id: "root",
@@ -74,12 +75,7 @@ export const useNetworkData = (userId: string | undefined) => {
                   id: downline.id,
                   alias: downline.alias,
                   children: [],
-                })),
-                {
-                  id: "right",
-                  alias: "New Invite",
-                  children: [],
-                },
+                }))
               ],
             },
           ],
@@ -90,7 +86,8 @@ export const useNetworkData = (userId: string | undefined) => {
           adminProfiles,
           activeSponsor,
           downlines,
-          hasPendingRequest: !!pendingRequests
+          hasPendingRequest: !!pendingRequest,
+          pendingRelationshipId: pendingRequest?.id || null
         });
       } catch (error) {
         console.error('Error building network data:', error);
@@ -103,7 +100,7 @@ export const useNetworkData = (userId: string | undefined) => {
     };
 
     buildNetworkData();
-  }, [playerId, relationships, adminProfiles, downlines, toast]);
+  }, [playerId, relationships, adminProfiles, downlines, toast, updateTrigger]);
 
   return networkData;
 };

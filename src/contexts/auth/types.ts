@@ -1,20 +1,21 @@
-import { Session, User } from "@supabase/supabase-js";
+import { User, Session } from "@supabase/supabase-js";
+import { NavigateFunction } from "react-router-dom";
 
-export type UserRole = 'admin' | 'user' | null;
+export type UserRole = "anonymous" | "user" | "admin";
 
 export interface AuthContextType {
-  session: Session | null;
   user: User | null;
+  session: Session | null;
   role: UserRole;
   isLoading: boolean;
   signOut: () => Promise<void>;
 }
 
 export interface AuthStateHandlerProps {
-  navigate: (path: string) => void;
+  navigate: NavigateFunction;
   setSession: (session: Session | null) => void;
   setUser: (user: User | null) => void;
-  setRole: (role: UserRole) => void;
+  setRole: (role: UserRole | null) => void;
   setIsLoading: (loading: boolean) => void;
   mounted: boolean;
 }
@@ -22,6 +23,6 @@ export interface AuthStateHandlerProps {
 export interface InitAuthProps {
   setSession: (session: Session | null) => void;
   setUser: (user: User | null) => void;
-  setRole: (role: UserRole) => void;
+  setRole: (role: UserRole | null) => void;
   setIsLoading: (loading: boolean) => void;
 }

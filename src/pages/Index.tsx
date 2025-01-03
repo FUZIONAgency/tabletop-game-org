@@ -11,14 +11,12 @@ import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const { isLoading, user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
-    // Handle scroll to section if specified in location state
     if (location.state?.scrollTo) {
       const element = document.getElementById(location.state.scrollTo);
       if (element) {
@@ -30,7 +28,6 @@ const Index = () => {
   }, [location.state]);
 
   useEffect(() => {
-    // Log authentication state for debugging
     console.log("Auth state:", { isLoading, user });
   }, [isLoading, user]);
 
@@ -46,9 +43,9 @@ const Index = () => {
   }
 
   return (
-    <div className="bg-white flex flex-col min-h-screen">
+    <div className="bg-white flex flex-col min-h-screen relative">
       <Navigation />
-      <div className="flex-grow">
+      <div className="flex-grow relative z-10">
         <HeroSection />
         
         {/* Qualify Section */}
@@ -56,7 +53,7 @@ const Index = () => {
           id="qualify"
           title="Get Certified"
           subtitle="QUALIFICATION"
-          className="bg-gray-50"
+          className="bg-gray-50 relative z-10"
         >
           {user ? (
             <MyPlayerSection />
@@ -70,7 +67,7 @@ const Index = () => {
           id="games"
           title="Play Anywhere, Anytime"
           subtitle="GAMES"
-          className="bg-white -mt-12"
+          className="bg-white relative z-10"
         >
           <GamesSection />
         </Section>
@@ -80,7 +77,7 @@ const Index = () => {
           id="recruiting"
           title="Build Your Team"
           subtitle="RECRUITING"
-          className="bg-gray-50"
+          className="bg-gray-50 relative z-10"
         >
           <RecruitingSection />
         </Section>
@@ -90,7 +87,7 @@ const Index = () => {
           id="rewards"
           title="Get Paid to Play"
           subtitle="REWARDS"
-          className="bg-white"
+          className="bg-white relative z-10"
         >
           <RewardsSection />
         </Section>
