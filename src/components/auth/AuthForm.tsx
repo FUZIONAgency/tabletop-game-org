@@ -38,7 +38,14 @@ const AuthForm = () => {
     if (error) {
       console.error("Auth error:", error);
       
-      if (error.message?.includes("invalid_credentials")) {
+      // Handle 400 errors specifically
+      if (error.status === 400) {
+        toast({
+          title: "Authentication Error",
+          description: error.message || error.body?.message || "There was a problem with your request. Please try again.",
+          variant: "destructive",
+        });
+      } else if (error.message?.includes("invalid_credentials")) {
         toast({
           title: "Login Failed",
           description: "Invalid email or password. Please try again.",
