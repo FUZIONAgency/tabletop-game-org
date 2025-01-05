@@ -41,7 +41,11 @@ const MyRetailers = () => {
         .eq('player_id', playerData.id);
 
       if (retailersError) throw retailersError;
-      return (data as RetailerResponse[]) || [];
+      
+      // Transform the data to match RetailerResponse type
+      return (data || []).map(item => ({
+        retailer: item.retailer as Retailer
+      })) as RetailerResponse[];
     },
     enabled: !!user,
   });
