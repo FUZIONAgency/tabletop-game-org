@@ -10,5 +10,5 @@ export interface Retailer extends BaseEntity {
 }
 
 export interface RetailerResponse {
-  retailer: Retailer;  // Changed from Retailer[] to Retailer
+  retailer: Retailer;
 }
