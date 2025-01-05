@@ -10,6 +10,7 @@ export interface Session {
   price: number;
   end_date: string | null;
   campaign: Campaign;
+  player_session?: PlayerSession[];
 }
 
 export interface PlayerSession {
