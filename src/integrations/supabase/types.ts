@@ -5470,7 +5470,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      metro_status: "active" | "inactive"
     }
     CompositeTypes: {
       geometry_dump: {

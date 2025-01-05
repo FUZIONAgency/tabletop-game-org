@@ -83,13 +83,13 @@ const MyGameSystems = () => {
           </div>
         ) : (
           <div className="space-y-4">
+            <GameSystemCard />
             {games?.map((game) => (
               <GameSystemCard 
                 key={game.game_system.id} 
                 gameSystem={game.game_system}
               />
             ))}
-            <GameSystemCard />
           </div>
         )}
       </div>
