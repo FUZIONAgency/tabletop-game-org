@@ -45,7 +45,7 @@ const MyRetailers = () => {
         .eq('player_id', playerData.id);
 
       if (retailersError) throw retailersError;
-      return (data as RetailerResponse[] || []).map(pr => pr.retailer);
+      return (data as RetailerResponse[]) || [];
     },
     enabled: !!user,
   });
@@ -89,7 +89,7 @@ const MyRetailers = () => {
             <p className="text-gray-500">You haven't connected with any retailers yet.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {retailers?.map((retailer) => (
+              {retailers?.map(({ retailer }) => (
                 <div 
                   key={retailer.id} 
                   className="border rounded-lg overflow-hidden shadow-sm cursor-pointer transition-shadow hover:shadow-md"

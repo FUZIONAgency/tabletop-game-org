@@ -6,22 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { format } from "date-fns";
-
-interface Tournament {
-  id: string;
-  title: string;
-  description: string | null;
-  start_date: string;
-  end_date: string;
-  location: string;
-  venue: string;
-  image_url: string | null;
-  prize_pool: number | null;
-}
-
-interface TournamentEntry {
-  tournament: Tournament;
-}
+import { TournamentEntry } from "@/types/tournament";
 
 const MyTournaments = () => {
   const { user } = useAuth();
@@ -41,6 +26,7 @@ const MyTournaments = () => {
       const { data, error: tournamentsError } = await supabase
         .from('tournament_entries')
         .select(`
+          id,
           tournament:tournaments (
             id,
             title,
@@ -56,7 +42,7 @@ const MyTournaments = () => {
         .eq('player_id', playerData.id);
 
       if (tournamentsError) throw tournamentsError;
-      return (data as TournamentEntry[] || []).map(te => te.tournament);
+      return data as unknown as TournamentEntry[];
     },
     enabled: !!user,
   });
@@ -87,26 +73,26 @@ const MyTournaments = () => {
             <p className="text-gray-500">You haven't entered any tournaments yet.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tournaments?.map((tournament) => (
-                <div key={tournament.id} className="border rounded-lg overflow-hidden shadow-sm">
-                  {tournament.image_url && (
+              {tournaments?.map((entry) => (
+                <div key={entry.id} className="border rounded-lg overflow-hidden shadow-sm">
+                  {entry.tournament.image_url && (
                     <img 
-                      src={tournament.image_url} 
-                      alt={tournament.title}
+                      src={entry.tournament.image_url} 
+                      alt={entry.tournament.title}
                       className="w-full h-48 object-cover"
                     />
                   )}
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-2">{tournament.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{tournament.description}</p>
+                    <h3 className="font-semibold text-lg mb-2">{entry.tournament.title}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{entry.tournament.description}</p>
                     <div className="text-sm text-gray-500">
-                      <p>{tournament.venue}</p>
-                      <p>{tournament.location}</p>
+                      <p>{entry.tournament.venue}</p>
+                      <p>{entry.tournament.location}</p>
                       <p>
-                        {format(new Date(tournament.start_date), 'MMM d, yyyy')} - {format(new Date(tournament.end_date), 'MMM d, yyyy')}
+                        {format(new Date(entry.tournament.start_date), 'MMM d, yyyy')} - {format(new Date(entry.tournament.end_date), 'MMM d, yyyy')}
                       </p>
-                      {tournament.prize_pool && (
-                        <p className="mt-2 text-green-600">Prize Pool: ${tournament.prize_pool}</p>
+                      {entry.tournament.prize_pool && (
+                        <p className="mt-2 text-green-600">Prize Pool: ${entry.tournament.prize_pool}</p>
                       )}
                     </div>
                   </div>

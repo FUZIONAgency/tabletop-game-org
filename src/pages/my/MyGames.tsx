@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { GameSystemCard } from "@/components/sections/player/GameSystemCard";
+import { PlayerGameAccount } from "@/types/player-game-account";
 
 const MyGames = () => {
   const { user } = useAuth();
@@ -52,7 +53,7 @@ const MyGames = () => {
         .eq('player_id', playerData.id);
 
       if (gamesError) throw gamesError;
-      return data || [];
+      return data as unknown as PlayerGameAccount[];
     },
     enabled: !!user,
   });
@@ -82,7 +83,7 @@ const MyGames = () => {
             <div className="space-y-4">
               {games?.map((game) => (
                 <GameSystemCard 
-                  key={game.game_system?.id || game.account_id} 
+                  key={game.game_system.id} 
                   gameSystem={game.game_system}
                 />
               ))}

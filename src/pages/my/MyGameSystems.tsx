@@ -57,7 +57,7 @@ const MyGameSystems = () => {
         .eq('player_id', playerData.id);
 
       if (gamesError) throw gamesError;
-      return data as PlayerGameAccount[];
+      return data as unknown as PlayerGameAccount[];
     },
     enabled: !!user,
   });
