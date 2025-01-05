@@ -1,4 +1,4 @@
-import { LogOut, User, Gamepad, Store, Trophy, Tent, Package, Users, TestTube, DollarSign, Gift, Box, Settings } from "lucide-react";
+import { LogOut, User, Gamepad, Store, Trophy, Tent, Package, Users, TestTube, DollarSign, Gift, Box, Settings, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +45,7 @@ const ProfileMenu = () => {
     { label: "My Team", icon: Users, path: "/my/network" },
     { label: "My Exams", icon: TestTube, path: "/my/exams" },
     { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
+    { label: "My Purchases", icon: ShoppingCart, path: "/my/purchases" },
     { label: "My Fundraisers", icon: Gift, path: "/my/fundraisers" },
     { label: "My Inventory", icon: Box, path: "/my/inventory" },
     { label: "My Equipment", icon: Settings, path: "/my/equipment" },
