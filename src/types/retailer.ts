@@ -7,7 +7,4 @@ export interface Retailer extends BaseEntity {
   city: string;
   state: string;
   store_photo: string | null;
-  zip: string;
-  lat: number;
-  lng: number;
 }

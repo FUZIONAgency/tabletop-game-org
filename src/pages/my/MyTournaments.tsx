@@ -19,6 +19,10 @@ interface Tournament {
   prize_pool: number | null;
 }
 
+interface TournamentEntry {
+  tournament: Tournament;
+}
+
 const MyTournaments = () => {
   const { user } = useAuth();
 
@@ -52,7 +56,7 @@ const MyTournaments = () => {
         .eq('player_id', playerData.id);
 
       if (tournamentsError) throw tournamentsError;
-      return data?.map(te => te.tournament) as Tournament[] || [];
+      return (data as TournamentEntry[] || []).map(te => te.tournament);
     },
     enabled: !!user,
   });

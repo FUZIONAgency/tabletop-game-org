@@ -7,6 +7,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Retailer } from "@/types/retailer";
+
+interface RetailerResponse {
+  retailer: Retailer;
+}
 
 const MyRetailers = () => {
   const { user } = useAuth();
@@ -40,7 +45,7 @@ const MyRetailers = () => {
         .eq('player_id', playerData.id);
 
       if (retailersError) throw retailersError;
-      return data?.map(pr => pr.retailer) || [];
+      return (data as RetailerResponse[] || []).map(pr => pr.retailer);
     },
     enabled: !!user,
   });
