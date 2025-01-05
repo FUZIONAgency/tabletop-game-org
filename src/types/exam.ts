@@ -1,21 +1,16 @@
-import { GameSystem } from "./game-system";
+import { BaseEntity } from './common';
+import { GameSystem } from './game-system';
 
-export interface Exam {
-  id: string;
+export interface Exam extends BaseEntity {
   name: string;
   weight: number;
   game_system: GameSystem;
   game_system_id?: string;
-  created_at?: string;
-  updated_at?: string;
 }
 
-export interface PlayerExam {
-  id: string;
+export interface PlayerExam extends BaseEntity {
   score: number | null;
   exam: Exam;
   player_id?: string;
   approval_player_id?: string | null;
-  created_at?: string;
-  updated_at?: string;
 }

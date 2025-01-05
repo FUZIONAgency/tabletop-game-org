@@ -1,5 +1,6 @@
-export interface GameSystem {
-  id: string;
+import { BaseEntity } from './common';
+
+export interface GameSystem extends BaseEntity {
   name: string;
   description: string | null;
   logo_image_url: string | null;

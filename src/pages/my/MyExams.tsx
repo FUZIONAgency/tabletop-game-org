@@ -5,6 +5,7 @@ import PageLayout from "@/components/PageLayout";
 import CompletedExams from "@/components/exams/CompletedExams";
 import AvailableExams from "@/components/exams/AvailableExams";
 import { Exam, PlayerExam } from "@/types/exam";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const MyExams = () => {
   const { user } = useAuth();
@@ -54,14 +55,15 @@ const MyExams = () => {
           game_system:game_systems (
             id,
             name,
-            logo_image_url
+            logo_image_url,
+            description
           )
         `)
         .in('game_system_id', gameSystemIds)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Exam[];
+      return data as unknown as Exam[];
     },
     enabled: !!playerGameAccounts?.length
   });
@@ -81,7 +83,8 @@ const MyExams = () => {
             game_system:game_systems (
               id,
               name,
-              logo_image_url
+              logo_image_url,
+              description
             )
           )
         `)
@@ -89,7 +92,7 @@ const MyExams = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as PlayerExam[];
+      return data as unknown as PlayerExam[];
     },
     enabled: !!player?.id
   });
