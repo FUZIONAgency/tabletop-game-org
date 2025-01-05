@@ -7,11 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Retailer } from "@/types/retailer";
-
-interface RetailerResponse {
-  retailer: Retailer;
-}
+import { Retailer, RetailerResponse } from "@/types/retailer";
 
 const MyRetailers = () => {
   const { user } = useAuth();

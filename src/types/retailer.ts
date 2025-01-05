@@ -8,3 +8,7 @@ export interface Retailer extends BaseEntity {
   state: string;
   store_photo: string | null;
 }
+
+export interface RetailerResponse {
+  retailer: Retailer;
+}
