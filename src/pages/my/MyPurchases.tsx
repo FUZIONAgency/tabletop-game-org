@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/auth";
 import { format } from "date-fns";
+import { PlayerSession } from "@/types/session";
 
 const MyPurchases = () => {
   const { user } = useAuth();
@@ -45,7 +46,7 @@ const MyPurchases = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as PlayerSession[];
     },
     enabled: !!user?.id,
   });

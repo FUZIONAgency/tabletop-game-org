@@ -1,21 +1,22 @@
-import { Campaign } from "./campaign";
-
-export interface PlayerSession {
-  id: string;
-  player_id: string;
-  attendance_status: string;
-}
+import { Campaign } from './campaign';
 
 export interface Session {
   id: string;
   campaign_id: string;
-  campaign?: Campaign;
   session_number: number;
   start_date: string;
-  end_date?: string | null;
-  description?: string | null;
-  status?: string | null;
+  description: string | null;
+  status: string;
   price: number;
-  created_at?: string;
-  player_session?: PlayerSession[];
+  end_date: string | null;
+  campaign: Campaign;
+}
+
+export interface PlayerSession {
+  id: string;
+  player_id: string;
+  session_id: string;
+  payment_status: string;
+  attendance_status: string;
+  session: Session;
 }
