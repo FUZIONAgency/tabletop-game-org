@@ -6,6 +6,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { GameSystemCard } from "@/components/sections/player/GameSystemCard";
+import { GameSystem } from "@/types/game-system";
+
+interface PlayerGameAccount {
+  account_id: string;
+  game_system: GameSystem;
+}
 
 const MyGameSystems = () => {
   const { user } = useAuth();
@@ -52,7 +58,7 @@ const MyGameSystems = () => {
         .eq('player_id', playerData.id);
 
       if (gamesError) throw gamesError;
-      return data || [];
+      return (data || []) as PlayerGameAccount[];
     },
     enabled: !!user,
   });

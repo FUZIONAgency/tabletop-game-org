@@ -7,6 +7,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 
+interface Tournament {
+  id: string;
+  title: string;
+  description: string | null;
+  start_date: string;
+  end_date: string;
+  location: string;
+  venue: string;
+  image_url: string | null;
+  prize_pool: number | null;
+}
+
 const MyTournaments = () => {
   const { user } = useAuth();
 
@@ -40,7 +52,7 @@ const MyTournaments = () => {
         .eq('player_id', playerData.id);
 
       if (tournamentsError) throw tournamentsError;
-      return data?.map(te => te.tournament) || [];
+      return data?.map(te => te.tournament) as Tournament[] || [];
     },
     enabled: !!user,
   });
