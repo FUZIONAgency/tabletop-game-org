@@ -1,10 +1,10 @@
 import { BaseEntity } from './common';
-import { GameSystem } from './game-system';
+import { GameSystem, GameSystemBasic } from './game-system';
 
 export interface Campaign extends BaseEntity {
   title: string;
   description: string | null;
-  game_system: GameSystem;
+  game_system: GameSystemBasic;
   game_system_id: string;
   min_players: number;
   max_players: number;

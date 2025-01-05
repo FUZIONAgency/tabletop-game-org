@@ -1,5 +1,14 @@
 import { Campaign } from './campaign';
 
+export interface PlayerSession {
+  id: string;
+  player_id: string;
+  session_id: string;
+  payment_status: string;
+  attendance_status: string;
+  session: Session;
+}
+
 export interface Session {
   id: string;
   campaign_id: string;
@@ -9,15 +18,7 @@ export interface Session {
   status: string;
   price: number;
   end_date: string | null;
-  campaign: Campaign;
+  campaign?: Campaign;
   player_session?: PlayerSession[];
-}
-
-export interface PlayerSession {
-  id: string;
-  player_id: string;
-  session_id: string;
-  payment_status: string;
-  attendance_status: string;
-  session: Session;
+  created_at?: string;
 }

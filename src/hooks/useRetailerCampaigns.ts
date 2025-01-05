@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth";
+import { Campaign } from "@/types/campaign";
 
 export const useRetailerCampaigns = () => {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ export const useRetailerCampaigns = () => {
         .select(`
           *,
           campaign_players!inner(*),
-          game_system:game_systems(name),
+          game_system:game_systems(id, name, description, logo_image_url),
           owner:campaign_players!inner(
             player:players(alias)
           )
@@ -49,7 +50,7 @@ export const useRetailerCampaigns = () => {
 
       if (error) throw error;
 
-      // Add is_member and is_owner flags
+      // Transform the data to match our Campaign type
       return campaigns.map(campaign => ({
         ...campaign,
         is_member: campaign.campaign_players.some(
@@ -58,8 +59,9 @@ export const useRetailerCampaigns = () => {
         is_owner: campaign.campaign_players.some(
           player => player.player_id === playerData?.id && player.role_type === 'owner'
         ),
-        owner_alias: campaign.owner[0]?.player?.alias || null
-      }));
+        owner_alias: campaign.owner[0]?.player?.alias || null,
+        game_system: campaign.game_system || null
+      })) as Campaign[];
     },
     enabled: !!user,
   });
