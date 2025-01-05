@@ -1,6 +1,6 @@
 import { LogOut, User, Gamepad, Store, Trophy, Tent, Package, Users, TestTube, DollarSign, Gift, Box, Settings, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -15,24 +15,16 @@ import { useAuth } from "@/contexts/auth";
 
 const ProfileMenu = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
       await signOut();
       navigate('/auth');
-      toast({
-        title: "Success",
-        description: "Logged out successfully",
-      });
+      toast.success("Logged out successfully");
     } catch (error) {
       console.error("Error logging out:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to log out",
-      });
+      toast.error("Failed to log out");
     }
   };
 

@@ -7,7 +7,6 @@ import RecruitNav from "./RecruitNav";
 import EarnNav from "./EarnNav";
 import { useAuth } from "@/contexts/auth";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   User,
@@ -35,18 +34,17 @@ const MobileNav = ({
   activeSection,
   scrollToSection,
 }: MobileNavProps) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await signOut();
       navigate('/auth');
       toast.success("Logged out successfully");
     } catch (error) {
       console.error("Error logging out:", error);
-      toast.error("Error logging out");
+      toast.error("Failed to log out");
     }
   };
 
