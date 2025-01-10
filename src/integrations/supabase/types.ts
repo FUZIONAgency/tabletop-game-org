@@ -1326,7 +1326,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          account_id: string
+          account_id?: string
           created_at?: string | null
           game_system_id: string
           id?: string

@@ -1,17 +1,25 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface AddGameSystemFormValues {
-  gameSystemId: string;
-  accountId: string;
-}
+const formSchema = z.object({
+  gameSystemId: z.string({
+    required_error: "Please select a game system",
+  }),
+  accountId: z.string({
+    required_error: "Please enter your account ID",
+  }).min(1, "Account ID is required"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface AddGameSystemModalProps {
   isOpen: boolean;
@@ -20,7 +28,13 @@ interface AddGameSystemModalProps {
 }
 
 export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSystemModalProps) => {
-  const form = useForm<AddGameSystemFormValues>();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      gameSystemId: "",
+      accountId: "",
+    },
+  });
   const queryClient = useQueryClient();
 
   const { data: gameSystems } = useQuery({
@@ -35,7 +49,7 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
     }
   });
 
-  const onSubmit = async (values: AddGameSystemFormValues) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       const { error } = await supabase
         .from('player_game_accounts')
@@ -48,7 +62,6 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
       if (error) throw error;
 
       toast.success("Game system added successfully!");
-      // Invalidate the my-games query without await
       queryClient.invalidateQueries({ queryKey: ['my-games'] });
       onOpenChange(false);
       form.reset();
@@ -86,6 +99,7 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -98,6 +112,7 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
                   <FormControl>
                     <Input placeholder="Enter your account ID" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
