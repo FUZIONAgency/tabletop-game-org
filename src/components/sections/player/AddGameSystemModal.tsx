@@ -35,14 +35,16 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
       accountId: "",
     },
   });
+
   const queryClient = useQueryClient();
 
   const { data: gameSystems } = useQuery({
-    queryKey: ['game_systems'],
+    queryKey: ['game-systems'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('game_systems')
-        .select('*');
+        .select('*')
+        .order('name');
       
       if (error) throw error;
       return data;
@@ -56,7 +58,7 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
         .insert({
           player_id: playerId,
           game_system_id: values.gameSystemId,
-          account_id: values.accountId
+          account_id: values.accountId,
         });
 
       if (error) throw error;
@@ -75,8 +77,9 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a New Game System</DialogTitle>
+          <DialogTitle>Add Game System</DialogTitle>
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -85,7 +88,10 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Game System</FormLabel>
-                  <Select onValueChange={field.onChange}>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a game system" />
@@ -103,6 +109,7 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="accountId"
@@ -116,7 +123,8 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Submit</Button>
+
+            <Button type="submit" className="w-full">Add Game System</Button>
           </form>
         </Form>
       </DialogContent>

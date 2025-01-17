@@ -9,6 +9,151 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ad_campaign_metrics: {
+        Row: {
+          campaign_id: string
+          clicks: number | null
+          conversion_rate: number | null
+          conversions: number | null
+          cpc: number | null
+          created_at: string | null
+          date: string
+          id: string
+          impressions: number | null
+          platform: string
+          revenue: number | null
+          roi: number | null
+          spend: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          campaign_id: string
+          clicks?: number | null
+          conversion_rate?: number | null
+          conversions?: number | null
+          cpc?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          impressions?: number | null
+          platform: string
+          revenue?: number | null
+          roi?: number | null
+          spend?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          clicks?: number | null
+          conversion_rate?: number | null
+          conversions?: number | null
+          cpc?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          impressions?: number | null
+          platform?: string
+          revenue?: number | null
+          roi?: number | null
+          spend?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_campaign_metrics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_campaign_transactions: {
+        Row: {
+          amount: number
+          campaign_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          platform: string
+          transaction_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          campaign_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          platform: string
+          transaction_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          campaign_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          platform?: string
+          transaction_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_campaign_transactions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_campaigns: {
+        Row: {
+          auth_id: string
+          budget: number | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          platform: string | null
+          start_date: string | null
+          status: string | null
+          target_audience: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_id?: string
+          budget?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          platform?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_audience?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_id?: string
+          budget?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          platform?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_audience?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       attribute_values: {
         Row: {
           attribute_id: string | null
@@ -143,6 +288,292 @@ export type Database = {
         }
         Relationships: []
       }
+      book_classes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      book_formats: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          size: Database["public"]["Enums"]["book_size"]
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          size: Database["public"]["Enums"]["book_size"]
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          size?: Database["public"]["Enums"]["book_size"]
+        }
+        Relationships: []
+      }
+      book_role_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      book_roles: {
+        Row: {
+          book_id: string | null
+          created_at: string
+          id: string
+          player_id: string | null
+          type_id: string | null
+        }
+        Insert: {
+          book_id?: string | null
+          created_at?: string
+          id?: string
+          player_id?: string | null
+          type_id?: string | null
+        }
+        Update: {
+          book_id?: string | null
+          created_at?: string
+          id?: string
+          player_id?: string | null
+          type_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_roles_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_roles_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "book_roles_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_roles_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "book_role_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      book_section_types: {
+        Row: {
+          content_json: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          content_json?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          content_json?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      book_sections: {
+        Row: {
+          book_id: string
+          content: string | null
+          content_json: Json | null
+          created_at: string
+          id: string
+          order_index: number
+          title: string
+          type_id: string
+          updated_at: string
+        }
+        Insert: {
+          book_id: string
+          content?: string | null
+          content_json?: Json | null
+          created_at?: string
+          id?: string
+          order_index: number
+          title: string
+          type_id: string
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string
+          content?: string | null
+          content_json?: Json | null
+          created_at?: string
+          id?: string
+          order_index?: number
+          title?: string
+          type_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_sections_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_sections_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "book_section_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      book_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      books: {
+        Row: {
+          author: string
+          class_id: string | null
+          content_type: string | null
+          created_at: string
+          format_id: string | null
+          id: string
+          isbn: string | null
+          template_id: string | null
+          title: string
+          type_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          class_id?: string | null
+          content_type?: string | null
+          created_at?: string
+          format_id?: string | null
+          id?: string
+          isbn?: string | null
+          template_id?: string | null
+          title: string
+          type_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          class_id?: string | null
+          content_type?: string | null
+          created_at?: string
+          format_id?: string | null
+          id?: string
+          isbn?: string | null
+          template_id?: string | null
+          title?: string
+          type_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "book_classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "books_format_id_fkey"
+            columns: ["format_id"]
+            isOneToOne: false
+            referencedRelation: "book_formats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "books_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "books_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "book_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_invitations: {
         Row: {
           campaign_id: string | null
@@ -250,6 +681,7 @@ export type Database = {
       }
       campaigns: {
         Row: {
+          auth_id: string | null
           created_at: string
           description: string | null
           game_system_id: string
@@ -264,6 +696,7 @@ export type Database = {
           type_id: string
         }
         Insert: {
+          auth_id?: string | null
           created_at?: string
           description?: string | null
           game_system_id?: string
@@ -278,6 +711,7 @@ export type Database = {
           type_id?: string
         }
         Update: {
+          auth_id?: string | null
           created_at?: string
           description?: string | null
           game_system_id?: string
@@ -395,6 +829,74 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      contract_types: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          version?: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
+      contracts: {
+        Row: {
+          contract_text: string
+          contract_type_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          contract_text: string
+          contract_type_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          version?: string
+        }
+        Update: {
+          contract_text?: string
+          contract_type_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_contract_type_id_fkey"
+            columns: ["contract_type_id"]
+            isOneToOne: false
+            referencedRelation: "contract_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conventions: {
         Row: {
@@ -564,6 +1066,84 @@ export type Database = {
           },
         ]
       }
+      demo_team_contracts: {
+        Row: {
+          auth_id: string
+          contract_accepted_at: string | null
+          contract_signed_at: string | null
+          contract_version: string
+          created_at: string | null
+          id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          auth_id: string
+          contract_accepted_at?: string | null
+          contract_signed_at?: string | null
+          contract_version?: string
+          created_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          auth_id?: string
+          contract_accepted_at?: string | null
+          contract_signed_at?: string | null
+          contract_version?: string
+          created_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      demo_team_territories: {
+        Row: {
+          auth_id: string
+          contract_id: string
+          created_at: string
+          id: string
+          metro_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          auth_id?: string
+          contract_id: string
+          created_at?: string
+          id?: string
+          metro_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          auth_id?: string
+          contract_id?: string
+          created_at?: string
+          id?: string
+          metro_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_team_territories_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "demo_team_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demo_team_territories_metro_id_fkey"
+            columns: ["metro_id"]
+            isOneToOne: false
+            referencedRelation: "metros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exam_questions: {
         Row: {
           created_at: string
@@ -639,6 +1219,113 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      fundraiser_surveys: {
+        Row: {
+          age: number | null
+          auth_id: string | null
+          business_name: string | null
+          completed_design_percentage: number | null
+          concerns_description: string | null
+          created_at: string | null
+          delivery_date: string | null
+          funding_date: string | null
+          fundraiser_id: string
+          id: string
+          intended_audience: string | null
+          launch_date: string | null
+          past_fundraising_experience: string | null
+          portions_complete_description: string | null
+          preferred_platform: string | null
+          prelaunch_date: string | null
+          questions_description: string | null
+          unique_project_description: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          age?: number | null
+          auth_id?: string | null
+          business_name?: string | null
+          completed_design_percentage?: number | null
+          concerns_description?: string | null
+          created_at?: string | null
+          delivery_date?: string | null
+          funding_date?: string | null
+          fundraiser_id: string
+          id?: string
+          intended_audience?: string | null
+          launch_date?: string | null
+          past_fundraising_experience?: string | null
+          portions_complete_description?: string | null
+          preferred_platform?: string | null
+          prelaunch_date?: string | null
+          questions_description?: string | null
+          unique_project_description?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: number | null
+          auth_id?: string | null
+          business_name?: string | null
+          completed_design_percentage?: number | null
+          concerns_description?: string | null
+          created_at?: string | null
+          delivery_date?: string | null
+          funding_date?: string | null
+          fundraiser_id?: string
+          id?: string
+          intended_audience?: string | null
+          launch_date?: string | null
+          past_fundraising_experience?: string | null
+          portions_complete_description?: string | null
+          preferred_platform?: string | null
+          prelaunch_date?: string | null
+          questions_description?: string | null
+          unique_project_description?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fundraiser_surveys_fundraiser_id_fkey"
+            columns: ["fundraiser_id"]
+            isOneToOne: true
+            referencedRelation: "fundraisers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fundraisers: {
+        Row: {
+          auth_id: string
+          budget: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          start_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_id?: string
+          budget?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_id?: string
+          budget?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       game_system_links: {
         Row: {
@@ -825,6 +1512,75 @@ export type Database = {
           },
         ]
       }
+      investor_surveys: {
+        Row: {
+          annual_revenue: number | null
+          auth_id: string
+          business_description: string | null
+          business_name: string | null
+          competitive_advantage: string | null
+          created_at: string | null
+          current_investors: string | null
+          exit_strategy: string | null
+          financial_projections: string | null
+          funding_amount: number | null
+          funding_purpose: string | null
+          id: string
+          intellectual_property: string | null
+          market_size: string | null
+          preferred_investment_type: string | null
+          risks_and_challenges: string | null
+          team_description: string | null
+          updated_at: string | null
+          use_of_funds: string | null
+          years_in_business: number | null
+        }
+        Insert: {
+          annual_revenue?: number | null
+          auth_id?: string
+          business_description?: string | null
+          business_name?: string | null
+          competitive_advantage?: string | null
+          created_at?: string | null
+          current_investors?: string | null
+          exit_strategy?: string | null
+          financial_projections?: string | null
+          funding_amount?: number | null
+          funding_purpose?: string | null
+          id?: string
+          intellectual_property?: string | null
+          market_size?: string | null
+          preferred_investment_type?: string | null
+          risks_and_challenges?: string | null
+          team_description?: string | null
+          updated_at?: string | null
+          use_of_funds?: string | null
+          years_in_business?: number | null
+        }
+        Update: {
+          annual_revenue?: number | null
+          auth_id?: string
+          business_description?: string | null
+          business_name?: string | null
+          competitive_advantage?: string | null
+          created_at?: string | null
+          current_investors?: string | null
+          exit_strategy?: string | null
+          financial_projections?: string | null
+          funding_amount?: number | null
+          funding_purpose?: string | null
+          id?: string
+          intellectual_property?: string | null
+          market_size?: string | null
+          preferred_investment_type?: string | null
+          risks_and_challenges?: string | null
+          team_description?: string | null
+          updated_at?: string | null
+          use_of_funds?: string | null
+          years_in_business?: number | null
+        }
+        Relationships: []
+      }
       invites: {
         Row: {
           accepted_at: string | null
@@ -896,6 +1652,230 @@ export type Database = {
             columns: ["accepted_by_player_id"]
             isOneToOne: false
             referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_bid_statuses: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      job_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string
+          estimated_days: number | null
+          id: string
+          job_id: string
+          proposal: string | null
+          status_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string
+          estimated_days?: number | null
+          id?: string
+          job_id: string
+          proposal?: string | null
+          status_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string
+          estimated_days?: number | null
+          id?: string
+          job_id?: string
+          proposal?: string | null
+          status_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_bids_bidder_id_fkey"
+            columns: ["bidder_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "job_bids_bidder_id_fkey"
+            columns: ["bidder_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_bids_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_bids_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "job_bid_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_classes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      job_statuses: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      job_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      jobs: {
+        Row: {
+          budget: number | null
+          class_id: string
+          created_at: string
+          description: string | null
+          id: string
+          requestor_id: string
+          status_id: string
+          title: string
+          type_id: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          class_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          requestor_id: string
+          status_id: string
+          title: string
+          type_id: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          class_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          requestor_id?: string
+          status_id?: string
+          title?: string
+          type_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "job_classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_requestor_id_fkey"
+            columns: ["requestor_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "jobs_requestor_id_fkey"
+            columns: ["requestor_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "job_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "job_types"
             referencedColumns: ["id"]
           },
         ]
@@ -1586,6 +2566,58 @@ export type Database = {
           },
         ]
       }
+      player_skills: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          player_id: string | null
+          rating: number
+          skill_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          player_id?: string | null
+          rating?: number
+          skill_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          player_id?: string | null
+          rating?: number
+          skill_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_skills_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "player_skills_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           alias: string
@@ -1836,6 +2868,7 @@ export type Database = {
           address_1: string | null
           carousel_image: string | null
           city: string
+          country_id: string
           created_at: string | null
           description: string | null
           email: string | null
@@ -1868,6 +2901,7 @@ export type Database = {
           address_1?: string | null
           carousel_image?: string | null
           city: string
+          country_id?: string
           created_at?: string | null
           description?: string | null
           email?: string | null
@@ -1900,6 +2934,7 @@ export type Database = {
           address_1?: string | null
           carousel_image?: string | null
           city?: string
+          country_id?: string
           created_at?: string | null
           description?: string | null
           email?: string | null
@@ -1929,10 +2964,193 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "retailers_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "retailers_metro_id_fkey"
             columns: ["metro_id"]
             isOneToOne: false
             referencedRelation: "metro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retailers_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "retailer_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_order_status_dependencies: {
+        Row: {
+          created_at: string
+          dependent_id: string
+          id: string
+          precedent_id: string
+          type_id: string
+        }
+        Insert: {
+          created_at?: string
+          dependent_id: string
+          id?: string
+          precedent_id: string
+          type_id?: string
+        }
+        Update: {
+          created_at?: string
+          dependent_id?: string
+          id?: string
+          precedent_id?: string
+          type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_order_status_dependencies_dependent_id_fkey"
+            columns: ["dependent_id"]
+            isOneToOne: false
+            referencedRelation: "service_order_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_order_status_dependencies_precedent_id_fkey"
+            columns: ["precedent_id"]
+            isOneToOne: false
+            referencedRelation: "service_order_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_order_status_dependencies_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "service_order_status_dependency_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_order_status_dependency_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      service_order_statuses: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          percent_completed: number
+          service_order_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          percent_completed?: number
+          service_order_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          percent_completed?: number
+          service_order_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_order_statuses_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_orders: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          end_date: string
+          id: string
+          job_id: string
+          name: string
+          provider_id: string | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          end_date: string
+          id?: string
+          job_id: string
+          name?: string
+          provider_id?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          job_id?: string
+          name?: string
+          provider_id?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "player_earnings_metrics"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "service_orders_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "players"
             referencedColumns: ["id"]
           },
         ]
@@ -1977,6 +3195,59 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      skills: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          type_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          type_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          type_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skills_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "skill_types"
             referencedColumns: ["id"]
           },
         ]
@@ -2592,6 +3863,12 @@ export type Database = {
           geom2: unknown
         }
         Returns: boolean
+      }
+      accept_job_bid: {
+        Args: {
+          bid_id_param: string
+        }
+        Returns: undefined
       }
       addauth: {
         Args: {
@@ -5470,6 +6747,16 @@ export type Database = {
       }
     }
     Enums: {
+      ad_platform_type:
+        | "google_adwords"
+        | "facebook"
+        | "tiktok"
+        | "reddit"
+        | "x_twitter"
+        | "radio"
+        | "billboard"
+        | "email"
+      book_size: "8.5x11" | "6x9"
       metro_status: "active" | "inactive"
     }
     CompositeTypes: {
