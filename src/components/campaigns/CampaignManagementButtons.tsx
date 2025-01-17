@@ -16,7 +16,7 @@ export const CampaignManagementButtons = () => {
       </Button>
       
       <Button
-        onClick={() => navigate('/my/games')}
+        onClick={() => navigate('/my/game-systems')}
         className="bg-gold hover:bg-yellow-500 text-black"
       >
         <Plus className="mr-2 h-4 w-4" />
