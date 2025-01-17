@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserRole } from "./types";
+import { toast } from "sonner";
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -18,10 +19,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setRole("anonymous");
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setRole("anonymous");
+      // Clear any stored tokens
+      localStorage.removeItem('sb-kwpptrhywkyuzadwxgdl-auth-token');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error("Failed to sign out properly");
+    }
   };
 
   useEffect(() => {
@@ -30,18 +38,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       try {
         // Get initial session
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
         
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
+        }
+
         if (mounted) {
           if (currentSession?.user) {
             setUser(currentSession.user);
             setSession(currentSession);
-            const { data: profile } = await supabase
+            
+            const { data: profile, error: profileError } = await supabase
               .from('profiles')
               .select('role')
               .eq('id', currentSession.user.id)
               .maybeSingle();
             
+            if (profileError) {
+              console.error('Profile error:', profileError);
+              throw profileError;
+            }
+
             setRole(profile?.role as UserRole || "user");
           }
           setIsLoading(false);
@@ -50,10 +69,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
           async (event, newSession) => {
-            if (mounted) {
-              setSession(newSession);
-              setUser(newSession?.user ?? null);
-              if (newSession?.user) {
+            if (!mounted) return;
+
+            console.log('Auth state changed:', event);
+
+            if (event === 'TOKEN_REFRESHED') {
+              console.log('Token refreshed successfully');
+            }
+
+            if (event === 'SIGNED_OUT') {
+              setUser(null);
+              setSession(null);
+              setRole("anonymous");
+              localStorage.removeItem('sb-kwpptrhywkyuzadwxgdl-auth-token');
+            }
+
+            setSession(newSession);
+            setUser(newSession?.user ?? null);
+
+            if (newSession?.user) {
+              try {
                 const { data: profile } = await supabase
                   .from('profiles')
                   .select('role')
@@ -61,11 +96,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                   .maybeSingle();
                 
                 setRole(profile?.role as UserRole || "user");
-              } else {
-                setRole("anonymous");
+              } catch (error) {
+                console.error('Error fetching profile:', error);
+                setRole("user");
               }
-              setIsLoading(false);
+            } else {
+              setRole("anonymous");
             }
+
+            setIsLoading(false);
           }
         );
 
@@ -77,6 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Error initializing auth:', error);
         if (mounted) {
           setIsLoading(false);
+          toast.error("Authentication error occurred");
         }
       }
     };
