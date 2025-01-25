@@ -36,6 +36,14 @@ export const SessionList = ({ campaignId }: SessionListProps) => {
           player_session:player_sessions(
             id,
             attendance_status
+          ),
+          campaign:campaigns(
+            id,
+            retailer_id,
+            retailer:retailers(
+              id,
+              name
+            )
           )
         `)
         .eq("campaign_id", campaignId)

@@ -18,7 +18,12 @@ export interface Session {
   status: string;
   price: number;
   end_date: string | null;
-  campaign?: Campaign;
+  campaign?: Campaign & {
+    retailer?: {
+      id: string;
+      name: string;
+    }
+  };
   player_session?: PlayerSession[];
   created_at?: string;
 }
