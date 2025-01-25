@@ -47,6 +47,8 @@ const MyGames = () => {
 
   // Filter owned campaigns
   const ownedCampaigns = campaigns?.filter(campaign => campaign.is_owner) || [];
+  // Filter campaigns where player is a participant but not owner
+  const participatingCampaigns = campaigns?.filter(campaign => !campaign.is_owner) || [];
 
   const handleJoinCampaign = async (campaignId: string) => {
     // This is a placeholder since we're only showing owned/joined campaigns
@@ -84,6 +86,18 @@ const MyGames = () => {
             >
               <CampaignTable 
                 campaigns={ownedCampaigns} 
+                onJoinCampaign={handleJoinCampaign}
+                onLeaveCampaign={handleLeaveCampaign}
+              />
+            </Section>
+
+            <Section
+              id="playing-games"
+              title="Playing Games"
+              subtitle="Games you are participating in"
+            >
+              <CampaignTable 
+                campaigns={participatingCampaigns}
                 onJoinCampaign={handleJoinCampaign}
                 onLeaveCampaign={handleLeaveCampaign}
               />
