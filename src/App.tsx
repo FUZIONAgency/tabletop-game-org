@@ -81,6 +81,7 @@ function App() {
             <Route path="/play/online" element={<Online />} />
             
             {/* Retailer Routes */}
+            <Route path="/retailers/search" element={<RetailerSearch />} />
             <Route path="/retailers/:id" element={<RetailerDetail />} />
             <Route path="/retailers/:id/edit" element={<EditCampaign />} />
 
