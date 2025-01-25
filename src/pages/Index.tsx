@@ -8,9 +8,9 @@ import RewardsSection from "@/components/sections/RewardsSection";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/auth";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import PageLayout from "@/components/PageLayout";
 
 const Index = () => {
   const { isLoading, user } = useAuth();
@@ -31,20 +31,8 @@ const Index = () => {
     console.log("Auth state:", { isLoading, user });
   }, [isLoading, user]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white p-6 space-y-8">
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-[60vh] w-full" />
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white flex flex-col min-h-screen relative">
-      <Navigation />
+    <PageLayout>
       <div className="flex-grow relative z-10">
         <HeroSection />
         
@@ -92,8 +80,7 @@ const Index = () => {
           <RewardsSection />
         </Section>
       </div>
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };
 
