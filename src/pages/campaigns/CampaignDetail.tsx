@@ -89,26 +89,14 @@ const CampaignDetail = () => {
   const { data: ads } = useQuery({
     queryKey: ['campaign-ads', id],
     queryFn: async () => {
-      // Try both 'ads' and 'advertising' folders
-      const [adsData, advertisingData] = await Promise.all([
-        supabase.storage.from('campaigns').list(`${id}/ads`),
-        supabase.storage.from('campaigns').list(`${id}/advertising`)
-      ]);
+      const { data, error } = await supabase.storage
+        .from('campaigns')
+        .list(`${id}/ads`);
 
-      console.log('Ads folder contents:', adsData.data);
-      console.log('Advertising folder contents:', advertisingData.data);
+      console.log('Ads folder contents:', data);
 
-      // Combine results from both folders
-      const combinedData = [
-        ...(adsData.data || []),
-        ...(advertisingData.data || [])
-      ];
-
-      if (adsData.error && advertisingData.error) {
-        throw adsData.error;
-      }
-
-      return combinedData;
+      if (error) throw error;
+      return data;
     },
     enabled: !!id,
   });
@@ -179,17 +167,14 @@ const CampaignDetail = () => {
 
                 <TabsContent value="advertising">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {ads?.map((ad) => {
-                      const path = ad.name.includes('/') ? ad.name : `ads/${ad.name}`;
-                      return (
-                        <img
-                          key={ad.name}
-                          src={getFileUrl(path)}
-                          alt={ad.name}
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      );
-                    })}
+                    {ads?.map((ad) => (
+                      <img
+                        key={ad.name}
+                        src={getFileUrl(`ads/${ad.name}`)}
+                        alt={ad.name}
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                    ))}
                   </div>
                 </TabsContent>
 
