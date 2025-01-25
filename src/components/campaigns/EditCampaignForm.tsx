@@ -2,28 +2,13 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Campaign } from "@/types/campaign";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-
-type FormData = {
-  title: string;
-  description: string;
-  type_id: string;
-  min_players: number;
-  max_players: number;
-  price: number;
-};
+import { EditFormData } from "./forms/types";
+import { EditCampaignBasicInfo } from "./forms/EditCampaignBasicInfo";
+import { EditCampaignTypeSelect } from "./forms/EditCampaignTypeSelect";
+import { EditCampaignPlayerCount } from "./forms/EditCampaignPlayerCount";
+import { EditCampaignPrice } from "./forms/EditCampaignPrice";
 
 interface EditCampaignFormProps {
   campaign: Campaign;
@@ -33,7 +18,7 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { register, handleSubmit, setValue } = useForm<FormData>({
+  const { register, handleSubmit, setValue } = useForm<EditFormData>({
     defaultValues: {
       title: campaign.title,
       description: campaign.description || '',
@@ -47,20 +32,7 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
   // Get the return path from state, fallback to /my/games if not set
   const returnPath = location.state?.from || '/my/games';
 
-  const { data: campaignTypes } = useQuery({
-    queryKey: ['campaignTypes'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('campaign_types')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: EditFormData) => {
     try {
       const { error } = await supabase
         .from('campaigns')
@@ -93,82 +65,31 @@ export const EditCampaignForm = ({ campaign }: EditCampaignFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          {...register("title", { required: true })}
-        />
-      </div>
+      <EditCampaignBasicInfo 
+        register={register}
+        defaultValues={{
+          title: campaign.title,
+          description: campaign.description || ''
+        }}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          {...register("description")}
-        />
-      </div>
+      <EditCampaignTypeSelect
+        defaultValue={campaign.type_id || ''}
+        onValueChange={(value) => setValue("type_id", value)}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="type_id">Type</Label>
-        <Select
-          onValueChange={(value) => setValue("type_id", value)}
-          defaultValue={campaign.type_id || ""}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            {campaignTypes?.map((type) => (
-              <SelectItem key={type.id} value={type.id}>
-                {type.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <EditCampaignPlayerCount
+        register={register}
+        defaultValues={{
+          min_players: campaign.min_players,
+          max_players: campaign.max_players
+        }}
+      />
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="min_players">Min Players</Label>
-          <Input
-            id="min_players"
-            type="number"
-            {...register("min_players", { 
-              required: true,
-              valueAsNumber: true,
-              min: 1
-            })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="max_players">Max Players</Label>
-          <Input
-            id="max_players"
-            type="number"
-            {...register("max_players", { 
-              required: true,
-              valueAsNumber: true,
-              min: 1
-            })}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="price">Price</Label>
-        <Input
-          id="price"
-          type="number"
-          step="0.01"
-          {...register("price", { 
-            required: true,
-            valueAsNumber: true,
-            min: 0
-          })}
-        />
-      </div>
+      <EditCampaignPrice
+        register={register}
+        defaultValue={campaign.price}
+      />
 
       <div className="flex gap-4">
         <Button type="submit">
