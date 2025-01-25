@@ -16,7 +16,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 type FormData = {
   title: string;
@@ -33,6 +48,8 @@ const NewCampaign = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { register, handleSubmit, setValue } = useForm<FormData>();
+  const [open, setOpen] = useState(false);
+  const [retailerValue, setRetailerValue] = useState("");
 
   const { data: campaignTypes } = useQuery({
     queryKey: ['campaignTypes'],
@@ -165,20 +182,48 @@ const NewCampaign = () => {
 
             <div className="space-y-2">
               <Label htmlFor="retailer_id">Retailer (Optional)</Label>
-              <Select
-                onValueChange={(value) => setValue("retailer_id", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select retailer" />
-                </SelectTrigger>
-                <SelectContent>
-                  {retailers?.map((retailer) => (
-                    <SelectItem key={retailer.id} value={retailer.id}>
-                      {retailer.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                  >
+                    {retailerValue
+                      ? retailers?.find((retailer) => retailer.id === retailerValue)?.name
+                      : "Select retailer..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search retailers..." />
+                    <CommandEmpty>No retailer found.</CommandEmpty>
+                    <CommandGroup>
+                      {retailers?.map((retailer) => (
+                        <CommandItem
+                          key={retailer.id}
+                          value={retailer.name}
+                          onSelect={() => {
+                            setRetailerValue(retailer.id);
+                            setValue("retailer_id", retailer.id);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              retailerValue === retailer.id ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {retailer.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
