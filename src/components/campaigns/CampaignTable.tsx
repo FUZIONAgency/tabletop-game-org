@@ -34,10 +34,11 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
         } else {
           await onLeaveCampaign(selectedCampaignId);
         }
-        setIsDialogOpen(false);
-        setSelectedCampaignId(null);
       } catch (error) {
         console.error('Error during campaign action:', error);
+      } finally {
+        setIsDialogOpen(false);
+        setSelectedCampaignId(null);
       }
     }
   };
