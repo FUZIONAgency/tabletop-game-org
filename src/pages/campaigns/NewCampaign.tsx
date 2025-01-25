@@ -21,6 +21,12 @@ const NewCampaign = () => {
     created_at: new Date().toISOString(),
     game_system_id: '',
     auth_id: '',
+    game_system: {
+      id: '',
+      name: '',
+      description: null,
+      logo_image_url: null
+    }
   };
 
   return (
