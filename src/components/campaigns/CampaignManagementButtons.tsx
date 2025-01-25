@@ -12,7 +12,7 @@ export const CampaignManagementButtons = () => {
         className="bg-gold hover:bg-yellow-500 text-black"
       >
         <Plus className="mr-2 h-4 w-4" />
-        Add Campaign
+        Add Game
       </Button>
     </div>
   );
