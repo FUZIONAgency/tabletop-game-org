@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth...');
         // Get initial session
         const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
         
@@ -47,6 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (mounted) {
           if (currentSession?.user) {
+            console.log('Found existing session:', currentSession.user.email);
             setUser(currentSession.user);
             setSession(currentSession);
             
@@ -62,6 +64,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             setRole(profile?.role as UserRole || "user");
+          } else {
+            console.log('No existing session found');
           }
           setIsLoading(false);
         }
