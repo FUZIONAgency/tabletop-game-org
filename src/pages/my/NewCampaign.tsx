@@ -205,9 +205,12 @@ const NewCampaign = () => {
                         <CommandItem
                           key={retailer.id}
                           value={retailer.name}
-                          onSelect={() => {
-                            setRetailerValue(retailer.id);
-                            setValue("retailer_id", retailer.id);
+                          onSelect={(currentValue) => {
+                            const selectedRetailer = retailers.find(r => r.name.toLowerCase() === currentValue.toLowerCase());
+                            if (selectedRetailer) {
+                              setRetailerValue(selectedRetailer.id);
+                              setValue("retailer_id", selectedRetailer.id);
+                            }
                             setOpen(false);
                           }}
                         >
