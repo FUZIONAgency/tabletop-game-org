@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { FormData } from "./types";
+import { CampaignFormData } from "./types";
 import { usePlayerData } from "@/components/network/hooks/usePlayerData";
 import { BasicInfoSection } from "./sections/BasicInfoSection";
 import { GameSystemSection } from "./sections/GameSystemSection";
@@ -17,9 +17,9 @@ export function CampaignForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const playerId = usePlayerData(user?.id);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<CampaignFormData>();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: CampaignFormData) => {
     try {
       if (!user?.id) {
         toast.error("You must be logged in to create a campaign");
