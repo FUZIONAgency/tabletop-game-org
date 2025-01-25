@@ -3,38 +3,63 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
+  const navigate = useNavigate();
   const redirectTo = `${window.location.origin}/auth/callback`;
 
-  // Add auth state change listener with improved error handling
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN") {
-      toast.success("Successfully signed in!");
-    } else if (event === "USER_UPDATED") {
-      toast.success("Your account has been updated");
-    } else if (event === "PASSWORD_RECOVERY") {
-      toast.info("Check your email for password reset instructions");
-    } else if (event === "SIGNED_OUT") {
-      toast.error("You have been signed out");
-    }
-
-    // Handle auth errors
-    const error = session?.user?.user_metadata?.error;
-    if (error) {
-      console.error("Auth error:", error);
-      
-      if (error.message?.includes("Invalid login credentials")) {
-        toast.error("Invalid email or password. Please try again.");
-      } else if (error.message?.includes("Email not confirmed")) {
-        toast.error("Please check your email and verify your account before logging in.");
-      } else if (error.status === 400) {
-        toast.error(error.message || "There was a problem with your request. Please try again.");
-      } else {
-        toast.error(error.message || "An error occurred during authentication");
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/');
       }
-    }
-  });
+    };
+    checkUser();
+
+    // Add auth state change listener with improved error handling
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
+
+      if (event === "SIGNED_IN") {
+        toast.success("Successfully signed in!");
+        navigate('/');
+      } else if (event === "USER_UPDATED") {
+        toast.success("Your account has been updated");
+      } else if (event === "PASSWORD_RECOVERY") {
+        toast.info("Check your email for password reset instructions");
+      } else if (event === "SIGNED_OUT") {
+        toast.error("You have been signed out");
+      }
+
+      // Handle auth errors
+      const error = session?.error || (session as any)?.error;
+      if (error) {
+        console.error("Auth error:", error);
+        
+        if (error.message?.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password. Please try again.");
+        } else if (error.message?.includes("Email not confirmed")) {
+          toast.error("Please check your email and verify your account before logging in.");
+        } else if (error.message?.includes("Database error saving new user")) {
+          toast.error("There was an error creating your account. Please try again later.");
+        } else if (error.status === 400) {
+          toast.error(error.message || "There was a problem with your request. Please try again.");
+        } else if (error.status === 500) {
+          toast.error("An unexpected error occurred. Please try again later.");
+        } else {
+          toast.error(error.message || "An error occurred during authentication");
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div className="w-full max-w-md">
@@ -78,6 +103,10 @@ const AuthForm = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
+          onError={(error) => {
+            console.error("Auth UI error:", error);
+            toast.error(error.message || "An error occurred during authentication");
+          }}
         />
       </div>
     </div>
