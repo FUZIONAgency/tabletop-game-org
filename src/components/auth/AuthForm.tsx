@@ -34,26 +34,6 @@ const AuthForm = () => {
       } else if (event === "SIGNED_OUT") {
         toast.error("You have been signed out");
       }
-
-      // Handle auth errors
-      if (session?.error) {
-        console.error("Auth error:", session.error);
-        
-        const errorMessage = session.error.message;
-        if (errorMessage?.includes("Invalid login credentials")) {
-          toast.error("Invalid email or password. Please try again.");
-        } else if (errorMessage?.includes("Email not confirmed")) {
-          toast.error("Please check your email and verify your account before logging in.");
-        } else if (errorMessage?.includes("Database error saving new user")) {
-          toast.error("There was an error creating your account. Please try again later.");
-        } else if (session.error.status === 400) {
-          toast.error(errorMessage || "There was a problem with your request. Please try again.");
-        } else if (session.error.status === 500) {
-          toast.error("An unexpected error occurred. Please try again later.");
-        } else {
-          toast.error(errorMessage || "An error occurred during authentication");
-        }
-      }
     });
 
     return () => {
@@ -103,10 +83,6 @@ const AuthForm = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
-          onError={(error) => {
-            console.error("Auth UI error:", error);
-            toast.error(error.message || "An error occurred during authentication");
-          }}
         />
       </div>
     </div>
