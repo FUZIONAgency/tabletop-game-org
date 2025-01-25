@@ -17,6 +17,7 @@ export const useLeaveCampaign = (refetch: () => void) => {
     }
 
     try {
+      // First get the player record for the current user
       const { data: playerData } = await supabase
         .from("players")
         .select("id")
@@ -32,6 +33,7 @@ export const useLeaveCampaign = (refetch: () => void) => {
         return;
       }
 
+      // Delete the campaign_players record
       const { error: leaveError } = await supabase
         .from("campaign_players")
         .delete()
