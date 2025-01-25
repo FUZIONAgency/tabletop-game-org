@@ -3,14 +3,17 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
+  const navigate = useNavigate();
   const redirectTo = `${window.location.origin}/auth/callback`;
 
   // Add auth state change listener with improved error handling
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === "SIGNED_IN") {
       toast.success("Successfully signed in!");
+      navigate("/"); // Redirect to home page after sign in
     } else if (event === "USER_UPDATED") {
       toast.success("Your account has been updated");
     } else if (event === "PASSWORD_RECOVERY") {
