@@ -12,6 +12,7 @@ import MyProfile from "@/pages/my/MyProfile";
 import MyGames from "@/pages/my/MyGames";
 import MyEarnings from "@/pages/my/MyEarnings";
 import MyPurchases from "@/pages/my/MyPurchases";
+import MyFundraisers from "@/pages/my/MyFundraisers";
 import NewCampaign from "@/pages/my/NewCampaign";
 import MyConventions from "@/pages/my/MyConventions";
 import MyGameSystems from "@/pages/my/MyGameSystems";
@@ -79,6 +80,7 @@ function App() {
             <Route path="/my/retailers" element={<ProtectedRoute><MyRetailers /></ProtectedRoute>} />
             <Route path="/my/earnings" element={<ProtectedRoute><MyEarnings /></ProtectedRoute>} />
             <Route path="/my/purchases" element={<ProtectedRoute><MyPurchases /></ProtectedRoute>} />
+            <Route path="/my/fundraisers" element={<ProtectedRoute><MyFundraisers /></ProtectedRoute>} />
             <Route path="/my/exams" element={<ProtectedRoute><MyExams /></ProtectedRoute>} />
             <Route path="/my/exams/:examId" element={<ProtectedRoute><TakeExam /></ProtectedRoute>} />
             <Route path="/my/conventions" element={<ProtectedRoute><MyConventions /></ProtectedRoute>} />
