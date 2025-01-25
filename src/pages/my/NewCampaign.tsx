@@ -26,6 +26,7 @@ type FormData = {
   max_players: number;
   price: number;
   game_system_id: string;
+  retailer_id?: string;
 };
 
 const NewCampaign = () => {
@@ -59,6 +60,19 @@ const NewCampaign = () => {
     }
   });
 
+  const { data: retailers } = useQuery({
+    queryKey: ['retailers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('retailers')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const onSubmit = async (data: FormData) => {
     try {
       const { error } = await supabase
@@ -71,6 +85,7 @@ const NewCampaign = () => {
           max_players: data.max_players,
           price: data.price,
           game_system_id: data.game_system_id,
+          retailer_id: data.retailer_id || null,
           auth_id: user?.id
         });
 
@@ -142,6 +157,24 @@ const NewCampaign = () => {
                   {campaignTypes?.map((type) => (
                     <SelectItem key={type.id} value={type.id}>
                       {type.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="retailer_id">Retailer (Optional)</Label>
+              <Select
+                onValueChange={(value) => setValue("retailer_id", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select retailer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {retailers?.map((retailer) => (
+                    <SelectItem key={retailer.id} value={retailer.id}>
+                      {retailer.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
