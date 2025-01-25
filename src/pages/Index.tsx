@@ -6,7 +6,6 @@ import GamesSection from "@/components/sections/GamesSection";
 import RecruitingSection from "@/components/sections/RecruitingSection";
 import RewardsSection from "@/components/sections/RewardsSection";
 import MyPlayerSection from "@/components/sections/MyPlayerSection";
-import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
@@ -100,7 +99,6 @@ const Index = () => {
           </Section>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
