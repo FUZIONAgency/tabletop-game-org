@@ -24,6 +24,17 @@ export function CampaignForm() {
         return;
       }
 
+      // Validate required fields
+      if (!data.game_system_id) {
+        toast.error("Please select a game system");
+        return;
+      }
+
+      if (!data.type_id) {
+        toast.error("Please select a campaign type");
+        return;
+      }
+
       const { error } = await supabase
         .from('campaigns')
         .insert({
@@ -54,12 +65,12 @@ export function CampaignForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl space-y-6">
-      <CampaignBasicInfo register={register} />
+      <CampaignBasicInfo register={register} errors={errors} />
       <GameSystemSelect setValue={setValue} />
       <RetailerSelect setValue={setValue} userId={user?.id} />
       <CampaignTypeSelect setValue={setValue} />
-      <PlayerCountInputs register={register} />
-      <PriceInput register={register} />
+      <PlayerCountInputs register={register} errors={errors} />
+      <PriceInput register={register} errors={errors} />
 
       <div className="flex gap-4">
         <Button type="submit">

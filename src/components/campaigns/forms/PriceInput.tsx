@@ -1,13 +1,14 @@
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { FormData } from "./types";
 
 type Props = {
   register: UseFormRegister<FormData>;
+  errors: FieldErrors<FormData>;
 };
 
-export function PriceInput({ register }: Props) {
+export function PriceInput({ register, errors }: Props) {
   return (
     <div className="space-y-2">
       <Label htmlFor="price">Price</Label>
@@ -16,12 +17,19 @@ export function PriceInput({ register }: Props) {
         type="number"
         step="0.01"
         {...register("price", { 
-          required: true,
+          required: "Price is required",
           valueAsNumber: true,
-          min: 0
+          min: {
+            value: 0,
+            message: "Price cannot be negative"
+          }
         })}
         placeholder="0.00"
+        className={errors.price ? "border-red-500" : ""}
       />
+      {errors.price && (
+        <p className="text-sm text-red-500">{errors.price.message}</p>
+      )}
     </div>
   );
 }
