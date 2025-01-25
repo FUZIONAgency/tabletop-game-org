@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 // Pages
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Network from "@/pages/recruit/Network";
+
 import AcceptInvite from "@/pages/AcceptInvite";
 import MyProfile from "@/pages/my/MyProfile";
 import MyGames from "@/pages/my/MyGames";
@@ -25,8 +25,7 @@ import RetailerDetail from "@/pages/retailers/RetailerDetail";
 import RetailerSearch from "@/pages/retailers/RetailerSearch";
 
 // Recruit pages
-
-
+import MyNetwork from "@/pages/recruit/MyNetwork";
 
 // Earn pages
 import ConventionSales from "./pages/earn/ConventionSales";
@@ -65,10 +64,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/network" element={<Network />} />
             <Route path="/accept-invite" element={<AcceptInvite />} />
             
             {/* My Section Routes */}
+            <Route path="/my/network" element={<ProtectedRoute><MyNetwork /></ProtectedRoute>} />
             <Route path="/my/profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
             <Route path="/my/games" element={<ProtectedRoute><MyGames /></ProtectedRoute>} />
             <Route path="/my/games/new" element={<ProtectedRoute><NewCampaign /></ProtectedRoute>} />
