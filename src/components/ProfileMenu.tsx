@@ -34,7 +34,6 @@ const ProfileMenu = () => {
     { label: "My Retailers", icon: Store, path: "/my/retailers" },
     { label: "My Tournaments", icon: Trophy, path: "/my/tournaments" },
     { label: "My Conventions", icon: Tent, path: "/my/conventions" },
-    { label: "My Products", icon: Package, path: "/my/products" },
     { label: "My Team", icon: Users, path: "/my/network" },
     { label: "My Exams", icon: TestTube, path: "/my/exams" },
     { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
