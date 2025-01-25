@@ -21,6 +21,10 @@ import Online from "@/pages/play/Online";
 import CampaignDetail from "@/pages/campaigns/CampaignDetail";
 import EditCampaign from "@/pages/campaigns/EditCampaign";
 
+import RetailerDetail from "@/pages/retailers/RetailerDetail";
+import RetailerSearch from "@/pages/retailers/RetailerSearch";
+
+
 // Footer pages
 import Contact from "@/pages/footer/Contact";
 import Terms from "@/pages/footer/Terms";
@@ -76,6 +80,10 @@ function App() {
             <Route path="/play/convention" element={<ConventionGames />} />
             <Route path="/play/online" element={<Online />} />
             
+            {/* Retailer Routes */}
+            <Route path="/retailers/:id" element={<RetailerDetail />} />
+            <Route path="/retailers/:id/edit" element={<EditCampaign />} />
+
             {/* Campaign Routes */}
             <Route path="/campaigns/:id" element={<CampaignDetail />} />
             <Route path="/campaigns/:id/edit" element={<EditCampaign />} />
