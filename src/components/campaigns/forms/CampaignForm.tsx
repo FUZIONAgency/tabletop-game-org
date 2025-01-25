@@ -15,10 +15,15 @@ import { FormData } from "./types";
 export function CampaignForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { register, handleSubmit, setValue } = useForm<FormData>();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
     try {
+      if (!user?.id) {
+        toast.error("You must be logged in to create a campaign");
+        return;
+      }
+
       const { error } = await supabase
         .from('campaigns')
         .insert({
@@ -30,10 +35,14 @@ export function CampaignForm() {
           price: data.price,
           game_system_id: data.game_system_id,
           retailer_id: data.retailer_id || null,
-          auth_id: user?.id
+          auth_id: user.id
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating campaign:', error);
+        toast.error("Failed to create campaign");
+        return;
+      }
 
       toast.success("Campaign created successfully");
       navigate('/my/games');
