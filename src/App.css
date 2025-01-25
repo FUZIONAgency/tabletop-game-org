@@ -43,3 +43,14 @@
   padding-top: 100px;
   padding-bottom: 100px;
 }
+
+/* Add padding to section headers on landing page */
+.landing-section-header {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+/* Add padding above footer */
+footer {
+  margin-top: 80px;
+}
