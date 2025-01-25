@@ -31,6 +31,9 @@ import RetailerSearch from "@/pages/retailers/RetailerSearch";
 // Recruit pages
 import MyNetwork from "@/pages/recruit/MyNetwork";
 
+// Qualify pages
+import GetCertified from "@/pages/qualify/GetCertified";
+
 // Earn pages
 import ConventionSales from "./pages/earn/ConventionSales";
 import Overrides from "./pages/earn/Overrides";
@@ -89,7 +92,11 @@ function App() {
             <Route path="/play/retailer" element={<ProtectedRoute><RetailerGames /></ProtectedRoute>} />
             <Route path="/play/convention" element={<ProtectedRoute><ConventionGames /></ProtectedRoute>} />
             <Route path="/play/online" element={<ProtectedRoute><Online /></ProtectedRoute>} />
-            
+
+            {/* Qualify Section Routes */}
+            <Route path="/qualify/get-certified" element={<ProtectedRoute><GetCertified /></ProtectedRoute>} />
+
+
             {/* Earn Section Routes */}
             <Route path="/earn/product-sales" element={<ProtectedRoute><ProductSales /></ProtectedRoute>} />
             <Route path="/earn/overrides" element={<ProtectedRoute><Overrides /></ProtectedRoute>} />
