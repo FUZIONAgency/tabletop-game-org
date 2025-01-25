@@ -22,10 +22,10 @@ interface SessionFormProps {
 }
 
 const formSchema = z.object({
-  session_number: z.number().min(1, "Session number is required"),
+  session_number: z.coerce.number().min(1, "Session number is required"),
   description: z.string().min(1, "Description is required"),
   start_date: z.string().min(1, "Start date is required"),
-  price: z.number().min(0, "Price must be 0 or greater"),
+  price: z.coerce.number().min(0, "Price must be 0 or greater"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -84,9 +84,18 @@ export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
               <FormLabel>Session Number</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  {...field} 
-                  onChange={e => field.onChange(Number(e.target.value))}
+                  type="number"
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                  min={1}
+                  {...field}
+                  value={field.value}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || /^\d+$/.test(value)) {
+                      field.onChange(value === "" ? "" : parseInt(value, 10));
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -130,10 +139,19 @@ export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
               <FormLabel>Price</FormLabel>
               <FormControl>
                 <Input 
-                  type="number" 
-                  step="0.01" 
+                  type="number"
+                  pattern="[0-9]*\.?[0-9]*"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
                   {...field}
-                  onChange={e => field.onChange(Number(e.target.value))}
+                  value={field.value}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                      field.onChange(value === "" ? "" : parseFloat(value));
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
