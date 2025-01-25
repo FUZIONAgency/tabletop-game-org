@@ -7,6 +7,7 @@ import { AlertCircle } from "lucide-react";
 import { usePlayerData } from "@/components/network/hooks/usePlayerData";
 import PageLayout from "@/components/PageLayout";
 import { CampaignTable } from "@/components/campaigns/CampaignTable";
+import Section from "@/components/Section";
 
 const MyGames = () => {
   const { user } = useAuth();
@@ -44,11 +45,22 @@ const MyGames = () => {
     enabled: !!playerId,
   });
 
+  // Filter owned campaigns
+  const ownedCampaigns = campaigns?.filter(campaign => campaign.is_owner) || [];
+
+  const handleJoinCampaign = async (campaignId: string) => {
+    // This is a placeholder since we're only showing owned/joined campaigns
+    console.log("Join campaign", campaignId);
+  };
+
+  const handleLeaveCampaign = async (campaignId: string) => {
+    // This is a placeholder since we're only showing owned/joined campaigns
+    console.log("Leave campaign", campaignId);
+  };
+
   return (
     <PageLayout>
       <div className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-3xl font-bold mb-8">My Games</h1>
-        
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertCircle className="h-4 w-4" />
@@ -64,7 +76,19 @@ const MyGames = () => {
             <Skeleton className="h-24 w-full" />
           </div>
         ) : (
-          <CampaignTable campaigns={campaigns || []} />
+          <div className="space-y-12">
+            <Section 
+              id="owned-games"
+              title="Owned Games"
+              subtitle="Games you are running"
+            >
+              <CampaignTable 
+                campaigns={ownedCampaigns} 
+                onJoinCampaign={handleJoinCampaign}
+                onLeaveCampaign={handleLeaveCampaign}
+              />
+            </Section>
+          </div>
         )}
       </div>
     </PageLayout>
