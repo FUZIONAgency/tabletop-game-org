@@ -1,10 +1,10 @@
+import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
-import { FormData } from "../types";
+import { SessionFormData } from "../types";
 
 type Props = {
-  form: UseFormReturn<FormData>;
+  form: UseFormReturn<SessionFormData>;
 };
 
 export function SessionDateSection({ form }: Props) {

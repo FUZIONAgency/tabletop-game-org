@@ -2,11 +2,11 @@ import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FormData } from "../types";
+import { CampaignFormData } from "../types";
 
 type Props = {
-  register: UseFormRegister<FormData>;
-  errors: FieldErrors<FormData>;
+  register: UseFormRegister<CampaignFormData>;
+  errors: FieldErrors<CampaignFormData>;
 };
 
 export function BasicInfoSection({ register, errors }: Props) {

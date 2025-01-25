@@ -1,4 +1,3 @@
-import { UseFormSetValue } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
@@ -10,10 +9,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePlayerData } from "@/components/network/hooks/usePlayerData";
-import { FormData } from "../types";
+import { UseFormSetValue } from "react-hook-form";
+import { CampaignFormData } from "../types";
 
 type Props = {
-  setValue: UseFormSetValue<FormData>;
+  setValue: UseFormSetValue<CampaignFormData>;
   userId?: string;
 };
 
