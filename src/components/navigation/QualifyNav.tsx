@@ -42,13 +42,13 @@ const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
             Qualify
           </NavigationMenuTrigger>
           {user && (
-            <NavigationMenuContent>
-              <div className="w-[200px] p-2">
+            <NavigationMenuContent className="min-w-[200px] bg-white z-50">
+              <div className="p-2">
                 {qualifyItems.map((item) => (
                   <Button
                     key={item.route}
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start text-black hover:bg-gray-100"
                     onClick={() => navigate(item.route)}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
