@@ -39,8 +39,6 @@ const ProfileMenu = () => {
     { label: "My Earnings", icon: DollarSign, path: "/my/earnings" },
     { label: "My Purchases", icon: ShoppingCart, path: "/my/purchases" },
     { label: "My Fundraisers", icon: Gift, path: "/my/fundraisers" },
-    { label: "My Inventory", icon: Box, path: "/my/inventory" },
-    { label: "My Equipment", icon: Settings, path: "/my/equipment" },
   ];
 
   return (
