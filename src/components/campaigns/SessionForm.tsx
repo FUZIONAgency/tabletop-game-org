@@ -8,7 +8,7 @@ import { SessionNumberSection } from "./forms/sections/SessionNumberSection";
 import { SessionDescriptionSection } from "./forms/sections/SessionDescriptionSection";
 import { SessionDateSection } from "./forms/sections/SessionDateSection";
 import { SessionPriceSection } from "./forms/sections/SessionPriceSection";
-import { formSchema, FormData } from "./forms/types";
+import { sessionFormSchema, SessionFormData } from "./forms/types";
 
 interface SessionFormProps {
   campaignId: string;
@@ -18,8 +18,8 @@ interface SessionFormProps {
 export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
   const { toast } = useToast();
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SessionFormData>({
+    resolver: zodResolver(sessionFormSchema),
     defaultValues: {
       session_number: undefined,
       description: "",
@@ -28,7 +28,7 @@ export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: SessionFormData) => {
     try {
       const { error } = await supabase
         .from("sessions")
@@ -62,10 +62,10 @@ export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <SessionNumberSection form={form} />
-        <SessionDescriptionSection form={form} />
+        <SessionNumberSection register={form.register} errors={form.formState.errors} />
+        <SessionDescriptionSection register={form.register} errors={form.formState.errors} />
         <SessionDateSection form={form} />
-        <SessionPriceSection form={form} />
+        <SessionPriceSection register={form.register} errors={form.formState.errors} />
         
         <Button type="submit" className="w-full">
           Create Session

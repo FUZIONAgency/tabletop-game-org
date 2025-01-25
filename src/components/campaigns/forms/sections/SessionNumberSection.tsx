@@ -1,11 +1,11 @@
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { FormData } from "../types";
+import { SessionFormData } from "../types";
 
 type Props = {
-  register: UseFormRegister<FormData>;
-  errors: FieldErrors<FormData>;
+  register: UseFormRegister<SessionFormData>;
+  errors: FieldErrors<SessionFormData>;
 };
 
 export function SessionNumberSection({ register, errors }: Props) {
