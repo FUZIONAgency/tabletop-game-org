@@ -1,40 +1,36 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
 import { FormData } from "../types";
 
 type Props = {
-  form: UseFormReturn<FormData>;
+  register: UseFormRegister<FormData>;
+  errors: FieldErrors<FormData>;
 };
 
-export function SessionPriceSection({ form }: Props) {
+export function SessionPriceSection({ register, errors }: Props) {
   return (
-    <FormField
-      control={form.control}
-      name="price"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Price</FormLabel>
-          <FormControl>
-            <Input 
-              type="number"
-              pattern="[0-9]*\.?[0-9]*"
-              inputMode="decimal"
-              min={0}
-              step="0.01"
-              {...field}
-              value={field.value}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                  field.onChange(value === "" ? "" : parseFloat(value));
-                }
-              }}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+    <div className="space-y-2">
+      <Label htmlFor="price">Price</Label>
+      <Input
+        id="price"
+        type="number"
+        step="0.01"
+        min={0}
+        defaultValue=""
+        {...register("price", {
+          required: "Price is required",
+          valueAsNumber: true,
+          min: {
+            value: 0,
+            message: "Price cannot be negative"
+          }
+        })}
+        className={errors.price ? "border-red-500" : ""}
+      />
+      {errors.price && (
+        <p className="text-sm text-red-500">{errors.price.message}</p>
       )}
-    />
+    </div>
   );
 }
