@@ -65,13 +65,13 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/my/game-systems" element={<MyGameSystems />} />
+            <Route path="/my/gamesystems" element={<MyGameSystems />} />
             <Route path="/my/retailers" element={<MyRetailers />} />
             <Route path="/my/exams" element={<MyExams />} />
             <Route path="/my/exams/:examId" element={<TakeExam />} />
 
             {/* Play Section Routes */}
-            <Route path="/play/retailer" element={<RetailerGames />} />
+            <Route path="/my/retailers" element={<RetailerGames />} />
             <Route path="/play/convention" element={<ConventionGames />} />
             <Route path="/play/online" element={<Online />} />
             
