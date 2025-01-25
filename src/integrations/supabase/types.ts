@@ -4339,6 +4339,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      is_campaign_owner: {
+        Args: {
+          campaign_id: string
+          checking_user_id: string
+        }
+        Returns: boolean
+      }
       json: {
         Args: {
           "": unknown
