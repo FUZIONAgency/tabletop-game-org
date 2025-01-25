@@ -9,9 +9,11 @@ import { format } from "date-fns";
 import { SessionList } from "@/components/campaigns/SessionList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { QRCodeSVG } from "qrcode.react";
 
 const CampaignDetail = () => {
   const { id } = useParams();
+  const currentUrl = window.location.href;
 
   const { data: campaign, isLoading, error } = useQuery({
     queryKey: ['campaign', id],
@@ -138,17 +140,27 @@ const CampaignDetail = () => {
             </div>
           ) : campaign ? (
             <div>
-              <div className="flex items-center gap-6 mb-6">
-                {campaign.game_system?.logo_image_url && (
-                  <img
-                    src={campaign.game_system.logo_image_url}
-                    alt={campaign.game_system.name}
-                    className="w-24 h-24 object-contain"
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-6">
+                  {campaign.game_system?.logo_image_url && (
+                    <img
+                      src={campaign.game_system.logo_image_url}
+                      alt={campaign.game_system.name}
+                      className="w-24 h-24 object-contain"
+                    />
+                  )}
+                  <div>
+                    <h1 className="text-3xl font-bold">{campaign.title}</h1>
+                    <p className="text-gray-600">{campaign.game_system?.name}</p>
+                  </div>
+                </div>
+                <div className="w-32 h-32">
+                  <QRCodeSVG
+                    value={currentUrl}
+                    size={128}
+                    level="L"
+                    includeMargin={true}
                   />
-                )}
-                <div>
-                  <h1 className="text-3xl font-bold">{campaign.title}</h1>
-                  <p className="text-gray-600">{campaign.game_system?.name}</p>
                 </div>
               </div>
 
