@@ -10,17 +10,7 @@ import { CampaignTypeSelect } from "./CampaignTypeSelect";
 import { PlayerCountInputs } from "./PlayerCountInputs";
 import { PriceInput } from "./PriceInput";
 import { CampaignBasicInfo } from "./CampaignBasicInfo";
-
-type FormData = {
-  title: string;
-  description: string;
-  type_id: string;
-  min_players: number;
-  max_players: number;
-  price: number;
-  game_system_id: string;
-  retailer_id?: string;
-};
+import { FormData } from "./types";
 
 export function CampaignForm() {
   const navigate = useNavigate();

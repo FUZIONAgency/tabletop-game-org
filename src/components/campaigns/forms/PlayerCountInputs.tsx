@@ -1,11 +1,7 @@
 import { UseFormRegister } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
-type FormData = {
-  min_players: number;
-  max_players: number;
-};
+import { FormData } from "./types";
 
 type Props = {
   register: UseFormRegister<FormData>;
