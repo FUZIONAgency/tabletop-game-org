@@ -91,13 +91,17 @@ const CampaignDetail = () => {
   const { data: ads } = useQuery({
     queryKey: ['campaign-ads', id],
     queryFn: async () => {
+      console.log('Fetching ads for campaign:', id);
       const { data, error } = await supabase.storage
         .from('campaigns')
         .list(`${id}/ads`);
 
-      console.log('Ads folder contents:', data);
-
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching ads:', error);
+        throw error;
+      }
+      
+      console.log('Raw storage response:', data);
       return data;
     },
     enabled: !!id,
@@ -107,7 +111,8 @@ const CampaignDetail = () => {
     const url = supabase.storage
       .from('campaigns')
       .getPublicUrl(`${id}/${path}`).data.publicUrl;
-    console.log('Generated URL:', url);
+    console.log('Generated URL for path:', path);
+    console.log('Full URL:', url);
     return url;
   };
 
@@ -179,14 +184,18 @@ const CampaignDetail = () => {
 
                 <TabsContent value="advertising">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {ads?.map((ad) => (
-                      <img
-                        key={ad.name}
-                        src={getFileUrl(`ads/${ad.name}`)}
-                        alt={ad.name}
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    ))}
+                    {ads?.map((ad) => {
+                      const imageUrl = getFileUrl(`ads/${ad.name}`);
+                      console.log('Processing ad:', ad.name, 'URL:', imageUrl);
+                      return (
+                        <img
+                          key={ad.name}
+                          src={imageUrl}
+                          alt={ad.name}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                      );
+                    })}
                   </div>
                 </TabsContent>
 
