@@ -11,6 +11,10 @@ interface AdvertisingTabProps {
 }
 
 export const AdvertisingTab = ({ ads, getFileUrl }: AdvertisingTabProps) => {
+  if (!ads || ads.length === 0) {
+    return <div className="text-gray-500">No advertisements available.</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {ads?.map((ad) => {
@@ -21,7 +25,7 @@ export const AdvertisingTab = ({ ads, getFileUrl }: AdvertisingTabProps) => {
             key={ad.name}
             src={imageUrl}
             alt={ad.name}
-            className="w-full h-48 object-cover rounded-lg"
+            className="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
           />
         );
       })}
