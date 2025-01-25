@@ -44,6 +44,11 @@ export const CampaignTableRow = ({
     navigate(`/campaigns/${campaignId}`);
   };
 
+  // Format status by removing quotes and 'text' suffix
+  const formatStatus = (status: string) => {
+    return status.replace(/'|::text/g, '');
+  };
+
   return (
     <React.Fragment>
       <TableRow>
@@ -117,8 +122,8 @@ export const CampaignTableRow = ({
         <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
         <TableCell>${campaign.price}</TableCell>
         <TableCell>
-          <Badge variant={campaign.status === "draft" ? "secondary" : "default"}>
-            {campaign.status || "N/A"}
+          <Badge variant={formatStatus(campaign.status) === "draft" ? "secondary" : "default"}>
+            {formatStatus(campaign.status) || "N/A"}
           </Badge>
         </TableCell>
         <TableCell>
