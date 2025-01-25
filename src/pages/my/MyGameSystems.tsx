@@ -6,37 +6,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { GameSystemCard } from "@/components/sections/player/GameSystemCard";
 import { PlayerGameAccount } from "@/types/player-game-account";
+import { usePlayerData } from "@/components/network/hooks/usePlayerData";
 import PageLayout from "@/components/PageLayout";
 
 const MyGameSystems = () => {
   const { user } = useAuth();
-
-  const { data: player } = useQuery({
-    queryKey: ['player', user?.email],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('players')
-        .select('*')
-        .eq('email', user?.email)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.email
-  });
+  const playerId = usePlayerData(user?.id);
 
   const { data: games, isLoading, error } = useQuery({
-    queryKey: ['my-games', user?.id],
+    queryKey: ['my-game-systems', playerId],
     queryFn: async () => {
-      const { data: playerData, error: playerError } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user?.id)
-        .maybeSingle();
-
-      if (playerError) throw playerError;
-      if (!playerData) return [];
+      if (!playerId) return [];
 
       const { data, error: gamesError } = await supabase
         .from('player_game_accounts')
@@ -54,12 +34,12 @@ const MyGameSystems = () => {
             video_url
           )
         `)
-        .eq('player_id', playerData.id);
+        .eq('player_id', playerId);
 
       if (gamesError) throw gamesError;
       return data as unknown as PlayerGameAccount[];
     },
-    enabled: !!user,
+    enabled: !!playerId,
   });
 
   return (
