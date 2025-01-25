@@ -26,12 +26,42 @@ type FormData = {
   max_players: number;
   price: number;
   game_system_id: string;
+  retailer_id?: string;
 };
 
 const NewCampaign = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { register, handleSubmit, setValue } = useForm<FormData>();
+
+  // Fetch player's retailers
+  const { data: playerRetailers } = useQuery({
+    queryKey: ['playerRetailers', user?.id],
+    queryFn: async () => {
+      const { data: playerData } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user?.id)
+        .single();
+
+      if (!playerData) return [];
+
+      const { data, error } = await supabase
+        .from('player_retailers')
+        .select(`
+          retailer:retailers (
+            id,
+            name
+          )
+        `)
+        .eq('player_id', playerData.id)
+        .eq('status', 'active');
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id
+  });
 
   const { data: campaignTypes } = useQuery({
     queryKey: ['campaignTypes'],
@@ -71,6 +101,7 @@ const NewCampaign = () => {
           max_players: data.max_players,
           price: data.price,
           game_system_id: data.game_system_id,
+          retailer_id: data.retailer_id || null,
           auth_id: user?.id
         });
 
@@ -124,6 +155,24 @@ const NewCampaign = () => {
                   {gameSystems?.map((system) => (
                     <SelectItem key={system.id} value={system.id}>
                       {system.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="retailer_id">Retailer (Optional)</Label>
+              <Select
+                onValueChange={(value) => setValue("retailer_id", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select retailer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {playerRetailers?.map((pr) => (
+                    <SelectItem key={pr.retailer.id} value={pr.retailer.id}>
+                      {pr.retailer.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
