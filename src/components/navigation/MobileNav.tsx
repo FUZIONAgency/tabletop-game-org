@@ -50,6 +50,7 @@ const MobileNav = ({
 
   const profileMenuItems = [
     { label: "My Profile", icon: User, path: "/my/profile" },
+    { label: "My Games", icon: Gamepad, path: "/my/games" },
     { label: "My Game Systems", icon: Gamepad, path: "/my/gamesystems" },
     { label: "My Retailers", icon: Store, path: "/my/retailers" },
     { label: "My Tournaments", icon: Trophy, path: "/my/tournaments" },
