@@ -24,7 +24,8 @@ const NewCampaign = () => {
     game_system: {
       name: '',
       description: null,
-      logo_image_url: null
+      logo_image_url: null,
+      id: ''  // Adding id since it's part of GameSystemBasic type
     }
   };
 
