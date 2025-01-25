@@ -13,23 +13,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface SessionFormProps {
   campaignId: string;
   onSuccess: () => void;
 }
 
-interface FormData {
-  session_number: number;
-  description: string;
-  start_date: string;
-  price: number;
-}
+const formSchema = z.object({
+  session_number: z.number().min(1, "Session number is required"),
+  description: z.string().min(1, "Description is required"),
+  start_date: z.string().min(1, "Start date is required"),
+  price: z.number().min(0, "Price must be 0 or greater"),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const form = useForm<FormData>();
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      session_number: 1,
+      description: "",
+      start_date: "",
+      price: 0,
+    },
+  });
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -70,7 +83,11 @@ export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
             <FormItem>
               <FormLabel>Session Number</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input 
+                  type="number" 
+                  {...field} 
+                  onChange={e => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -112,7 +129,12 @@ export const SessionForm = ({ campaignId, onSuccess }: SessionFormProps) => {
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" {...field} />
+                <Input 
+                  type="number" 
+                  step="0.01" 
+                  {...field}
+                  onChange={e => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
