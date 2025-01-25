@@ -71,7 +71,7 @@ function App() {
             <Route path="/my/exams/:examId" element={<TakeExam />} />
 
             {/* Play Section Routes */}
-            <Route path="/my/retailers" element={<RetailerGames />} />
+            <Route path="/play/retailer" element={<RetailerGames />} />
             <Route path="/play/convention" element={<ConventionGames />} />
             <Route path="/play/online" element={<Online />} />
             
