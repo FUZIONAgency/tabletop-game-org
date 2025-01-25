@@ -66,6 +66,7 @@ function App() {
               } 
             />
             <Route path="/my/gamesystems" element={<MyGameSystems />} />
+            <Route path="/my/games" element={<MyGames />} />
             <Route path="/my/retailers" element={<MyRetailers />} />
             <Route path="/my/exams" element={<MyExams />} />
             <Route path="/my/exams/:examId" element={<TakeExam />} />
