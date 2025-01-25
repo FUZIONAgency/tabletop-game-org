@@ -4,12 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Calendar, FileIcon, ImageIcon, Users } from "lucide-react";
-import { format } from "date-fns";
+import { AlertCircle } from "lucide-react";
 import { SessionList } from "@/components/campaigns/SessionList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { QRCodeSVG } from "qrcode.react";
+import { CampaignHeader } from "@/components/campaigns/CampaignHeader";
+import { AdvertisingTab } from "@/components/campaigns/tabs/AdvertisingTab";
+import { ResourcesTab } from "@/components/campaigns/tabs/ResourcesTab";
+import { PhotosTab } from "@/components/campaigns/tabs/PhotosTab";
+import { ParticipantsTab } from "@/components/campaigns/tabs/ParticipantsTab";
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -116,13 +118,6 @@ const CampaignDetail = () => {
     return url;
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) {
-      return <ImageIcon className="h-6 w-6" />;
-    }
-    return <FileIcon className="h-6 w-6" />;
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -145,29 +140,12 @@ const CampaignDetail = () => {
             </div>
           ) : campaign ? (
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-6">
-                  {campaign.game_system?.logo_image_url && (
-                    <img
-                      src={campaign.game_system.logo_image_url}
-                      alt={campaign.game_system.name}
-                      className="w-24 h-24 object-contain"
-                    />
-                  )}
-                  <div>
-                    <h1 className="text-3xl font-bold">{campaign.title}</h1>
-                    <p className="text-gray-600">{campaign.game_system?.name}</p>
-                  </div>
-                </div>
-                <div className="w-32 h-32">
-                  <QRCodeSVG
-                    value={currentUrl}
-                    size={128}
-                    level="L"
-                    includeMargin={true}
-                  />
-                </div>
-              </div>
+              <CampaignHeader
+                gameSystemLogo={campaign.game_system?.logo_image_url}
+                gameSystemName={campaign.game_system?.name}
+                title={campaign.title}
+                currentUrl={currentUrl}
+              />
 
               <Tabs defaultValue="sessions" className="w-full">
                 <TabsList>
@@ -183,69 +161,19 @@ const CampaignDetail = () => {
                 </TabsContent>
 
                 <TabsContent value="advertising">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {ads?.map((ad) => {
-                      const imageUrl = getFileUrl(`ads/${ad.name}`);
-                      console.log('Processing ad:', ad.name, 'URL:', imageUrl);
-                      return (
-                        <img
-                          key={ad.name}
-                          src={imageUrl}
-                          alt={ad.name}
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      );
-                    })}
-                  </div>
+                  <AdvertisingTab ads={ads} getFileUrl={getFileUrl} />
                 </TabsContent>
 
                 <TabsContent value="resources">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {resources?.map((resource) => (
-                      <a
-                        key={resource.name}
-                        href={getFileUrl(`resources/${resource.name}`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 p-4 border rounded-lg hover:bg-gray-50"
-                      >
-                        {getFileIcon(resource.metadata?.mimetype || '')}
-                        <span className="truncate">{resource.name}</span>
-                      </a>
-                    ))}
-                  </div>
+                  <ResourcesTab resources={resources} getFileUrl={getFileUrl} />
                 </TabsContent>
 
                 <TabsContent value="photos">
-                  <ScrollArea className="h-[500px] w-full rounded-md border p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {photos?.map((photo) => (
-                        <img
-                          key={photo.name}
-                          src={getFileUrl(`photos/${photo.name}`)}
-                          alt={photo.name}
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      ))}
-                    </div>
-                  </ScrollArea>
+                  <PhotosTab photos={photos} getFileUrl={getFileUrl} />
                 </TabsContent>
 
                 <TabsContent value="participants">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {participants?.map((participant) => (
-                      <div key={participant.player.alias} className="flex items-center gap-2 p-4 border rounded-lg">
-                        {participant.player.alias_image_url && (
-                          <img
-                            src={participant.player.alias_image_url}
-                            alt={participant.player.alias}
-                            className="w-10 h-10 rounded-full object-cover"
-                          />
-                        )}
-                        <span>{participant.player.alias}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <ParticipantsTab participants={participants} />
                 </TabsContent>
               </Tabs>
             </div>
