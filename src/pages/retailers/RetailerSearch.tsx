@@ -38,6 +38,31 @@ const RetailerSearch = () => {
     }
   }, [toast]);
 
+  // Fetch user's linked retailers
+  const { data: linkedRetailers = [] } = useQuery({
+    queryKey: ['linked-retailers', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data: playerData } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (!playerData) return [];
+
+      const { data: links } = await supabase
+        .from('player_retailers')
+        .select('retailer_id')
+        .eq('player_id', playerData.id)
+        .eq('status', 'active');
+
+      return (links || []).map(link => link.retailer_id);
+    },
+    enabled: !!user
+  });
+
   const { data: retailers = [], isLoading } = useQuery({
     queryKey: ['retailers', searchQuery, userLocation, rangeInMiles],
     queryFn: async () => {
@@ -191,6 +216,7 @@ const RetailerSearch = () => {
                       : undefined
                   }
                   onLink={handleLinkRetailer}
+                  isLinked={linkedRetailers.includes(retailer.id)}
                 />
               ))}
             </div>
