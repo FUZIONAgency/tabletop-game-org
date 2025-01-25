@@ -11,6 +11,7 @@ import AcceptInvite from "@/pages/AcceptInvite";
 import MyProfile from "@/pages/my/MyProfile";
 import MyGames from "@/pages/my/MyGames";
 import NewCampaign from "@/pages/my/NewCampaign";
+import MyConventions from "@/pages/my/MyConventions";
 import MyGameSystems from "@/pages/my/MyGameSystems";
 import MyRetailers from "@/pages/my/MyRetailers";
 import MyExams from "@/pages/my/MyExams";
@@ -76,6 +77,7 @@ function App() {
             <Route path="/my/retailers" element={<ProtectedRoute><MyRetailers /></ProtectedRoute>} />
             <Route path="/my/exams" element={<ProtectedRoute><MyExams /></ProtectedRoute>} />
             <Route path="/my/exams/:examId" element={<ProtectedRoute><TakeExam /></ProtectedRoute>} />
+            <Route path="/my/conventions" element={<ProtectedRoute><MyConventions /></ProtectedRoute>} />
 
             {/* Play Section Routes */}
             <Route path="/play/retailer" element={<ProtectedRoute><RetailerGames /></ProtectedRoute>} />

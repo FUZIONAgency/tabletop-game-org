@@ -12,7 +12,6 @@ import {
   User,
   Gamepad,
   Store,
-  Trophy,
   Tent,
   Package,
   Users,
