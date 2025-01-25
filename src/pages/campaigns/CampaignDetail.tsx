@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
@@ -29,6 +29,7 @@ const CampaignDetail = () => {
             logo_image_url
           ),
           retailer:retailers (
+            id,
             name,
             address,
             city,
@@ -146,6 +147,20 @@ const CampaignDetail = () => {
                 title={campaign.title}
                 currentUrl={currentUrl}
               />
+
+              {campaign.retailer && (
+                <div className="mb-6">
+                  <Link 
+                    to={`/retailers/${campaign.retailer.id}`}
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    {campaign.retailer.name}
+                  </Link>
+                  <p className="text-sm text-gray-600">
+                    {campaign.retailer.address}, {campaign.retailer.city}, {campaign.retailer.state} {campaign.retailer.zip}
+                  </p>
+                </div>
+              )}
 
               <Tabs defaultValue="sessions" className="w-full">
                 <TabsList>
