@@ -33,7 +33,7 @@ export const RetailerCard = ({ retailer, distance, onLink, isLinked }: RetailerC
         )}
         {isLinked ? (
           <Button
-            className="w-full bg-green-500 hover:bg-green-600 text-white cursor-default"
+            className="w-full bg-forest-green hover:bg-forest-green text-white cursor-default"
             disabled
           >
             Linked
