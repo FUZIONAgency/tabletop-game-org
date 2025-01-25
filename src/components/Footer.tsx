@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="bg-black text-white py-8">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
-          <Link to="/privacy-policy" className="hover:text-gray-300 transition-colors">
+          <Link to="/privacy" className="hover:text-gray-300 transition-colors">
             Privacy Policy
           </Link>
           <Link to="/terms" className="hover:text-gray-300 transition-colors">
