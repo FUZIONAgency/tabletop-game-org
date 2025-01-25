@@ -80,8 +80,8 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
       </TableHeader>
       <TableBody>
         {campaigns.map((campaign) => (
-          <>
-            <TableRow key={campaign.id}>
+          <React.Fragment key={campaign.id}>
+            <TableRow>
               <TableCell>
                 <div className="flex gap-2">
                   <Dialog open={isDialogOpen && selectedCampaignId === campaign.id} onOpenChange={setIsDialogOpen}>
@@ -184,7 +184,7 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
                 </TableCell>
               </TableRow>
             )}
-          </>
+          </React.Fragment>
         ))}
       </TableBody>
     </Table>
