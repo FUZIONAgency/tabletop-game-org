@@ -6,9 +6,9 @@ import { Toaster } from "@/components/ui/sonner";
 // Pages
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Profile from "@/pages/Profile";
 import Network from "@/pages/Network";
 import AcceptInvite from "@/pages/AcceptInvite";
+import MyProfile from "@/pages/my/MyProfile";
 import MyGames from "@/pages/my/MyGames";
 import NewCampaign from "@/pages/my/NewCampaign";
 import MyGameSystems from "@/pages/my/MyGameSystems";
@@ -55,39 +55,33 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/network" element={<Network />} />
             <Route path="/accept-invite" element={<AcceptInvite />} />
             
             {/* My Section Routes */}
-            <Route path="/my/games" element={<MyGames />} />
-            <Route 
-              path="/my/games/new" 
-              element={
-                <ProtectedRoute>
-                  <NewCampaign />
-                </ProtectedRoute>
-              } 
-            />
-            <Route path="/my/gamesystems" element={<MyGameSystems />} />
-            <Route path="/my/games" element={<MyGames />} />
-            <Route path="/my/retailers" element={<MyRetailers />} />
-            <Route path="/my/exams" element={<MyExams />} />
-            <Route path="/my/exams/:examId" element={<TakeExam />} />
+            <ProtectedRoute>
+              <Route path="/my/profile" element={<MyProfile />} />
+              <Route path="/my/games" element={<MyGames />} />
+              <Route path="/my/games/new" element={<NewCampaign />} />
+              <Route path="/my/gamesystems" element={<MyGameSystems />} />
+              <Route path="/my/games" element={<MyGames />} />
+              <Route path="/my/retailers" element={<MyRetailers />} />
+              <Route path="/my/exams" element={<MyExams />} />
+              <Route path="/my/exams/:examId" element={<TakeExam />} />
+              {/* Play Section Routes */}
+              <Route path="/play/retailer" element={<RetailerGames />} />
+              <Route path="/play/convention" element={<ConventionGames />} />
+              <Route path="/play/online" element={<Online />} />
+              
+              {/* Retailer Routes */}
+              <Route path="/retailers/search" element={<RetailerSearch />} />
+              <Route path="/retailers/:id" element={<RetailerDetail />} />
+              <Route path="/retailers/:id/edit" element={<EditCampaign />} />
 
-            {/* Play Section Routes */}
-            <Route path="/play/retailer" element={<RetailerGames />} />
-            <Route path="/play/convention" element={<ConventionGames />} />
-            <Route path="/play/online" element={<Online />} />
-            
-            {/* Retailer Routes */}
-            <Route path="/retailers/search" element={<RetailerSearch />} />
-            <Route path="/retailers/:id" element={<RetailerDetail />} />
-            <Route path="/retailers/:id/edit" element={<EditCampaign />} />
-
-            {/* Campaign Routes */}
-            <Route path="/campaigns/:id" element={<CampaignDetail />} />
-            <Route path="/campaigns/:id/edit" element={<EditCampaign />} />
+              {/* Campaign Routes */}
+              <Route path="/campaigns/:id" element={<CampaignDetail />} />
+              <Route path="/campaigns/:id/edit" element={<EditCampaign />} />
+            </ProtectedRoute>
 
             {/* Footer Routes */}
             <Route path="/contact" element={<Contact />} />
