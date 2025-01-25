@@ -59,29 +59,28 @@ function App() {
             <Route path="/accept-invite" element={<AcceptInvite />} />
             
             {/* My Section Routes */}
-            <ProtectedRoute>
-              <Route path="/my/profile" element={<MyProfile />} />
-              <Route path="/my/games" element={<MyGames />} />
-              <Route path="/my/games/new" element={<NewCampaign />} />
-              <Route path="/my/gamesystems" element={<MyGameSystems />} />
-              <Route path="/my/games" element={<MyGames />} />
-              <Route path="/my/retailers" element={<MyRetailers />} />
-              <Route path="/my/exams" element={<MyExams />} />
-              <Route path="/my/exams/:examId" element={<TakeExam />} />
-              {/* Play Section Routes */}
-              <Route path="/play/retailer" element={<RetailerGames />} />
-              <Route path="/play/convention" element={<ConventionGames />} />
-              <Route path="/play/online" element={<Online />} />
-              
-              {/* Retailer Routes */}
-              <Route path="/retailers/search" element={<RetailerSearch />} />
-              <Route path="/retailers/:id" element={<RetailerDetail />} />
-              <Route path="/retailers/:id/edit" element={<EditCampaign />} />
+            <Route path="/my/profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+            <Route path="/my/games" element={<ProtectedRoute><MyGames /></ProtectedRoute>} />
+            <Route path="/my/games/new" element={<ProtectedRoute><NewCampaign /></ProtectedRoute>} />
+            <Route path="/my/gamesystems" element={<ProtectedRoute><MyGameSystems /></ProtectedRoute>} />
+            <Route path="/my/games" element={<ProtectedRoute><MyGames /></ProtectedRoute>} />
+            <Route path="/my/retailers" element={<ProtectedRoute><MyRetailers /></ProtectedRoute>} />
+            <Route path="/my/exams" element={<ProtectedRoute><MyExams /></ProtectedRoute>} />
+            <Route path="/my/exams/:examId" element={<ProtectedRoute><TakeExam /></ProtectedRoute>} />
 
-              {/* Campaign Routes */}
-              <Route path="/campaigns/:id" element={<CampaignDetail />} />
-              <Route path="/campaigns/:id/edit" element={<EditCampaign />} />
-            </ProtectedRoute>
+            {/* Play Section Routes */}
+            <Route path="/play/retailer" element={<ProtectedRoute><RetailerGames /></ProtectedRoute>} />
+            <Route path="/play/convention" element={<ProtectedRoute><ConventionGames /></ProtectedRoute>} />
+            <Route path="/play/online" element={<ProtectedRoute><Online /></ProtectedRoute>} />
+            
+            {/* Retailer Routes */}
+            <Route path="/retailers/search" element={<ProtectedRoute><RetailerSearch /></ProtectedRoute>} />
+            <Route path="/retailers/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
+            <Route path="/retailers/:id/edit" element={<ProtectedRoute><EditCampaign /></ProtectedRoute>} />
+
+            {/* Campaign Routes */}
+            <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
+            <Route path="/campaigns/:id/edit" element={<ProtectedRoute><EditCampaign /></ProtectedRoute>} />
 
             {/* Footer Routes */}
             <Route path="/contact" element={<Contact />} />
