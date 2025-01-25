@@ -5,7 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { GameSystemCard } from "@/components/sections/player/GameSystemCard";
-import { PlayerGameAccount } from "@/types/player-game-account";
 import { usePlayerData } from "@/components/network/hooks/usePlayerData";
 import PageLayout from "@/components/PageLayout";
 
@@ -13,44 +12,42 @@ const MyGames = () => {
   const { user } = useAuth();
   const playerId = usePlayerData(user?.id);
 
-  const { data: games, isLoading, error } = useQuery({
-    queryKey: ['my-owned-games', playerId],
+  const { data: campaigns, isLoading, error } = useQuery({
+    queryKey: ['my-campaigns', playerId],
     queryFn: async () => {
       if (!playerId) return [];
 
-      // First get campaigns where the player is an owner
-      const { data: campaignPlayers, error: campaignsError } = await supabase
+      const { data: campaignPlayers, error } = await supabase
         .from('campaign_players')
-        .select('campaign_id')
-        .eq('player_id', playerId)
-        .eq('role_type', 'owner');
-
-      if (campaignsError) throw campaignsError;
-      
-      if (!campaignPlayers?.length) return [];
-
-      // Then get the campaign details
-      const { data: campaigns, error: gamesError } = await supabase
-        .from('campaigns')
         .select(`
-          id,
-          game_system:game_systems (
+          campaign:campaigns (
             id,
-            name,
-            description,
-            logo_image_url,
-            video_url
+            game_system:game_systems (
+              id,
+              name,
+              description,
+              logo_image_url,
+              video_url
+            )
           )
         `)
-        .in('id', campaignPlayers.map(cp => cp.campaign_id));
+        .eq('player_id', playerId);
 
-      if (gamesError) throw gamesError;
-      
-      // Transform the data to match PlayerGameAccount type
-      return campaigns.map(campaign => ({
-        account_id: campaign.id,
-        game_system: campaign.game_system
-      })) as PlayerGameAccount[];
+      if (error) throw error;
+
+      // Transform the data to match PlayerGameAccount type and remove duplicates
+      const uniqueGameSystems = campaignPlayers?.reduce((acc, cp) => {
+        const gameSystem = cp.campaign?.game_system;
+        if (gameSystem && !acc.some(g => g.game_system.id === gameSystem.id)) {
+          acc.push({
+            account_id: cp.campaign.id,
+            game_system: gameSystem
+          });
+        }
+        return acc;
+      }, []);
+
+      return uniqueGameSystems || [];
     },
     enabled: !!playerId,
   });
@@ -77,7 +74,7 @@ const MyGames = () => {
         ) : (
           <div className="space-y-4">
             <GameSystemCard />
-            {games?.map((game) => (
+            {campaigns?.map((game) => (
               <GameSystemCard 
                 key={game.game_system.id} 
                 gameSystem={game.game_system}
