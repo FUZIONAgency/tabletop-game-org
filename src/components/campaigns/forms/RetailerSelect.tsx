@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { usePlayerData } from "@/components/network/hooks/usePlayerData";
 
 type Props = {
   setValue: (name: "retailer_id", value: string) => void;
@@ -15,16 +16,12 @@ type Props = {
 };
 
 export function RetailerSelect({ setValue, userId }: Props) {
-  const { data: playerRetailers } = useQuery({
-    queryKey: ['playerRetailers', userId],
-    queryFn: async () => {
-      const { data: playerData } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', userId)
-        .single();
+  const playerId = usePlayerData(userId);
 
-      if (!playerData) return [];
+  const { data: playerRetailers } = useQuery({
+    queryKey: ['playerRetailers', playerId],
+    queryFn: async () => {
+      if (!playerId) return [];
 
       const { data, error } = await supabase
         .from('player_retailers')
@@ -34,13 +31,13 @@ export function RetailerSelect({ setValue, userId }: Props) {
             name
           )
         `)
-        .eq('player_id', playerData.id)
+        .eq('player_id', playerId)
         .eq('status', 'active');
 
       if (error) throw error;
       return data;
     },
-    enabled: !!userId
+    enabled: !!playerId
   });
 
   return (
