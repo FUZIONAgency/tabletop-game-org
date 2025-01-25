@@ -2,6 +2,7 @@ import { Session } from "@/types/session";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface SessionCardProps {
   session: Session;
@@ -85,15 +86,25 @@ export const SessionCard = ({ session, onConfirmAttendance, onCancelAttendance }
             </>
           )}
           <div>
-            <h3 className="font-medium">Session {session.session_number}</h3>
+            <h3 className="font-medium">
+              {new Date(session.start_date).toLocaleDateString()} {new Date(session.start_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
+              {' - '}
+              Session {session.session_number}
+              {' - '}
+              {session.campaign?.retailer_id && (
+                <Link 
+                  to={`/retailers/${session.campaign.retailer_id}`}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  {session.campaign?.retailer?.name}
+                </Link>
+              )}
+            </h3>
             <p className="text-sm text-gray-500">{session.description}</p>
           </div>
         </div>
         <div className="text-right">
           <p className="font-medium">${session.price}</p>
-          <p className="text-sm text-gray-500">
-            {new Date(session.start_date).toLocaleDateString()}
-          </p>
         </div>
       </div>
     </div>
