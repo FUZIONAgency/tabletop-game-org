@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 // Pages
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Network from "@/pages/Network";
+import Network from "@/pages/recruit/Network";
 import AcceptInvite from "@/pages/AcceptInvite";
 import MyProfile from "@/pages/my/MyProfile";
 import MyGames from "@/pages/my/MyGames";
@@ -23,6 +23,10 @@ import EditCampaign from "@/pages/campaigns/EditCampaign";
 
 import RetailerDetail from "@/pages/retailers/RetailerDetail";
 import RetailerSearch from "@/pages/retailers/RetailerSearch";
+
+// Recruit pages
+
+
 
 // Earn pages
 import ConventionSales from "./pages/earn/ConventionSales";
