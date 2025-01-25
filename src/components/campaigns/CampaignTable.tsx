@@ -70,7 +70,6 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
           <TableHead className="w-[200px]"></TableHead>
           <TableHead className="text-left">Owner</TableHead>
           <TableHead className="text-left">Title</TableHead>
-          <TableHead className="text-left">Description</TableHead>
           <TableHead>Game System</TableHead>
           <TableHead>Players</TableHead>
           <TableHead>Price</TableHead>
@@ -149,7 +148,6 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
               </TableCell>
               <TableCell className="font-medium text-left">{campaign.owner_alias || 'N/A'}</TableCell>
               <TableCell className="font-medium text-left">{campaign.title}</TableCell>
-              <TableCell className="text-left">{campaign.description}</TableCell>
               <TableCell>{campaign.game_system?.name || 'N/A'}</TableCell>
               <TableCell>{campaign.min_players}-{campaign.max_players}</TableCell>
               <TableCell>${campaign.price}</TableCell>
