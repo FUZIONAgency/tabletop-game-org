@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(null);
       setSession(null);
       setRole("anonymous");
-      // Clear any stored tokens
       localStorage.removeItem('sb-kwpptrhywkyuzadwxgdl-auth-token');
     } catch (error) {
       console.error('Error signing out:', error);
@@ -33,99 +32,79 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    let mounted = true;
-
-    const initializeAuth = async () => {
+    // Initialize auth state
+    const initAuth = async () => {
       try {
-        console.log('Initializing auth...');
-        // Get initial session
-        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          throw sessionError;
+        if (error) {
+          throw error;
         }
 
-        if (mounted) {
-          if (currentSession?.user) {
-            console.log('Found existing session:', currentSession.user.email);
-            setUser(currentSession.user);
-            setSession(currentSession);
-            
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('id', currentSession.user.id)
-              .maybeSingle();
-            
-            if (profileError) {
-              console.error('Profile error:', profileError);
-              throw profileError;
-            }
-
-            setRole(profile?.role as UserRole || "user");
-          } else {
-            console.log('No existing session found');
-          }
-          setIsLoading(false);
+        if (currentSession?.user) {
+          setUser(currentSession.user);
+          setSession(currentSession);
+          
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', currentSession.user.id)
+            .maybeSingle();
+          
+          setRole(profile?.role as UserRole || "user");
         }
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, newSession) => {
-            if (!mounted) return;
-
-            console.log('Auth state changed:', event);
-
-            if (event === 'TOKEN_REFRESHED') {
-              console.log('Token refreshed successfully');
-            }
-
-            if (event === 'SIGNED_OUT') {
-              setUser(null);
-              setSession(null);
-              setRole("anonymous");
-              localStorage.removeItem('sb-kwpptrhywkyuzadwxgdl-auth-token');
-            }
-
-            setSession(newSession);
-            setUser(newSession?.user ?? null);
-
-            if (newSession?.user) {
-              try {
-                const { data: profile } = await supabase
-                  .from('profiles')
-                  .select('role')
-                  .eq('id', newSession.user.id)
-                  .maybeSingle();
-                
-                setRole(profile?.role as UserRole || "user");
-              } catch (error) {
-                console.error('Error fetching profile:', error);
-                setRole("user");
-              }
-            } else {
-              setRole("anonymous");
-            }
-
-            setIsLoading(false);
-          }
-        );
-
-        return () => {
-          mounted = false;
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('Error initializing auth:', error);
-        if (mounted) {
-          setIsLoading(false);
-          toast.error("Authentication error occurred");
-        }
+        toast.error("Authentication error occurred");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    initializeAuth();
+    initAuth();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        console.log('Auth state changed:', event);
+
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setSession(null);
+          setRole("anonymous");
+          setIsLoading(false);
+          return;
+        }
+
+        if (newSession?.user) {
+          setUser(newSession.user);
+          setSession(newSession);
+          
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', newSession.user.id)
+              .maybeSingle();
+            
+            setRole(profile?.role as UserRole || "user");
+          } catch (error) {
+            console.error('Error fetching profile:', error);
+            setRole("user");
+          }
+        } else {
+          setUser(null);
+          setSession(null);
+          setRole("anonymous");
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
