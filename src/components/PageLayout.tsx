@@ -9,13 +9,16 @@ interface PageLayoutProps {
 }
 
 const PageLayout = ({ children }: PageLayoutProps) => {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
 
   // Only show skeleton for a brief moment to prevent infinite loading state
   if (isLoading) {
+    console.log("Auth loading state:", { isLoading, user });
     setTimeout(() => {
-      console.log("Auth loading timeout reached");
-    }, 2000); // Log if loading takes more than 2 seconds
+      if (isLoading) {
+        console.log("Auth loading timeout reached - still loading after 2s");
+      }
+    }, 2000);
   }
 
   return (
