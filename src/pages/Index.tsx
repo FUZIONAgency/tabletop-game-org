@@ -31,7 +31,6 @@ const Index = () => {
     console.log("Auth state:", { isLoading, user });
   }, [isLoading, user]);
 
-  // Only show loading state while auth is initializing
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white p-6 space-y-8">
