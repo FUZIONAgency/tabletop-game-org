@@ -24,6 +24,12 @@ import EditCampaign from "@/pages/campaigns/EditCampaign";
 import RetailerDetail from "@/pages/retailers/RetailerDetail";
 import RetailerSearch from "@/pages/retailers/RetailerSearch";
 
+// Earn pages
+import ConventionSales from "./pages/earn/ConventionSales";
+import Overrides from "./pages/earn/Overrides";
+import PaidGames from "./pages/earn/PaidGames";
+import ProductSales from "./pages/earn/ProductSales";
+import RetailerSales from "./pages/earn/RetailerSales";
 
 // Footer pages
 import Contact from "@/pages/footer/Contact";
@@ -73,6 +79,13 @@ function App() {
             <Route path="/play/convention" element={<ProtectedRoute><ConventionGames /></ProtectedRoute>} />
             <Route path="/play/online" element={<ProtectedRoute><Online /></ProtectedRoute>} />
             
+            {/* Earn Section Routes */}
+            <Route path="/earn/product-sales" element={<ProtectedRoute><ProductSales /></ProtectedRoute>} />
+            <Route path="/earn/overrides" element={<ProtectedRoute><Overrides /></ProtectedRoute>} />
+            <Route path="/earn/convention-sales" element={<ProtectedRoute><ConventionSales /></ProtectedRoute>} />
+            <Route path="/earn/retailer-sales" element={<ProtectedRoute><RetailerSales /></ProtectedRoute>} />
+            <Route path="/earn/paid-games" element={<ProtectedRoute><PaidGames /></ProtectedRoute>} />
+
             {/* Retailer Routes */}
             <Route path="/retailers/search" element={<ProtectedRoute><RetailerSearch /></ProtectedRoute>} />
             <Route path="/retailers/:id" element={<ProtectedRoute><RetailerDetail /></ProtectedRoute>} />
