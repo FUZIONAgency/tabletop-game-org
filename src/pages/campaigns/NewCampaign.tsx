@@ -4,13 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { EditCampaignForm } from "@/components/campaigns/EditCampaignForm";
 import Section from "@/components/Section";
-import { Campaign } from "@/types/campaign";
 
 const NewCampaign = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const defaultCampaign: Campaign = {
+  const defaultCampaign = {
     id: '',
     title: '',
     description: '',
@@ -21,12 +20,7 @@ const NewCampaign = () => {
     status: 'active',
     created_at: new Date().toISOString(),
     game_system_id: '',
-    game_system: {
-      id: '',
-      name: '',
-      description: null,
-      logo_image_url: null
-    }
+    auth_id: '',
   };
 
   return (

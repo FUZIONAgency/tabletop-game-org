@@ -12,7 +12,6 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // If user is already logged in, redirect to home
     if (user) {
       navigate("/");
     }
@@ -20,14 +19,10 @@ const Auth = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
-
       if (event === "SIGNED_OUT") {
-        toast({
-          title: "Signed out",
-          description: "You have been signed out successfully",
-        });
+        // Handle sign out
       } else if (event === "PASSWORD_RECOVERY") {
+        // Handle password recovery
         const email = session?.user?.email;
         if (email) {
           try {
@@ -61,12 +56,13 @@ const Auth = () => {
           }
         }
       } else if (event === "SIGNED_IN") {
+        // Handle successful sign in
         toast({
           title: "Success",
           description: "Successfully signed in!",
         });
-        navigate("/");
       } else if (event === "USER_UPDATED") {
+        // Handle user data update
         console.log('User data updated');
         toast({
           title: "Account Created",
