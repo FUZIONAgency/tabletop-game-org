@@ -17,13 +17,19 @@ export const useJoinCampaign = (refetch: () => void) => {
     }
 
     try {
+      console.log("Attempting to join campaign:", campaignId);
+      console.log("Current user:", user.id);
+
       // First check if there are any existing players
       const { data: existingPlayers } = await supabase
         .from("campaign_players")
         .select("*")
         .eq("campaign_id", campaignId);
 
+      console.log("Existing players:", existingPlayers);
+
       const roleType = existingPlayers && existingPlayers.length === 0 ? "owner" : "player";
+      console.log("Role type determined:", roleType);
 
       // Get the player record for the current user
       const { data: playerData, error: playerError } = await supabase
@@ -33,6 +39,8 @@ export const useJoinCampaign = (refetch: () => void) => {
         .maybeSingle();
 
       if (playerError) throw playerError;
+
+      console.log("Player data:", playerData);
 
       if (!playerData) {
         toast({
@@ -50,6 +58,8 @@ export const useJoinCampaign = (refetch: () => void) => {
         .eq("campaign_id", campaignId)
         .eq("player_id", playerData.id)
         .maybeSingle();
+
+      console.log("Existing player check:", existingPlayer);
 
       if (existingPlayer) {
         toast({
@@ -69,6 +79,8 @@ export const useJoinCampaign = (refetch: () => void) => {
           role_type: roleType,
           status: "active",
         });
+
+      console.log("Join attempt result:", joinError || "Success");
 
       if (joinError) throw joinError;
 
