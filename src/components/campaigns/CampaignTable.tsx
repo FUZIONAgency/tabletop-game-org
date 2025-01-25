@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Campaign } from "@/types/campaign";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Pencil } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, Pencil } from "lucide-react";
 import { SessionList } from "./SessionList";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -56,6 +56,10 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
     navigate(`/my/games/${campaignId}/edit`, {
       state: { from: location.pathname }
     });
+  };
+
+  const handleViewCampaign = (campaignId: string) => {
+    navigate(`/campaigns/${campaignId}`);
   };
 
   return (
@@ -131,6 +135,15 @@ export const CampaignTable = ({ campaigns, onJoinCampaign, onLeaveCampaign }: Ca
                       <Pencil className="h-4 w-4 text-black" />
                     </Button>
                   )}
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-forest-green hover:bg-green-700"
+                    onClick={() => handleViewCampaign(campaign.id)}
+                  >
+                    <Eye className="h-4 w-4 text-white" />
+                  </Button>
                 </div>
               </TableCell>
               <TableCell className="font-medium text-left">{campaign.owner_alias || 'N/A'}</TableCell>

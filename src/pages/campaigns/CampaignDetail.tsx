@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Calendar, Users } from "lucide-react";
+import { AlertCircle, Calendar, FileIcon, ImageIcon, Users } from "lucide-react";
 import { format } from "date-fns";
 import { SessionList } from "@/components/campaigns/SessionList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -39,20 +41,76 @@ const CampaignDetail = () => {
     enabled: !!id,
   });
 
-  const { data: confirmedPlayersCount } = useQuery({
-    queryKey: ['campaign-players-count', id],
+  const { data: participants } = useQuery({
+    queryKey: ['campaign-participants', id],
     queryFn: async () => {
-      const { count, error } = await supabase
+      const { data, error } = await supabase
         .from('campaign_players')
-        .select('*', { count: 'exact', head: true })
-        .eq('campaign_id', id)
-        .eq('status', 'active');
+        .select(`
+          player:players (
+            alias,
+            alias_image_url
+          )
+        `)
+        .eq('campaign_id', id);
 
       if (error) throw error;
-      return count || 0;
+      return data;
     },
     enabled: !!id,
   });
+
+  const { data: resources } = useQuery({
+    queryKey: ['campaign-resources', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from('campaigns')
+        .list(`${id}/resources`);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const { data: photos } = useQuery({
+    queryKey: ['campaign-photos', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from('campaigns')
+        .list(`${id}/photos`);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const { data: ads } = useQuery({
+    queryKey: ['campaign-ads', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from('campaigns')
+        .list(`${id}/ads`);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const getFileUrl = (path: string) => {
+    return supabase.storage
+      .from('campaigns')
+      .getPublicUrl(`${id}/${path}`).data.publicUrl;
+  };
+
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType.startsWith('image/')) {
+      return <ImageIcon className="h-6 w-6" />;
+    }
+    return <FileIcon className="h-6 w-6" />;
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -90,41 +148,81 @@ const CampaignDetail = () => {
                 </div>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-lg mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <Users className="w-5 h-5" />
-                      {confirmedPlayersCount} / {campaign.max_players} players
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-5 h-5" />
-                      Created {format(new Date(campaign.created_at), 'MMM d, yyyy')}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-2xl font-bold">${campaign.price}</span>
-                    <span className="text-gray-500">/session</span>
-                  </div>
-                </div>
-                <p className="text-gray-700">{campaign.description}</p>
-              </div>
+              <Tabs defaultValue="sessions" className="w-full">
+                <TabsList>
+                  <TabsTrigger value="sessions">Sessions</TabsTrigger>
+                  <TabsTrigger value="advertising">Advertising</TabsTrigger>
+                  <TabsTrigger value="resources">Resources</TabsTrigger>
+                  <TabsTrigger value="photos">Photos</TabsTrigger>
+                  <TabsTrigger value="participants">Participants</TabsTrigger>
+                </TabsList>
 
-              {campaign.retailer && (
-                <div className="border rounded-lg p-6 mb-8">
-                  <h2 className="text-xl font-semibold mb-4">Location</h2>
-                  <p className="font-medium text-lg">{campaign.retailer.name}</p>
-                  <p className="text-gray-600">{campaign.retailer.address}</p>
-                  <p className="text-gray-600">
-                    {campaign.retailer.city}, {campaign.retailer.state} {campaign.retailer.zip}
-                  </p>
-                </div>
-              )}
+                <TabsContent value="sessions">
+                  <SessionList campaignId={campaign.id} />
+                </TabsContent>
 
-              <div className="border rounded-lg p-6">
-                <h2 className="text-xl font-semibold mb-4">Sessions</h2>
-                <SessionList campaignId={campaign.id} />
-              </div>
+                <TabsContent value="advertising">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {ads?.map((ad) => (
+                      <img
+                        key={ad.name}
+                        src={getFileUrl(`ads/${ad.name}`)}
+                        alt={ad.name}
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="resources">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {resources?.map((resource) => (
+                      <a
+                        key={resource.name}
+                        href={getFileUrl(`resources/${resource.name}`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-4 border rounded-lg hover:bg-gray-50"
+                      >
+                        {getFileIcon(resource.metadata?.mimetype || '')}
+                        <span className="truncate">{resource.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="photos">
+                  <ScrollArea className="h-[500px] w-full rounded-md border p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {photos?.map((photo) => (
+                        <img
+                          key={photo.name}
+                          src={getFileUrl(`photos/${photo.name}`)}
+                          alt={photo.name}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="participants">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {participants?.map((participant) => (
+                      <div key={participant.player.alias} className="flex items-center gap-2 p-4 border rounded-lg">
+                        {participant.player.alias_image_url && (
+                          <img
+                            src={participant.player.alias_image_url}
+                            alt={participant.player.alias}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        )}
+                        <span>{participant.player.alias}</span>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           ) : (
             <p className="text-gray-500">Campaign not found.</p>
