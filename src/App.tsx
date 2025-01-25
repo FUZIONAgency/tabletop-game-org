@@ -10,6 +10,7 @@ import Profile from "@/pages/Profile";
 import Network from "@/pages/Network";
 import AcceptInvite from "@/pages/AcceptInvite";
 import MyGames from "@/pages/my/MyGames";
+import NewCampaign from "@/pages/my/NewCampaign";
 import MyGameSystems from "@/pages/my/MyGameSystems";
 import MyRetailers from "@/pages/my/MyRetailers";
 import MyExams from "@/pages/my/MyExams";
@@ -41,6 +42,7 @@ function App() {
             
             {/* My Section Routes */}
             <Route path="/my/games" element={<MyGames />} />
+            <Route path="/my/games/new" element={<NewCampaign />} />
             <Route path="/my/game-systems" element={<MyGameSystems />} />
             <Route path="/my/retailers" element={<MyRetailers />} />
             <Route path="/my/exams" element={<MyExams />} />
