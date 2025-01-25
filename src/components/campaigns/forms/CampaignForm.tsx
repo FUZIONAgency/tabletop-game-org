@@ -11,16 +11,23 @@ import { PlayerCountInputs } from "./PlayerCountInputs";
 import { PriceInput } from "./PriceInput";
 import { CampaignBasicInfo } from "./CampaignBasicInfo";
 import { FormData } from "./types";
+import { usePlayerData } from "@/components/network/hooks/usePlayerData";
 
 export function CampaignForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const playerId = usePlayerData(user?.id);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
     try {
       if (!user?.id) {
         toast.error("You must be logged in to create a campaign");
+        return;
+      }
+
+      if (!playerId) {
+        toast.error("Player profile not found");
         return;
       }
 
@@ -35,7 +42,8 @@ export function CampaignForm() {
         return;
       }
 
-      const { error } = await supabase
+      // First create the campaign
+      const { data: campaign, error: campaignError } = await supabase
         .from('campaigns')
         .insert({
           title: data.title,
@@ -47,11 +55,29 @@ export function CampaignForm() {
           game_system_id: data.game_system_id,
           retailer_id: data.retailer_id || null,
           auth_id: user.id
+        })
+        .select()
+        .single();
+
+      if (campaignError) {
+        console.error('Error creating campaign:', campaignError);
+        toast.error("Failed to create campaign");
+        return;
+      }
+
+      // Then create the campaign_players record for the owner
+      const { error: playerError } = await supabase
+        .from('campaign_players')
+        .insert({
+          campaign_id: campaign.id,
+          player_id: playerId,
+          role_type: 'owner',
+          status: 'active'
         });
 
-      if (error) {
-        console.error('Error creating campaign:', error);
-        toast.error("Failed to create campaign");
+      if (playerError) {
+        console.error('Error setting campaign owner:', playerError);
+        toast.error("Failed to set campaign owner");
         return;
       }
 
