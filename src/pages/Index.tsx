@@ -49,48 +49,56 @@ const Index = () => {
         <HeroSection />
         
         {/* Qualify Section */}
-        <Section
-          id="qualify"
-          title="Get Certified"
-          subtitle="QUALIFICATION"
-          className="bg-gray-50 relative z-10"
-        >
-          {user ? (
-            <MyPlayerSection />
-          ) : (
-            <SignUpSection />
-          )}
-        </Section>
+        <div className="landing-section-wrapper">
+          <Section
+            id="qualify"
+            title="Get Certified"
+            subtitle="QUALIFICATION"
+            className="bg-gray-50 relative z-10"
+          >
+            {user ? (
+              <MyPlayerSection />
+            ) : (
+              <SignUpSection />
+            )}
+          </Section>
+        </div>
 
         {/* Games Section */}
-        <Section
-          id="games"
-          title="Play Anywhere, Anytime"
-          subtitle="GAMES"
-          className="bg-white relative z-10"
-        >
-          <GamesSection />
-        </Section>
+        <div className="landing-section-wrapper">
+          <Section
+            id="games"
+            title="Play Anywhere, Anytime"
+            subtitle="GAMES"
+            className="bg-white relative z-10"
+          >
+            <GamesSection />
+          </Section>
+        </div>
 
         {/* Recruiting Section */}
-        <Section
-          id="recruiting"
-          title="Build Your Team"
-          subtitle="RECRUITING"
-          className="bg-gray-50 relative z-10"
-        >
-          <RecruitingSection />
-        </Section>
+        <div className="landing-section-wrapper">
+          <Section
+            id="recruiting"
+            title="Build Your Team"
+            subtitle="RECRUITING"
+            className="bg-gray-50 relative z-10"
+          >
+            <RecruitingSection />
+          </Section>
+        </div>
 
         {/* Rewards Section */}
-        <Section
-          id="rewards"
-          title="Get Paid to Play"
-          subtitle="REWARDS"
-          className="bg-white relative z-10"
-        >
-          <RewardsSection />
-        </Section>
+        <div className="landing-section-wrapper">
+          <Section
+            id="rewards"
+            title="Get Paid to Play"
+            subtitle="REWARDS"
+            className="bg-white relative z-10"
+          >
+            <RewardsSection />
+          </Section>
+        </div>
       </div>
       <Footer />
     </div>
