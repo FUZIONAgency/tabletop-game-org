@@ -18,11 +18,13 @@ export const useLeaveCampaign = (refetch: () => void) => {
 
     try {
       // First get the player record for the current user
-      const { data: playerData } = await supabase
+      const { data: playerData, error: playerError } = await supabase
         .from("players")
         .select("id")
         .eq("auth_id", user.id)
         .maybeSingle();
+
+      if (playerError) throw playerError;
 
       if (!playerData) {
         toast({
@@ -33,6 +35,11 @@ export const useLeaveCampaign = (refetch: () => void) => {
         return;
       }
 
+      console.log("Attempting to delete campaign_players record:", {
+        campaignId,
+        playerId: playerData.id
+      });
+
       // Delete the campaign_players record
       const { error: leaveError } = await supabase
         .from("campaign_players")
@@ -40,7 +47,10 @@ export const useLeaveCampaign = (refetch: () => void) => {
         .eq("campaign_id", campaignId)
         .eq("player_id", playerData.id);
 
-      if (leaveError) throw leaveError;
+      if (leaveError) {
+        console.error("Error deleting campaign_players record:", leaveError);
+        throw leaveError;
+      }
 
       toast({
         title: "Success!",
