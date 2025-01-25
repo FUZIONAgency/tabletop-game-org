@@ -45,23 +45,34 @@ export const useRetailerCampaigns = () => {
           )
         `)
         .eq("type_id", typeData.id)
-        .eq("campaign_players.role_type", "owner")
-        .order("created_at", { ascending: false });
+        .eq("campaign_players.role_type", "owner");
 
       if (error) throw error;
 
-      // Transform the data to match our Campaign type
-      return campaigns.map(campaign => ({
-        ...campaign,
-        is_member: campaign.campaign_players.some(
-          player => player.player_id === playerData?.id
-        ),
-        is_owner: campaign.campaign_players.some(
-          player => player.player_id === playerData?.id && player.role_type === 'owner'
-        ),
-        owner_alias: campaign.owner[0]?.player?.alias || null,
-        game_system: campaign.game_system || null
-      })) as Campaign[];
+      // Check if the current player is a member of each campaign
+      const campaignsWithMembership = await Promise.all(
+        campaigns.map(async (campaign) => {
+          const { data: membershipData } = await supabase
+            .from("campaign_players")
+            .select("*")
+            .eq("campaign_id", campaign.id)
+            .eq("player_id", playerData?.id)
+            .eq("status", "active")
+            .maybeSingle();
+
+          return {
+            ...campaign,
+            is_member: !!membershipData,
+            is_owner: campaign.campaign_players.some(
+              player => player.player_id === playerData?.id && player.role_type === 'owner'
+            ),
+            owner_alias: campaign.owner[0]?.player?.alias || null,
+            game_system: campaign.game_system || null
+          };
+        })
+      );
+
+      return campaignsWithMembership as Campaign[];
     },
     enabled: !!user,
   });
