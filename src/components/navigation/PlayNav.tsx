@@ -8,7 +8,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/auth";
 
 interface PlayNavProps {
@@ -18,7 +17,6 @@ interface PlayNavProps {
 
 const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const { user } = useAuth();
 
   const handlePlayClick = (e: React.MouseEvent) => {
@@ -26,8 +24,8 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   };
 
   const playItems = [
-    { icon: Store, label: "Retailer Games", route: "/play/retailer" },
-    { icon: Users, label: "Convention Games", route: "/play/convention" },
+    { icon: Store, label: "Retailer Games", route: "/play/retailer-games" },
+    { icon: Users, label: "Convention Games", route: "/play/convention-games" },
     { icon: Dices, label: "Online Games", route: "/play/online" },
   ];
 
