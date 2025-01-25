@@ -64,7 +64,11 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
       if (error) throw error;
 
       toast.success("Game system added successfully!");
+      
+      // Invalidate both queries that need to be refreshed
+      queryClient.invalidateQueries({ queryKey: ['my-game-systems'] });
       queryClient.invalidateQueries({ queryKey: ['my-games'] });
+      
       onOpenChange(false);
       form.reset();
     } catch (error) {
