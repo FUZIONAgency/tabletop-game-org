@@ -31,7 +31,11 @@ export function CampaignBasicInfo({ register, errors }: Props) {
           id="description"
           {...register("description")}
           placeholder="Describe your campaign"
+          className={errors.description ? "border-red-500" : ""}
         />
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
+        )}
       </div>
     </>
   );

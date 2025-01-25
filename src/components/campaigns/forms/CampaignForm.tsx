@@ -92,9 +92,13 @@ export function CampaignForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl space-y-6">
       <CampaignBasicInfo register={register} errors={errors} />
-      <GameSystemSelect setValue={setValue} />
+      <div className={`${!errors.game_system_id ? '' : 'border-red-500 rounded-md border p-2'}`}>
+        <GameSystemSelect setValue={setValue} />
+      </div>
       <RetailerSelect setValue={setValue} userId={user?.id} />
-      <CampaignTypeSelect setValue={setValue} />
+      <div className={`${!errors.type_id ? '' : 'border-red-500 rounded-md border p-2'}`}>
+        <CampaignTypeSelect setValue={setValue} />
+      </div>
       <PlayerCountInputs register={register} errors={errors} />
       <PriceInput register={register} errors={errors} />
 

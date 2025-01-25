@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 type Props = {
   setValue: (name: "type_id", value: string) => void;
@@ -31,7 +32,12 @@ export function CampaignTypeSelect({ setValue }: Props) {
     <div className="space-y-2">
       <Label htmlFor="type_id">Campaign Type</Label>
       <Select
-        onValueChange={(value) => setValue("type_id", value)}
+        onValueChange={(value) => {
+          setValue("type_id", value);
+          if (!value) {
+            toast.error("Please select a campaign type");
+          }
+        }}
       >
         <SelectTrigger>
           <SelectValue placeholder="Select type" />

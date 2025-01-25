@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 type Props = {
   setValue: (name: "game_system_id", value: string) => void;
@@ -31,7 +32,12 @@ export function GameSystemSelect({ setValue }: Props) {
     <div className="space-y-2">
       <Label htmlFor="game_system_id">Game System</Label>
       <Select
-        onValueChange={(value) => setValue("game_system_id", value)}
+        onValueChange={(value) => {
+          setValue("game_system_id", value);
+          if (!value) {
+            toast.error("Please select a game system");
+          }
+        }}
       >
         <SelectTrigger>
           <SelectValue placeholder="Select game system" />
