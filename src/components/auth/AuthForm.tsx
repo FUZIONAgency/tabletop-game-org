@@ -3,38 +3,49 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const AuthForm = () => {
+  const navigate = useNavigate();
   const redirectTo = `${window.location.origin}/auth/callback`;
 
-  // Add auth state change listener with improved error handling
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN") {
-      toast.success("Successfully signed in!");
-    } else if (event === "USER_UPDATED") {
-      toast.success("Your account has been updated");
-    } else if (event === "PASSWORD_RECOVERY") {
-      toast.info("Check your email for password reset instructions");
-    } else if (event === "SIGNED_OUT") {
-      toast.error("You have been signed out");
-    }
-
-    // Handle auth errors
-    const error = session?.user?.user_metadata?.error;
-    if (error) {
-      console.error("Auth error:", error);
-      
-      if (error.message?.includes("Invalid login credentials")) {
-        toast.error("Invalid email or password. Please try again.");
-      } else if (error.message?.includes("Email not confirmed")) {
-        toast.error("Please check your email and verify your account before logging in.");
-      } else if (error.status === 400) {
-        toast.error(error.message || "There was a problem with your request. Please try again.");
-      } else {
-        toast.error(error.message || "An error occurred during authentication");
+  useEffect(() => {
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        toast.success("Successfully signed in!");
+        navigate("/"); // Redirect to home page after successful login
+      } else if (event === "USER_UPDATED") {
+        toast.success("Your account has been updated");
+      } else if (event === "PASSWORD_RECOVERY") {
+        toast.info("Check your email for password reset instructions");
+      } else if (event === "SIGNED_OUT") {
+        toast.error("You have been signed out");
       }
-    }
-  });
+
+      // Handle auth errors
+      const error = session?.user?.user_metadata?.error;
+      if (error) {
+        console.error("Auth error:", error);
+        
+        if (error.message?.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password. Please try again.");
+        } else if (error.message?.includes("Email not confirmed")) {
+          toast.error("Please check your email and verify your account before logging in.");
+        } else if (error.status === 400) {
+          toast.error(error.message || "There was a problem with your request. Please try again.");
+        } else {
+          toast.error(error.message || "An error occurred during authentication");
+        }
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div className="w-full max-w-md">
