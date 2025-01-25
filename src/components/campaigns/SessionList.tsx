@@ -56,6 +56,31 @@ export const SessionList = ({ campaignId }: SessionListProps) => {
     enabled: !!user,
   });
 
+  // Check if current user is the campaign owner
+  const { data: isOwner } = useQuery({
+    queryKey: ["isOwner", campaignId],
+    queryFn: async () => {
+      const { data: playerData } = await supabase
+        .from("players")
+        .select("id")
+        .eq("auth_id", user?.id)
+        .single();
+
+      if (!playerData) return false;
+
+      const { data } = await supabase
+        .from("campaign_players")
+        .select()
+        .eq("campaign_id", campaignId)
+        .eq("player_id", playerData.id)
+        .eq("role_type", "owner")
+        .single();
+
+      return !!data;
+    },
+    enabled: !!user,
+  });
+
   const handleConfirmAttendance = async (sessionId: string) => {
     if (!user) {
       toast({
@@ -165,22 +190,24 @@ export const SessionList = ({ campaignId }: SessionListProps) => {
         <p className="text-gray-500">No sessions scheduled yet.</p>
       )}
 
-      <Dialog open={isAddSessionOpen} onOpenChange={setIsAddSessionOpen}>
-        <DialogTrigger asChild>
-          <Button className="bg-yellow-500 hover:bg-yellow-600">
-            Add Session
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Session</DialogTitle>
-          </DialogHeader>
-          <SessionForm 
-            campaignId={campaignId} 
-            onSuccess={() => setIsAddSessionOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      {isOwner && (
+        <Dialog open={isAddSessionOpen} onOpenChange={setIsAddSessionOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-yellow-500 hover:bg-yellow-600">
+              Add Session
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Session</DialogTitle>
+            </DialogHeader>
+            <SessionForm 
+              campaignId={campaignId} 
+              onSuccess={() => setIsAddSessionOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
