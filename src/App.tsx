@@ -33,6 +33,7 @@ import MyNetwork from "@/pages/recruit/MyNetwork";
 
 // Qualify pages
 import GetCertified from "@/pages/qualify/GetCertified";
+import Ratings from "@/pages/qualify/Ratings";
 
 // Earn pages
 import ConventionSales from "./pages/earn/ConventionSales";
@@ -95,7 +96,7 @@ function App() {
 
             {/* Qualify Section Routes */}
             <Route path="/qualify/get-certified" element={<ProtectedRoute><GetCertified /></ProtectedRoute>} />
-
+            <Route path="/qualify/ratings" element={<ProtectedRoute><Ratings /></ProtectedRoute>} />
 
             {/* Earn Section Routes */}
             <Route path="/earn/product-sales" element={<ProtectedRoute><ProductSales /></ProtectedRoute>} />
