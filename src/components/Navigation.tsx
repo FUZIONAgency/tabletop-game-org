@@ -26,7 +26,15 @@ const Navigation = () => {
     }
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      const navHeight = 64; // Height of the navigation bar
+      const offset = navHeight + 16; // Add some additional padding
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
     }
     setActiveSection(id);
   };
