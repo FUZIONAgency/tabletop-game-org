@@ -1,5 +1,5 @@
 import { ShieldCheck, Award, Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/auth";
 
 interface QualifyNavProps {
@@ -16,17 +17,14 @@ interface QualifyNavProps {
 }
 
 const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
-  const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user } = useAuth();
 
   const handleQualifyClick = () => {
-    scrollToSection('qualify');
+    if (!isMobile) {
+      scrollToSection('qualify');
+    }
   };
-
-  const qualifyItems = [
-    { icon: Award, label: "Get Certified", route: "/qualify/get-certified" },
-    { icon: Star, label: "Ratings", route: "/qualify/ratings" },
-  ];
 
   return (
     <NavigationMenu>
@@ -42,19 +40,28 @@ const QualifyNav = ({ activeSection, scrollToSection }: QualifyNavProps) => {
             Qualify
           </NavigationMenuTrigger>
           {user && (
-            <NavigationMenuContent className="min-w-[200px] bg-white z-50">
-              <div className="p-2">
-                {qualifyItems.map((item) => (
-                  <Button
-                    key={item.route}
-                    variant="ghost"
-                    className="w-full justify-start text-black hover:bg-gray-100"
-                    onClick={() => navigate(item.route)}
-                  >
-                    <item.icon className="w-4 h-4 mr-2" />
-                    {item.label}
-                  </Button>
-                ))}
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link to="/qualify/get-certified" className="flex items-center space-x-2">
+                    <Award className="w-4 h-4" />
+                    <span>Get Certified</span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link to="/qualify/ratings" className="flex items-center space-x-2">
+                    <Star className="w-4 h-4" />
+                    <span>Ratings</span>
+                  </Link>
+                </Button>
               </div>
             </NavigationMenuContent>
           )}

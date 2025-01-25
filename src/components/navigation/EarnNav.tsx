@@ -45,13 +45,13 @@ const EarnNav = ({ activeSection, scrollToSection }: EarnNavProps) => {
             Earn
           </NavigationMenuTrigger>
           {user && (
-            <NavigationMenuContent className="min-w-[200px] bg-white z-50">
-              <div className="p-2">
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
                 {earnItems.map((item) => (
                   <Button
                     key={item.route}
                     variant="ghost"
-                    className="w-full justify-start text-black hover:bg-gray-100"
+                    className="w-full justify-start"
                     onClick={() => navigate(item.route)}
                   >
                     <item.icon className="w-4 h-4 mr-2" />

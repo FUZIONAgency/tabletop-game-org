@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/auth";
 
 interface PlayNavProps {
@@ -17,6 +18,7 @@ interface PlayNavProps {
 
 const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user } = useAuth();
 
   const handlePlayClick = (e: React.MouseEvent) => {
@@ -24,8 +26,8 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
   };
 
   const playItems = [
-    { icon: Store, label: "Retailer Games", route: "/play/retailer-games" },
-    { icon: Users, label: "Convention Games", route: "/play/convention-games" },
+    { icon: Store, label: "Retailer Games", route: "/play/retailer" },
+    { icon: Users, label: "Convention Games", route: "/play/convention" },
     { icon: Dices, label: "Online Games", route: "/play/online" },
   ];
 
@@ -43,13 +45,13 @@ const PlayNav = ({ activeSection, scrollToSection }: PlayNavProps) => {
             Play
           </NavigationMenuTrigger>
           {user && (
-            <NavigationMenuContent className="min-w-[200px] bg-white z-50">
-              <div className="p-2">
+            <NavigationMenuContent>
+              <div className="w-[200px] p-2">
                 {playItems.map((item) => (
                   <Button
                     key={item.route}
                     variant="ghost"
-                    className="w-full justify-start text-black hover:bg-gray-100"
+                    className="w-full justify-start"
                     onClick={() => navigate(item.route)}
                   >
                     <item.icon className="w-4 h-4 mr-2" />

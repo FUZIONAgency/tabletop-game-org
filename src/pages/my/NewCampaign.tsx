@@ -16,22 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 
 type FormData = {
   title: string;
@@ -41,15 +26,12 @@ type FormData = {
   max_players: number;
   price: number;
   game_system_id: string;
-  retailer_id?: string;
 };
 
 const NewCampaign = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { register, handleSubmit, setValue } = useForm<FormData>();
-  const [open, setOpen] = useState(false);
-  const [retailerValue, setRetailerValue] = useState("");
 
   const { data: campaignTypes } = useQuery({
     queryKey: ['campaignTypes'],
@@ -77,19 +59,6 @@ const NewCampaign = () => {
     }
   });
 
-  const { data: retailers } = useQuery({
-    queryKey: ['retailers'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('retailers')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const onSubmit = async (data: FormData) => {
     try {
       const { error } = await supabase
@@ -102,7 +71,6 @@ const NewCampaign = () => {
           max_players: data.max_players,
           price: data.price,
           game_system_id: data.game_system_id,
-          retailer_id: data.retailer_id || null,
           auth_id: user?.id
         });
 
@@ -178,55 +146,6 @@ const NewCampaign = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="retailer_id">Retailer (Optional)</Label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                  >
-                    {retailerValue
-                      ? retailers?.find((retailer) => retailer.id === retailerValue)?.name
-                      : "Select retailer..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Search retailers..." />
-                    <CommandEmpty>No retailer found.</CommandEmpty>
-                    <CommandGroup>
-                      {retailers?.map((retailer) => (
-                        <CommandItem
-                          key={retailer.id}
-                          value={retailer.name}
-                          onSelect={(currentValue) => {
-                            const selectedRetailer = retailers.find(r => r.name.toLowerCase() === currentValue.toLowerCase());
-                            if (selectedRetailer) {
-                              setRetailerValue(selectedRetailer.id);
-                              setValue("retailer_id", selectedRetailer.id);
-                            }
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              retailerValue === retailer.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {retailer.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
