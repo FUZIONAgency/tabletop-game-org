@@ -1,5 +1,10 @@
 import { Mail, User, UserCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
 
 interface ProfileData {
   email: string | null;
@@ -13,7 +18,39 @@ interface ProfileCardProps {
 }
 
 const ProfileCard = ({ profile }: ProfileCardProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [username, setUsername] = useState(profile?.username || "");
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!profile) return null;
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ username })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Username updated successfully",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating username:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update username",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card>
@@ -31,7 +68,44 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <User className="h-4 w-4" />
-            <span>{profile.username}</span>
+            {isEditing ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="h-8"
+                  placeholder="Enter username"
+                />
+                <Button 
+                  size="sm"
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                >
+                  Save
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setUsername(profile.username || "");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span>{profile.username}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit
+                </Button>
+              </div>
+            )}
           </div>
           {profile.role && (
             <div className="flex items-center gap-2">
