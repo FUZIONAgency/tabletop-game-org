@@ -73,7 +73,7 @@ const MyPlayerSection = () => {
           <CardContent className="flex flex-col items-center justify-center space-y-4 py-6">
             <h3 className="text-lg font-semibold text-center">Add More Game Systems</h3>
             <Button 
-              onClick={() => navigate('/my/game_systems')} 
+              onClick={() => navigate('/my/gamesystems')} 
               className="bg-gold hover:bg-gold/90"
             >
               <Plus className="w-4 h-4 mr-2" />
