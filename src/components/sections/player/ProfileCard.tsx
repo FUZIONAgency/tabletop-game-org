@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 
 interface ProfileData {
+  id: string;  // Added this line to fix the TypeScript error
   email: string | null;
   username: string | null;
   avatar_url: string | null;
