@@ -761,6 +761,47 @@ export type Database = {
           },
         ]
       }
+      clause: {
+        Row: {
+          content: string | null
+          created_at: string
+          description: string | null
+          explanation: string | null
+          id: string
+          name: string | null
+          parent_id: string | null
+          version: number | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          explanation?: string | null
+          id?: string
+          name?: string | null
+          parent_id?: string | null
+          version?: number | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          explanation?: string | null
+          id?: string
+          name?: string | null
+          parent_id?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clause_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "clause"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       condition_types: {
         Row: {
           created_at: string
@@ -842,6 +883,198 @@ export type Database = {
         }
         Relationships: []
       }
+      contract_classes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          parent_id: string | null
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_classes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "contract_classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_clauses: {
+        Row: {
+          clause_id: string | null
+          contract_id: string | null
+          created_at: string | null
+          id: string
+          name: string
+          sortorder: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          clause_id?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          sortorder?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          clause_id?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          sortorder?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_clauses_clause_id_fkey"
+            columns: ["clause_id"]
+            isOneToOne: false
+            referencedRelation: "clause"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contract_clauses_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_metros: {
+        Row: {
+          contract_id: string | null
+          created_at: string | null
+          id: string
+          metro_id: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          metro_id?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          contract_id?: string | null
+          created_at?: string | null
+          id?: string
+          metro_id?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_metros_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contract_metros_metro_id_fkey"
+            columns: ["metro_id"]
+            isOneToOne: false
+            referencedRelation: "metros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_profiles: {
+        Row: {
+          accepted_date: string | null
+          contract_id: string | null
+          created_at: string | null
+          declined_date: string | null
+          id: string
+          name: string
+          profile_id: string | null
+          requested_date: string | null
+          signature_id: string | null
+          sortorder: number | null
+          updated_at: string | null
+          viewed_date: string | null
+        }
+        Insert: {
+          accepted_date?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          declined_date?: string | null
+          id?: string
+          name: string
+          profile_id?: string | null
+          requested_date?: string | null
+          signature_id?: string | null
+          sortorder?: number | null
+          updated_at?: string | null
+          viewed_date?: string | null
+        }
+        Update: {
+          accepted_date?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          declined_date?: string | null
+          id?: string
+          name?: string
+          profile_id?: string | null
+          requested_date?: string | null
+          signature_id?: string | null
+          sortorder?: number | null
+          updated_at?: string | null
+          viewed_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_counterparties_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contract_profiles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contract_profiles_signature_id_fkey"
+            columns: ["signature_id"]
+            isOneToOne: false
+            referencedRelation: "signature"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_types: {
         Row: {
           created_at: string | null
@@ -849,7 +1082,7 @@ export type Database = {
           id: string
           name: string
           updated_at: string | null
-          version: string
+          version: number | null
         }
         Insert: {
           created_at?: string | null
@@ -857,7 +1090,7 @@ export type Database = {
           id?: string
           name: string
           updated_at?: string | null
-          version?: string
+          version?: number | null
         }
         Update: {
           created_at?: string | null
@@ -865,50 +1098,64 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string | null
-          version?: string
+          version?: number | null
         }
         Relationships: []
       }
       contracts: {
         Row: {
-          contract_text: string
+          contract_class: string | null
           contract_type_id: string
           created_at: string | null
           description: string | null
           id: string
-          markdown_preview: string | null
           name: string
+          parent_id: string | null
           updated_at: string | null
-          version: string
+          version: number | null
         }
         Insert: {
-          contract_text: string
+          contract_class?: string | null
           contract_type_id: string
           created_at?: string | null
           description?: string | null
           id?: string
-          markdown_preview?: string | null
           name: string
+          parent_id?: string | null
           updated_at?: string | null
-          version?: string
+          version?: number | null
         }
         Update: {
-          contract_text?: string
+          contract_class?: string | null
           contract_type_id?: string
           created_at?: string | null
           description?: string | null
           id?: string
-          markdown_preview?: string | null
           name?: string
+          parent_id?: string | null
           updated_at?: string | null
-          version?: string
+          version?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "contracts_contract_class_fkey"
+            columns: ["contract_class"]
+            isOneToOne: false
+            referencedRelation: "contract_classes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "contracts_contract_type_id_fkey"
             columns: ["contract_type_id"]
             isOneToOne: false
             referencedRelation: "contract_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
         ]
@@ -1267,6 +1514,44 @@ export type Database = {
             columns: ["game_system_id"]
             isOneToOne: false
             referencedRelation: "game_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fundraiser_graphs: {
+        Row: {
+          auth_id: string
+          created_at: string | null
+          fundraiser_id: string
+          graph_json: Json
+          id: string
+          updated_at: string | null
+          version: number
+        }
+        Insert: {
+          auth_id?: string
+          created_at?: string | null
+          fundraiser_id: string
+          graph_json: Json
+          id?: string
+          updated_at?: string | null
+          version?: number
+        }
+        Update: {
+          auth_id?: string
+          created_at?: string | null
+          fundraiser_id?: string
+          graph_json?: Json
+          id?: string
+          updated_at?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fundraiser_graphs_fundraiser_id_fkey"
+            columns: ["fundraiser_id"]
+            isOneToOne: false
+            referencedRelation: "fundraisers"
             referencedColumns: ["id"]
           },
         ]
@@ -2117,6 +2402,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          profile_id: string | null
         }
         Insert: {
           cell?: string | null
@@ -2125,6 +2411,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          profile_id?: string | null
         }
         Update: {
           cell?: string | null
@@ -2133,8 +2420,17 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          profile_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "person_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       player_exam_answers: {
         Row: {
@@ -3186,6 +3482,30 @@ export type Database = {
           },
         ]
       }
+      signature: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       skill_types: {
         Row: {
           created_at: string
@@ -3357,6 +3677,7 @@ export type Database = {
         Row: {
           carousel_image: string | null
           created_at: string | null
+          created_by: string | null
           description: string | null
           end_date: string
           game_system_id: string | null
@@ -3378,6 +3699,7 @@ export type Database = {
         Insert: {
           carousel_image?: string | null
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           end_date: string
           game_system_id?: string | null
@@ -3399,6 +3721,7 @@ export type Database = {
         Update: {
           carousel_image?: string | null
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           end_date?: string
           game_system_id?: string | null
