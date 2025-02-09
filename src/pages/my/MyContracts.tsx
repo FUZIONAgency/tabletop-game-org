@@ -71,7 +71,7 @@ const MyContracts = () => {
 
       // Get the Instance class ID
       const { data: classData } = await supabase
-        .from('contract_class')
+        .from('contract_classes')
         .select('id')
         .eq('name', 'Instance')
         .single();
@@ -86,8 +86,9 @@ const MyContracts = () => {
         .insert({
           name: 'Game Organizer Agreement',
           description: 'Executed Game Organizer Agreement',
-          class_id: classData.id,
-          content: content
+          contract_class: classData.id,
+          content: content,
+          contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357' // This should match your template contract's type
         })
         .select()
         .single();
@@ -100,7 +101,9 @@ const MyContracts = () => {
         .insert({
           contract_id: newContract.id,
           profile_id: user.id,
-          accepted: agree
+          name: 'Game Organizer Agreement',
+          accepted_date: agree ? new Date().toISOString() : null,
+          declined_date: agree ? null : new Date().toISOString(),
         });
 
       if (profileError) throw profileError;
