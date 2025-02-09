@@ -70,12 +70,13 @@ const MyContracts = () => {
         .join('\n\n');
 
       // Get the Instance class ID
-      const { data: classData } = await supabase
+      const { data: classData, error: classError } = await supabase
         .from('contract_classes')
         .select('id')
         .eq('name', 'Instance')
         .single();
 
+      if (classError) throw classError;
       if (!classData) {
         throw new Error('Could not find Instance contract class');
       }
