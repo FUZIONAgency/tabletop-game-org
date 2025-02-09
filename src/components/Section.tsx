@@ -13,7 +13,7 @@ const Section = ({ id, title, subtitle, children, className = "" }: SectionProps
   return (
     <section
       id={id}
-      className={`${className}`}
+      className={`${className} pb-20`}
     >
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 pt-20 landing-section-header">
