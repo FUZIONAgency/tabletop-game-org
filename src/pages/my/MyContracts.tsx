@@ -64,26 +64,37 @@ const MyContracts = () => {
     if (!user?.id || !organizerClauses) return;
 
     try {
+      // First get the original contract details
+      const { data: originalContract, error: contractError } = await supabase
+        .from('contracts')
+        .select('*')
+        .eq('id', '594c1639-8930-4fbe-8e29-10009ff24357')
+        .single();
+
+      if (contractError) throw contractError;
+
       // Build content from clauses
       const content = organizerClauses
         .map(clause => `${clause.clause.name}\n\n${clause.clause.content}`)
         .join('\n\n');
 
-      // Create new contract
-      const { data: newContract, error: contractError } = await supabase
+      // Create new contract by cloning original and updating specific fields
+      const { data: newContract, error: newContractError } = await supabase
         .from('contracts')
         .insert({
+          ...originalContract,
+          id: undefined, // Remove id to generate new one
           name: 'Game Organizer Agreement',
           description: 'Executed Game Organizer Agreement',
-          contract_class: '2979bcfe-d9b8-4643-b8e6-7357e358005f', // Instance class ID
           content: content,
-          contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357',
-          auth_id: user.id
+          auth_id: user.id,
+          created_at: undefined, // Remove to generate new timestamp
+          updated_at: undefined  // Remove to generate new timestamp
         })
         .select()
         .single();
 
-      if (contractError) throw contractError;
+      if (newContractError) throw newContractError;
 
       // Create contract profile association
       const { error: profileError } = await supabase
@@ -183,3 +194,4 @@ const MyContracts = () => {
 };
 
 export default MyContracts;
+
