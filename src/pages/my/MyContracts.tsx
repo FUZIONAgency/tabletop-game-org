@@ -77,7 +77,8 @@ const MyContracts = () => {
           description: 'Executed Game Organizer Agreement',
           contract_class: '2979bcfe-d9b8-4643-b8e6-7357e358005f', // Instance class ID
           content: content,
-          contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357'
+          contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357',
+          auth_id: user.id
         })
         .select()
         .single();
