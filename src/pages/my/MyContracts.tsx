@@ -73,7 +73,7 @@ const MyContracts = () => {
       const { data: classData, error: classError } = await supabase
         .from('contract_classes')
         .select('id')
-        .eq('name', 'Instance')
+        .ilike('name', 'instance') 
         .single();
 
       if (classError) throw classError;
