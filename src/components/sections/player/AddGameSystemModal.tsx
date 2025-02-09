@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -15,7 +16,7 @@ const formSchema = z.object({
     required_error: "Please select a game system",
   }),
   accountId: z.string({
-    required_error: "Please enter your account ID",
+    required_error: "Account ID is required",
   }).min(1, "Account ID is required"),
 });
 
@@ -32,7 +33,7 @@ export const AddGameSystemModal = ({ isOpen, onOpenChange, playerId }: AddGameSy
     resolver: zodResolver(formSchema),
     defaultValues: {
       gameSystemId: "",
-      accountId: "",
+      accountId: "Not Available",
     },
   });
 
