@@ -69,25 +69,13 @@ const MyContracts = () => {
         .map(clause => `${clause.clause.name}\n\n${clause.clause.content}`)
         .join('\n\n');
 
-      // Get the Instance class ID
-      const { data: classData, error: classError } = await supabase
-        .from('contract_classes')
-        .select('id')
-        .ilike('name', 'instance') 
-        .single();
-
-      if (classError) throw classError;
-      if (!classData) {
-        throw new Error('Could not find Instance contract class');
-      }
-
       // Create new contract
       const { data: newContract, error: contractError } = await supabase
         .from('contracts')
         .insert({
           name: 'Game Organizer Agreement',
           description: 'Executed Game Organizer Agreement',
-          contract_class: classData.id,
+          contract_class: '2979bcfe-d9b8-4643-b8e6-7357e358005f', // Instance class ID
           content: content,
           contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357'
         })
