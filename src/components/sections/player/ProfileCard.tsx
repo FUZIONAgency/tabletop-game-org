@@ -1,3 +1,4 @@
+
 import { Mail, User, UserCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,9 +6,10 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProfileData {
-  id: string;  // Added this line to fix the TypeScript error
+  id: string;
   email: string | null;
   username: string | null;
   avatar_url: string | null;
@@ -23,6 +25,7 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
   const [username, setUsername] = useState(profile?.username || "");
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   if (!profile) return null;
 
@@ -35,6 +38,9 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
         .eq('id', profile.id);
 
       if (error) throw error;
+
+      // Invalidate and refetch profile data
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
 
       toast({
         title: "Success",
