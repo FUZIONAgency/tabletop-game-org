@@ -761,7 +761,7 @@ export type Database = {
           },
         ]
       }
-      clause: {
+      clauses: {
         Row: {
           content: string | null
           created_at: string
@@ -797,7 +797,7 @@ export type Database = {
             foreignKeyName: "clause_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
-            referencedRelation: "clause"
+            referencedRelation: "clauses"
             referencedColumns: ["id"]
           },
         ]
@@ -954,7 +954,7 @@ export type Database = {
             foreignKeyName: "contract_clauses_clause_id_fkey"
             columns: ["clause_id"]
             isOneToOne: false
-            referencedRelation: "clause"
+            referencedRelation: "clauses"
             referencedColumns: ["id"]
           },
           {
