@@ -1104,6 +1104,7 @@ export type Database = {
       }
       contracts: {
         Row: {
+          content: string | null
           contract_class: string | null
           contract_type_id: string
           created_at: string | null
@@ -1115,6 +1116,7 @@ export type Database = {
           version: number | null
         }
         Insert: {
+          content?: string | null
           contract_class?: string | null
           contract_type_id: string
           created_at?: string | null
@@ -1126,6 +1128,7 @@ export type Database = {
           version?: number | null
         }
         Update: {
+          content?: string | null
           contract_class?: string | null
           contract_type_id?: string
           created_at?: string | null

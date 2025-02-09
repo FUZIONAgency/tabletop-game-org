@@ -6,10 +6,11 @@ import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { FileText } from "lucide-react";
+import { toast } from "sonner";
 
 const MyContracts = () => {
   const { user } = useAuth();
@@ -58,6 +59,60 @@ const MyContracts = () => {
       return data;
     },
   });
+
+  const handleAgreement = async (agree: boolean) => {
+    if (!user?.id || !organizerClauses) return;
+
+    try {
+      // Build content from clauses
+      const content = organizerClauses
+        .map(clause => `${clause.clause.name}\n\n${clause.clause.content}`)
+        .join('\n\n');
+
+      // Get the Instance class ID
+      const { data: classData } = await supabase
+        .from('contract_class')
+        .select('id')
+        .eq('name', 'Instance')
+        .single();
+
+      if (!classData) {
+        throw new Error('Could not find Instance contract class');
+      }
+
+      // Create new contract
+      const { data: newContract, error: contractError } = await supabase
+        .from('contracts')
+        .insert({
+          name: 'Game Organizer Agreement',
+          description: 'Executed Game Organizer Agreement',
+          class_id: classData.id,
+          content: content
+        })
+        .select()
+        .single();
+
+      if (contractError) throw contractError;
+
+      // Create contract profile association
+      const { error: profileError } = await supabase
+        .from('contract_profiles')
+        .insert({
+          contract_id: newContract.id,
+          profile_id: user.id,
+          accepted: agree
+        });
+
+      if (profileError) throw profileError;
+
+      setShowOrganizerModal(false);
+      toast.success(agree ? 'Contract accepted successfully' : 'Contract declined');
+
+    } catch (error) {
+      console.error('Error handling agreement:', error);
+      toast.error('Failed to process agreement');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,6 +168,19 @@ const MyContracts = () => {
                   ))}
                 </div>
               </ScrollArea>
+              <DialogFooter className="mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => handleAgreement(false)}
+                >
+                  I Decline
+                </Button>
+                <Button
+                  onClick={() => handleAgreement(true)}
+                >
+                  I Agree
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </Section>
