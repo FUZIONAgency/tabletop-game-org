@@ -1,3 +1,4 @@
+
 import MyProfile from "@/pages/my/MyProfile";
 import MyGames from "@/pages/my/MyGames";
 import MyEarnings from "@/pages/my/MyEarnings";
@@ -9,6 +10,7 @@ import MyGameSystems from "@/pages/my/MyGameSystems";
 import MyRetailers from "@/pages/my/MyRetailers";
 import MyExams from "@/pages/my/MyExams";
 import TakeExam from "@/pages/my/TakeExam";
+import MyContracts from "@/pages/my/MyContracts";
 
 export const myRoutes = [
   { path: "/my/profile", element: <MyProfile /> },
@@ -22,4 +24,5 @@ export const myRoutes = [
   { path: "/my/exams", element: <MyExams /> },
   { path: "/my/exams/:examId", element: <TakeExam /> },
   { path: "/my/conventions", element: <MyConventions /> },
+  { path: "/my/contracts", element: <MyContracts /> },
 ];
