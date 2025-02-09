@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 
 interface SectionProps {
@@ -15,7 +16,7 @@ const Section = ({ id, title, subtitle, children, className = "" }: SectionProps
       className={`${className}`}
     >
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16 landing-section-header">
+        <div className="text-center mb-16 pt-20 landing-section-header">
           {/* <div className="inline-block px-3 py-1 bg-black/5 rounded-full text-sm font-medium mb-4">
             {subtitle}
           </div> */}
