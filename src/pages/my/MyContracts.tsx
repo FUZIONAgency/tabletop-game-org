@@ -88,7 +88,7 @@ const MyContracts = () => {
           description: 'Executed Game Organizer Agreement',
           contract_class: classData.id,
           content: content,
-          contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357' // This should match your template contract's type
+          contract_type_id: '594c1639-8930-4fbe-8e29-10009ff24357'
         })
         .select()
         .single();
