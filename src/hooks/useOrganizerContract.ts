@@ -47,7 +47,7 @@ export const useOrganizerContract = () => {
           created_at: undefined,
           updated_at: undefined,
           parent_id: undefined,
-          class_id: INSTANCE_CLASS_ID,
+          contract_class: INSTANCE_CLASS_ID,
           template: false
         })
         .select()
@@ -92,7 +92,7 @@ export const useOrganizerContract = () => {
           )
         `)
         .eq('profile_id', user?.id)
-        .eq('contracts.contract_class.name', 'Instance');
+        .eq('contracts.contract_class(name)', 'Instance');
 
       if (error) throw error;
       return data;
