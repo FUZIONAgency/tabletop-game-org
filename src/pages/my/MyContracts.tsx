@@ -67,7 +67,7 @@ const MyContracts = () => {
       // First get the original contract details
       const { data: originalContract, error: contractError } = await supabase
         .from('contracts')
-        .select('*')
+        .select()
         .eq('id', '594c1639-8930-4fbe-8e29-10009ff24357')
         .single();
 
@@ -82,7 +82,7 @@ const MyContracts = () => {
       const { data: newContract, error: newContractError } = await supabase
         .from('contracts')
         .insert({
-          ...originalContract,
+          ...originalContract, // Copy all fields from original
           id: undefined, // Remove id to generate new one
           name: 'Game Organizer Agreement',
           description: 'Executed Game Organizer Agreement',
@@ -194,4 +194,3 @@ const MyContracts = () => {
 };
 
 export default MyContracts;
-
