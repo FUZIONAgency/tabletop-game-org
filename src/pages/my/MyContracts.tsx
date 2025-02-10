@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/contexts/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +31,8 @@ const MyContracts = () => {
             contract_class(name)
           )
         `)
-        .eq('profile_id', user?.id);
+        .eq('profile_id', user?.id)
+        .eq('contract.contract_class', '2979bcfe-d9b8-4643-b8e6-7357e358005f');
 
       if (error) throw error;
       return data;
