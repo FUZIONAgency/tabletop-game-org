@@ -12,6 +12,8 @@ import { useState } from "react";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
 
+const ORGANIZER_TEMPLATE_ID = '594c1639-8930-4fbe-8e29-10009ff24357';
+
 const MyContracts = () => {
   const { user } = useAuth();
   const [showOrganizerModal, setShowOrganizerModal] = useState(false);
@@ -52,7 +54,7 @@ const MyContracts = () => {
             name
           )
         `)
-        .eq('contract_id', '594c1639-8930-4fbe-8e29-10009ff24357')
+        .eq('contract_id', ORGANIZER_TEMPLATE_ID)
         .order('sortorder');
 
       if (error) throw error;
@@ -67,11 +69,17 @@ const MyContracts = () => {
       // First get the original contract details
       const { data: originalContract, error: contractError } = await supabase
         .from('contracts')
-        .select()
-        .eq('id', '594c1639-8930-4fbe-8e29-10009ff24357')
-        .single();
+        .select('*')
+        .eq('id', ORGANIZER_TEMPLATE_ID)
+        .maybeSingle();
 
-      if (contractError) throw contractError;
+      if (contractError) {
+        throw contractError;
+      }
+
+      if (!originalContract) {
+        throw new Error('Template contract not found');
+      }
 
       // Build content from clauses
       const content = organizerClauses
@@ -82,7 +90,7 @@ const MyContracts = () => {
       const { data: newContract, error: newContractError } = await supabase
         .from('contracts')
         .insert({
-          ...originalContract, // Copy all fields from original
+          ...originalContract,
           id: undefined, // Remove id to generate new one
           name: 'Game Organizer Agreement',
           description: 'Executed Game Organizer Agreement',
