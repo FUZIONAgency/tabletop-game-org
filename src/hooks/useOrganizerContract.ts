@@ -92,7 +92,7 @@ export const useOrganizerContract = () => {
           )
         `)
         .eq('profile_id', user?.id)
-        .eq('contracts.class_id.name', 'Instance');
+        .eq('contracts.class_id', INSTANCE_CLASS_ID);
 
       if (error) throw error;
       return data;
