@@ -44,13 +44,13 @@ const MyContracts = () => {
         >
           <div className="mb-8 flex gap-4 items-end">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Select Agreement Type</label>
+              <label className="text-sm font-medium">Select Agreement</label>
               <Select
                 value={selectedTemplateId}
                 onValueChange={setSelectedTemplateId}
               >
                 <SelectTrigger className="w-[300px]">
-                  <SelectValue placeholder="Select an agreement type" />
+                  <SelectValue placeholder="Select an agreement" />
                 </SelectTrigger>
                 <SelectContent>
                   {templateContracts?.map((contract) => (

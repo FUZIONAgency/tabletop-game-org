@@ -106,8 +106,13 @@ export const useOrganizerContract = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('contracts')
-        .select('*')
-        .eq('class_id', 'Template');
+        .select(`
+          *,
+          class:contract_classes!inner(
+            name
+          )
+        `)
+        .eq('contract_classes.name', 'Template');
 
       if (error) throw error;
       return data;
