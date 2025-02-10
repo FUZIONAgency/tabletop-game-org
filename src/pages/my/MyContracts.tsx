@@ -5,18 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
-import { FileText } from "lucide-react";
-import { toast } from "sonner";
+import { ContractCard } from "@/components/contracts/ContractCard";
+import { OrganizerContractDialog } from "@/components/contracts/OrganizerContractDialog";
+import { useOrganizerContract } from "@/components/contracts/useOrganizerContract";
 
 const ORGANIZER_TEMPLATE_ID = '594c1639-8930-4fbe-8e29-10009ff24357';
 
 const MyContracts = () => {
   const { user } = useAuth();
   const [showOrganizerModal, setShowOrganizerModal] = useState(false);
+  const { handleAgreement } = useOrganizerContract();
 
   const { data: contracts } = useQuery({
     queryKey: ['my-contracts', user?.id],
@@ -62,69 +61,14 @@ const MyContracts = () => {
     },
   });
 
-  const handleAgreement = async (agree: boolean) => {
-    if (!user?.id || !organizerClauses) return;
+  const onAgree = async () => {
+    const success = await handleAgreement(true);
+    if (success) setShowOrganizerModal(false);
+  };
 
-    try {
-      // First get the original contract details to reference
-      const { data: originalContract, error: contractError } = await supabase
-        .from('contracts')
-        .select('*')
-        .eq('id', ORGANIZER_TEMPLATE_ID)
-        .maybeSingle();
-
-      if (contractError) {
-        throw contractError;
-      }
-
-      if (!originalContract) {
-        throw new Error('Template contract not found');
-      }
-
-      // Build content from clauses
-      const content = organizerClauses
-        .map(clause => `${clause.clause.name}\n\n${clause.clause.content}`)
-        .join('\n\n');
-
-      // Create new contract as an Instance
-      const { data: newContract, error: newContractError } = await supabase
-        .from('contracts')
-        .insert({
-          ...originalContract,
-          id: undefined, // Remove id to generate new one
-          name: 'Game Organizer Agreement',
-          description: 'Executed Game Organizer Agreement',
-          content: content,
-          auth_id: user.id,
-          created_at: undefined, // Remove to generate new timestamp
-          updated_at: undefined,  // Remove to generate new timestamp
-          contract_class: 'b76f8429-433b-4f71-b549-7a49648c1161' // Instance class ID
-        })
-        .select()
-        .single();
-
-      if (newContractError) throw newContractError;
-
-      // Create contract profile association
-      const { error: profileError } = await supabase
-        .from('contract_profiles')
-        .insert({
-          contract_id: newContract.id,
-          profile_id: user.id,
-          name: 'Game Organizer Agreement',
-          accepted_date: agree ? new Date().toISOString() : null,
-          declined_date: agree ? null : new Date().toISOString(),
-        });
-
-      if (profileError) throw profileError;
-
-      setShowOrganizerModal(false);
-      toast.success(agree ? 'Contract accepted successfully' : 'Contract declined');
-
-    } catch (error) {
-      console.error('Error handling agreement:', error);
-      toast.error('Failed to process agreement');
-    }
+  const onDecline = async () => {
+    const success = await handleAgreement(false);
+    if (success) setShowOrganizerModal(false);
   };
 
   return (
@@ -148,54 +92,17 @@ const MyContracts = () => {
 
           <div className="grid gap-6">
             {contracts?.map((contract) => (
-              <Card key={contract.id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    {contract.contract.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {contract.contract.description}
-                  </p>
-                </CardContent>
-              </Card>
+              <ContractCard key={contract.id} contract={contract} />
             ))}
           </div>
 
-          <Dialog open={showOrganizerModal} onOpenChange={setShowOrganizerModal}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Game Organizer Agreement</DialogTitle>
-              </DialogHeader>
-              <ScrollArea className="h-[60vh] mt-4">
-                <div className="space-y-6 pr-6">
-                  {organizerClauses?.map((clause) => (
-                    <div key={clause.id} className="space-y-2">
-                      <h3 className="font-semibold">{clause.clause.name}</h3>
-                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {clause.clause.content}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              <DialogFooter className="mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => handleAgreement(false)}
-                >
-                  I Decline
-                </Button>
-                <Button
-                  onClick={() => handleAgreement(true)}
-                >
-                  I Agree
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <OrganizerContractDialog
+            open={showOrganizerModal}
+            onOpenChange={setShowOrganizerModal}
+            clauses={organizerClauses}
+            onAgree={onAgree}
+            onDecline={onDecline}
+          />
         </Section>
       </main>
     </div>
