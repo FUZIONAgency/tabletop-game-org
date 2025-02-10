@@ -66,7 +66,7 @@ const MyContracts = () => {
     if (!user?.id || !organizerClauses) return;
 
     try {
-      // First get the original contract details
+      // First get the original contract details to reference
       const { data: originalContract, error: contractError } = await supabase
         .from('contracts')
         .select('*')
@@ -86,7 +86,7 @@ const MyContracts = () => {
         .map(clause => `${clause.clause.name}\n\n${clause.clause.content}`)
         .join('\n\n');
 
-      // Create new contract by cloning original and updating specific fields
+      // Create new contract as an Instance
       const { data: newContract, error: newContractError } = await supabase
         .from('contracts')
         .insert({
@@ -97,7 +97,8 @@ const MyContracts = () => {
           content: content,
           auth_id: user.id,
           created_at: undefined, // Remove to generate new timestamp
-          updated_at: undefined  // Remove to generate new timestamp
+          updated_at: undefined,  // Remove to generate new timestamp
+          contract_class: 'b76f8429-433b-4f71-b549-7a49648c1161' // Instance class ID
         })
         .select()
         .single();
