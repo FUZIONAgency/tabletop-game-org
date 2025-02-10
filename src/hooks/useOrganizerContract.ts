@@ -88,7 +88,7 @@ export const useOrganizerContract = () => {
             id,
             name,
             description,
-            class:class_id(name)
+            class:contract_classes!class_id(name)
           )
         `)
         .eq('profile_id', user?.id)
