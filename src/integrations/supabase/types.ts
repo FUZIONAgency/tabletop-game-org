@@ -1105,54 +1105,54 @@ export type Database = {
       contracts: {
         Row: {
           auth_id: string
+          class_id: string | null
           content: string | null
-          contract_class: string | null
-          contract_type_id: string
           created_at: string | null
           description: string | null
           id: string
           name: string
           parent_id: string | null
+          type_id: string
           updated_at: string | null
           version: number | null
         }
         Insert: {
           auth_id?: string
+          class_id?: string | null
           content?: string | null
-          contract_class?: string | null
-          contract_type_id: string
           created_at?: string | null
           description?: string | null
           id?: string
           name: string
           parent_id?: string | null
+          type_id: string
           updated_at?: string | null
           version?: number | null
         }
         Update: {
           auth_id?: string
+          class_id?: string | null
           content?: string | null
-          contract_class?: string | null
-          contract_type_id?: string
           created_at?: string | null
           description?: string | null
           id?: string
           name?: string
           parent_id?: string | null
+          type_id?: string
           updated_at?: string | null
           version?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "contracts_contract_class_fkey"
-            columns: ["contract_class"]
+            columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "contract_classes"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "contracts_contract_type_id_fkey"
-            columns: ["contract_type_id"]
+            columns: ["type_id"]
             isOneToOne: false
             referencedRelation: "contract_types"
             referencedColumns: ["id"]
