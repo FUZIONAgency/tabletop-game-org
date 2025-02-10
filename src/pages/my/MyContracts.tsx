@@ -41,10 +41,16 @@ const MyContracts = () => {
 
           <div className="grid gap-6">
             {contracts?.map((contract) => (
-              <div key={contract.id} onClick={() => setSelectedContract(contract.contract)}>
+              <div key={contract.id} onClick={() => setSelectedContract({
+                ...contract.contract,
+                accepted_date: contract.accepted_date,
+                declined_date: contract.declined_date,
+              })}>
                 <ContractCard
                   name={contract.contract?.name || ''}
                   description={contract.contract?.description || ''}
+                  acceptedDate={contract.accepted_date}
+                  declinedDate={contract.declined_date}
                 />
               </div>
             ))}

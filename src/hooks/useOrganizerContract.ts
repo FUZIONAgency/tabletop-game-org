@@ -83,6 +83,8 @@ export const useOrganizerContract = () => {
         .from('contract_profiles')
         .select(`
           id,
+          accepted_date,
+          declined_date,
           contract:contracts(
             id,
             name,
