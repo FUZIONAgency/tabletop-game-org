@@ -1,13 +1,14 @@
 
 import { useAuth } from "@/contexts/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const INSTANCE_CLASS_ID = '2979bcfe-d9b8-4643-b8e6-7357e358005f';
 
 export const useOrganizerContract = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const handleAgreement = async (agree: boolean, templateId: string) => {
     if (!user?.id || !templateClauses.data) return;
@@ -65,6 +66,9 @@ export const useOrganizerContract = () => {
         });
 
       if (profileError) throw profileError;
+
+      // Invalidate the my-contracts query to trigger a refresh
+      await queryClient.invalidateQueries({ queryKey: ['my-contracts', user.id] });
 
       toast.success(agree ? 'Contract accepted successfully' : 'Contract declined');
       return true;
