@@ -47,8 +47,7 @@ export const useOrganizerContract = () => {
           created_at: undefined,
           updated_at: undefined,
           parent_id: undefined,
-          class_id: INSTANCE_CLASS_ID,
-          template: false
+          class_id: INSTANCE_CLASS_ID
         })
         .select()
         .single();
