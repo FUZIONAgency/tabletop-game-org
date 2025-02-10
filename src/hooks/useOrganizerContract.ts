@@ -4,21 +4,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-const ORGANIZER_TEMPLATE_ID = '594c1639-8930-4fbe-8e29-10009ff24357';
 const INSTANCE_CLASS_ID = '2979bcfe-d9b8-4643-b8e6-7357e358005f';
 
 export const useOrganizerContract = () => {
   const { user } = useAuth();
 
-  const handleAgreement = async (agree: boolean) => {
-    if (!user?.id || !organizerClauses.data) return;
+  const handleAgreement = async (agree: boolean, templateId: string) => {
+    if (!user?.id || !templateClauses.data) return;
 
     try {
       // First get the original contract details
       const { data: originalContract, error: contractError } = await supabase
         .from('contracts')
         .select('*')
-        .eq('id', ORGANIZER_TEMPLATE_ID)
+        .eq('id', templateId)
         .maybeSingle();
 
       if (contractError) {
@@ -30,7 +29,8 @@ export const useOrganizerContract = () => {
       }
 
       // Build content from clauses
-      const content = organizerClauses.data
+      const clauses = templateClauses.data.filter(c => c.contract_id === templateId);
+      const content = clauses
         .map(clause => `${clause.clause.name}\n\n${clause.clause.content}`)
         .join('\n\n');
 
@@ -40,8 +40,7 @@ export const useOrganizerContract = () => {
         .insert({
           ...originalContract,
           id: undefined,
-          name: 'Game Organizer Agreement',
-          description: 'Executed Game Organizer Agreement',
+          description: 'Executed Agreement',
           content: content,
           auth_id: user.id,
           created_at: undefined,
@@ -60,7 +59,7 @@ export const useOrganizerContract = () => {
         .insert({
           contract_id: newContract.id,
           profile_id: user.id,
-          name: 'Game Organizer Agreement',
+          name: originalContract.name,
           accepted_date: agree ? new Date().toISOString() : null,
           declined_date: agree ? null : new Date().toISOString(),
         });
@@ -102,30 +101,48 @@ export const useOrganizerContract = () => {
     enabled: !!user?.id,
   });
 
-  const organizerClauses = useQuery({
-    queryKey: ['organizer-contract-clauses'],
+  const { data: templateContracts } = useQuery({
+    queryKey: ['template-contracts'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('contract_clauses')
-        .select(`
-          id,
-          name,
-          clause:clause_id(
-            content,
-            name
-          )
-        `)
-        .eq('contract_id', ORGANIZER_TEMPLATE_ID)
-        .order('sortorder');
+        .from('contracts')
+        .select('*')
+        .eq('class_id', 'Template');
 
       if (error) throw error;
       return data;
     },
   });
 
+  const templateClauses = useQuery({
+    queryKey: ['contract-clauses'],
+    queryFn: async () => {
+      if (!templateContracts?.length) return [];
+      
+      const { data, error } = await supabase
+        .from('contract_clauses')
+        .select(`
+          id,
+          contract_id,
+          name,
+          clause:clause_id(
+            content,
+            name
+          )
+        `)
+        .in('contract_id', templateContracts.map(c => c.id))
+        .order('sortorder');
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!templateContracts?.length,
+  });
+
   return {
     contracts,
-    organizerClauses: organizerClauses.data,
+    templateContracts,
+    templateClauses: templateClauses.data,
     handleAgreement,
   };
 };

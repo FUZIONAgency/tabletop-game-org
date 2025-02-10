@@ -23,6 +23,7 @@ interface OrganizerAgreementModalProps {
   clauses: OrganizerClause[];
   onAgree: () => void;
   onDecline: () => void;
+  title?: string;
 }
 
 const OrganizerAgreementModal = ({
@@ -31,12 +32,13 @@ const OrganizerAgreementModal = ({
   clauses,
   onAgree,
   onDecline,
+  title = "Agreement",
 }: OrganizerAgreementModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Game Organizer Agreement</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[60vh] mt-4">
           <div className="space-y-6 pr-6">

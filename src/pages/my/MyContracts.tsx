@@ -1,6 +1,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 import ContractCard from "@/components/contracts/ContractCard";
@@ -9,16 +16,21 @@ import ContractViewModal from "@/components/contracts/ContractViewModal";
 import { useOrganizerContract } from "@/hooks/useOrganizerContract";
 
 const MyContracts = () => {
-  const [showOrganizerModal, setShowOrganizerModal] = useState(false);
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
-  const { contracts, organizerClauses, handleAgreement } = useOrganizerContract();
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const { contracts, templateContracts, templateClauses, handleAgreement } = useOrganizerContract();
 
   const handleModalAgreement = async (agree: boolean) => {
-    const success = await handleAgreement(agree);
+    const success = await handleAgreement(agree, selectedTemplateId);
     if (success) {
-      setShowOrganizerModal(false);
+      setShowAgreementModal(false);
     }
   };
+
+  const selectedTemplateClauses = templateClauses?.filter(
+    (c) => c.contract_id === selectedTemplateId
+  ) || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,25 +42,49 @@ const MyContracts = () => {
           subtitle="Contract Management"
           className="bg-background"
         >
-          <div className="mb-8">
-            <Button 
-              onClick={() => setShowOrganizerModal(true)}
+          <div className="mb-8 flex gap-4 items-end">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Agreement Type</label>
+              <Select
+                value={selectedTemplateId}
+                onValueChange={setSelectedTemplateId}
+              >
+                <SelectTrigger className="w-[300px]">
+                  <SelectValue placeholder="Select an agreement type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {templateContracts?.map((contract) => (
+                    <SelectItem key={contract.id} value={contract.id}>
+                      {contract.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={() => setShowAgreementModal(true)}
               className="bg-gold hover:bg-gold/90"
+              disabled={!selectedTemplateId}
             >
-              Become a Game Organizer
+              View Agreement
             </Button>
           </div>
 
           <div className="grid gap-6">
             {contracts?.map((contract) => (
-              <div key={contract.id} onClick={() => setSelectedContract({
-                ...contract.contract,
-                accepted_date: contract.accepted_date,
-                declined_date: contract.declined_date,
-              })}>
+              <div
+                key={contract.id}
+                onClick={() =>
+                  setSelectedContract({
+                    ...contract.contract,
+                    accepted_date: contract.accepted_date,
+                    declined_date: contract.declined_date,
+                  })
+                }
+              >
                 <ContractCard
-                  name={contract.contract?.name || ''}
-                  description={contract.contract?.description || ''}
+                  name={contract.contract?.name || ""}
+                  description={contract.contract?.description || ""}
                   acceptedDate={contract.accepted_date}
                   declinedDate={contract.declined_date}
                 />
@@ -57,11 +93,12 @@ const MyContracts = () => {
           </div>
 
           <OrganizerAgreementModal
-            open={showOrganizerModal}
-            onOpenChange={setShowOrganizerModal}
-            clauses={organizerClauses || []}
+            open={showAgreementModal}
+            onOpenChange={setShowAgreementModal}
+            clauses={selectedTemplateClauses || []}
             onAgree={() => handleModalAgreement(true)}
             onDecline={() => handleModalAgreement(false)}
+            title={templateContracts?.find(c => c.id === selectedTemplateId)?.name || "Agreement"}
           />
 
           <ContractViewModal
