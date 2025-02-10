@@ -87,6 +87,7 @@ export const useOrganizerContract = () => {
             id,
             name,
             description,
+            content,
             class:contract_classes!class_id(name)
           )
         `)

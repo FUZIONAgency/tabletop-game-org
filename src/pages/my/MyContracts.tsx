@@ -5,10 +5,12 @@ import Navigation from "@/components/Navigation";
 import Section from "@/components/Section";
 import ContractCard from "@/components/contracts/ContractCard";
 import OrganizerAgreementModal from "@/components/contracts/OrganizerAgreementModal";
+import ContractViewModal from "@/components/contracts/ContractViewModal";
 import { useOrganizerContract } from "@/hooks/useOrganizerContract";
 
 const MyContracts = () => {
   const [showOrganizerModal, setShowOrganizerModal] = useState(false);
+  const [selectedContract, setSelectedContract] = useState(null);
   const { contracts, organizerClauses, handleAgreement } = useOrganizerContract();
 
   const handleModalAgreement = async (agree: boolean) => {
@@ -39,11 +41,12 @@ const MyContracts = () => {
 
           <div className="grid gap-6">
             {contracts?.map((contract) => (
-              <ContractCard
-                key={contract.id}
-                name={contract.contract?.name || ''}
-                description={contract.contract?.description || ''}
-              />
+              <div key={contract.id} onClick={() => setSelectedContract(contract.contract)}>
+                <ContractCard
+                  name={contract.contract?.name || ''}
+                  description={contract.contract?.description || ''}
+                />
+              </div>
             ))}
           </div>
 
@@ -53,6 +56,12 @@ const MyContracts = () => {
             clauses={organizerClauses || []}
             onAgree={() => handleModalAgreement(true)}
             onDecline={() => handleModalAgreement(false)}
+          />
+
+          <ContractViewModal
+            open={!!selectedContract}
+            onOpenChange={(open) => !open && setSelectedContract(null)}
+            contract={selectedContract}
           />
         </Section>
       </main>
