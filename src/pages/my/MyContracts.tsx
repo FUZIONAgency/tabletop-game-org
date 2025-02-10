@@ -13,7 +13,6 @@ import { FileText } from "lucide-react";
 import { toast } from "sonner";
 
 const ORGANIZER_TEMPLATE_ID = '594c1639-8930-4fbe-8e29-10009ff24357';
-const INSTANCE_CLASS_ID = '2979bcfe-d9b8-4643-b8e6-7357e358005f';
 
 const MyContracts = () => {
   const { user } = useAuth();
@@ -34,7 +33,7 @@ const MyContracts = () => {
           )
         `)
         .eq('profile_id', user?.id)
-        .eq('contract.contract_class', '2979bcfe-d9b8-4643-b8e6-7357e358005f');
+        .eq('contracts.contract_class.name', 'Instance');
 
       if (error) throw error;
       return data;
@@ -97,7 +96,6 @@ const MyContracts = () => {
           description: 'Executed Game Organizer Agreement',
           content: content,
           auth_id: user.id,
-          contract_class: INSTANCE_CLASS_ID, // Set to Instance class ID
           created_at: undefined, // Remove to generate new timestamp
           updated_at: undefined  // Remove to generate new timestamp
         })
