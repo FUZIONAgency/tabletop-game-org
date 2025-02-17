@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'TabletopGame.org <noreply@tabletopgame.org>',
+        from: 'TabletopGame.org <noreply@updates.tabletopgame.org>',
         to,
         subject: 'Reset Your Password - TabletopGame.org',
         html: `

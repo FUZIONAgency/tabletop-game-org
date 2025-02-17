@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+  VITE_SUPABASE_URL = "https://kwpptrhywkyuzadwxgdl.supabase.co"
+
+[context.production.environment]
+  VITE_PRODUCTION = "true"
+
+[context.deploy-preview.environment]
+  VITE_PRODUCTION = "false"
+
+# Uncomment and adjust if you need redirects
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200

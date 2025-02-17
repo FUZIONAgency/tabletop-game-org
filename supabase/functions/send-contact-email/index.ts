@@ -42,8 +42,8 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Contact Us <info@TabletopGame.org>",
-        to: ["info@tabletopgame.org"],
+        from: "Contact Us <info@updates.tabletopgame.org>",
+        to: ["info@updates.tabletopgame.org"],
         subject: `New Contact Form Submission: ${contactMessage.subject}`,
         html: `
           <h2>New Contact Form Submission</h2>

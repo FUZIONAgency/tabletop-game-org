@@ -24,10 +24,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(null);
       setSession(null);
       setRole("anonymous");
-      // Clear any stored tokens
       localStorage.removeItem('sb-kwpptrhywkyuzadwxgdl-auth-token');
     } catch (error) {
-      console.error('Error signing out:', error);
       toast.error("Failed to sign out properly");
     }
   };
@@ -37,13 +35,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const initializeAuth = async () => {
       try {
-        // Get initial session
         const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          throw sessionError;
-        }
+        if (sessionError) throw sessionError;
 
         if (mounted) {
           if (currentSession?.user) {
@@ -56,25 +50,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               .eq('id', currentSession.user.id)
               .maybeSingle();
             
-            if (profileError) {
-              console.error('Profile error:', profileError);
-              throw profileError;
-            }
+            if (profileError) throw profileError;
 
             setRole(profile?.role as UserRole || "user");
           }
           setIsLoading(false);
         }
 
-        // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
           async (event, newSession) => {
             if (!mounted) return;
 
-            console.log('Auth state changed:', event);
-
             if (event === 'TOKEN_REFRESHED') {
-              console.log('Token refreshed successfully');
+              // Token refreshed successfully
             }
 
             if (event === 'SIGNED_OUT') {
@@ -97,31 +85,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 
                 setRole(profile?.role as UserRole || "user");
               } catch (error) {
-                console.error('Error fetching profile:', error);
                 setRole("user");
               }
-            } else {
-              setRole("anonymous");
             }
-
-            setIsLoading(false);
           }
         );
 
         return () => {
-          mounted = false;
           subscription.unsubscribe();
         };
       } catch (error) {
-        console.error('Error initializing auth:', error);
-        if (mounted) {
-          setIsLoading(false);
-          toast.error("Authentication error occurred");
-        }
+        setRole("user");
+        setIsLoading(false);
       }
     };
 
     initializeAuth();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -133,7 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;

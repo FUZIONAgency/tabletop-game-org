@@ -31,9 +31,9 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "TabletopGame.org <info@tabletopgame.org>",
+        from: "TabletopGame.org <info@updates.tabletopgame.org>",
         to: [emailRequest.to],
-        bcc: ["info@tabletopgame.org"],
+        bcc: ["info@updates.tabletopgame.org"],
         subject: "You've been invited to join",
         html: `
           <p>Hello ${emailRequest.firstName} ${emailRequest.lastName},</p>
