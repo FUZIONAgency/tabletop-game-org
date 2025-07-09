@@ -1,10 +1,8 @@
 import { GameSystem } from './game-system';
+import { DBPlayerGameAccount } from './db-schema';
 
-export interface PlayerGameAccount {
-  id: string;
-  player_id: string;
-  game_system_id: string;
-  account_id: string;
-  status: string;
+// Domain model that extends the database type
+export interface PlayerGameAccount extends DBPlayerGameAccount {
+  // Additional domain property
   game_system: GameSystem;
 }

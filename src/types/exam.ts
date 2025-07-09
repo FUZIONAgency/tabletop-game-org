@@ -1,16 +1,15 @@
 import { BaseEntity } from './common';
 import { GameSystem } from './game-system';
+import { DBExam, DBPlayerExam } from './db-schema';
 
-export interface Exam extends BaseEntity {
-  name: string;
-  weight: number;
+// Domain model that extends the database type
+export interface Exam extends DBExam, BaseEntity {
+  // Additional domain property
   game_system: GameSystem;
-  game_system_id?: string;
 }
 
-export interface PlayerExam extends BaseEntity {
-  score: number | null;
+// Domain model that extends the database type
+export interface PlayerExam extends DBPlayerExam, BaseEntity {
+  // Additional domain property
   exam: Exam;
-  player_id?: string;
-  approval_player_id?: string | null;
 }

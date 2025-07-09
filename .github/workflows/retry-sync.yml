@@ -1,0 +1,18 @@
+name: Retry Failed Visit Syncs
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  retry-sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Retry Failed Syncs
+        run: |
+          curl -X POST ${{ secrets.SUPABASE_URL }}/functions/v1/retry-failed-syncs \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json"

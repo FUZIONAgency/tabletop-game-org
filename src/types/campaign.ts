@@ -1,18 +1,14 @@
 import { BaseEntity } from './common';
-import { GameSystem, GameSystemBasic } from './game-system';
+import { GameSystemBasic } from './game-system';
+import { DBCampaign, CampaignStatus } from './db-schema';
 
-export interface Campaign extends BaseEntity {
-  title: string;
-  description: string | null;
+// Domain model that extends the database type with additional computed properties
+export interface Campaign extends Omit<DBCampaign, 'status'>, BaseEntity {
+  // Override status to use the enum
+  status: CampaignStatus;
+  
+  // Additional domain properties
   game_system: GameSystemBasic;
-  game_system_id: string;
-  min_players: number;
-  max_players: number;
-  price: number;
-  status?: string;
-  type?: string;
-  type_id: string;
-  retailer_id?: string | null;
   is_member?: boolean;
   is_owner?: boolean;
   owner_alias?: string;

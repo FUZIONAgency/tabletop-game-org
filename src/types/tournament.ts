@@ -1,21 +1,17 @@
-export interface Tournament {
-  id: string;
-  title: string;
-  description: string | null;
-  start_date: string;
-  end_date: string;
-  location: string;
-  venue: string;
-  image_url: string | null;
-  prize_pool: number | null;
+import { DBTournament, DBTournamentEntry } from './db-schema';
+
+// Domain model that extends the database type but only exposes needed fields
+export interface Tournament extends Pick<DBTournament, 
+  'id' | 'title' | 'description' | 'start_date' | 'end_date' | 
+  'location' | 'venue' | 'image_url' | 'prize_pool' | 'game_system_id' |
+  'max_participants' | 'registration_deadline' | 'is_featured' | 
+  'tournament_type' | 'status' | 'registration_url' | 'carousel_image'
+> {
+  // Additional domain properties can be added here if needed
 }
 
-export interface TournamentEntry {
-  id: string;
-  tournament_id: string;
-  player_id: string;
-  registration_date?: string;
-  status?: string;
-  final_rank?: number;
+// Domain model that extends the database type
+export interface TournamentEntry extends DBTournamentEntry {
+  // Additional domain property
   tournament: Tournament;
 }

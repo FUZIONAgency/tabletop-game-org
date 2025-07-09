@@ -1,23 +1,16 @@
 import { Campaign } from './campaign';
+import { DBSession, DBPlayerSession, SessionStatus, PaymentStatus, AttendanceStatus } from './db-schema';
 
-export interface PlayerSession {
-  id: string;
-  player_id: string;
-  session_id: string;
-  payment_status: string;
-  attendance_status: string;
+// Domain model for PlayerSession that extends the database type
+export interface PlayerSession extends Omit<DBPlayerSession, 'payment_status' | 'attendance_status'> {
+  payment_status: PaymentStatus;
+  attendance_status: AttendanceStatus;
   session: Session;
 }
 
-export interface Session {
-  id: string;
-  campaign_id: string;
-  session_number: number;
-  start_date: string;
-  description: string | null;
-  status: string;
-  price: number;
-  end_date: string | null;
+// Domain model for Session that extends the database type
+export interface Session extends Omit<DBSession, 'status'> {
+  status: SessionStatus | null;
   campaign?: Campaign & {
     retailer?: {
       id: string;
@@ -25,5 +18,4 @@ export interface Session {
     }
   };
   player_session?: PlayerSession[];
-  created_at?: string;
 }

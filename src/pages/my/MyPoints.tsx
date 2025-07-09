@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { DollarSign, Users, Trophy, Gamepad2, Store, Tent } from "lucide-react";
+import { Star, Users, Trophy, Gamepad2, Store, Tent, MapPin, UserCheck } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/auth";
 
-interface EarningsMetrics {
+interface PointsMetrics {
   total_game_sessions: number;
   total_retailers: number;
   total_tournaments: number;
@@ -15,11 +15,11 @@ interface EarningsMetrics {
   total_convention_games: number;
 }
 
-const MyEarnings = () => {
+const MyPoints = () => {
   const { user } = useAuth();
 
-  const { data: metrics, isLoading } = useQuery({
-    queryKey: ['earnings-metrics', user?.id],
+  const { data: metrics, isLoading: metricsLoading } = useQuery({
+    queryKey: ['points-metrics', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
@@ -29,12 +29,58 @@ const MyEarnings = () => {
       );
 
       if (error) throw error;
-      return (data?.[0] || {}) as EarningsMetrics;
+      return (data?.[0] || {}) as PointsMetrics;
     },
     enabled: !!user?.id,
   });
 
+  // Query for visit statistics
+  const { data: visitStats, isLoading: visitsLoading } = useQuery({
+    queryKey: ['visit-stats', user?.id],
+    queryFn: async () => {
+      if (!user?.id) throw new Error("User not authenticated");
+      
+      // Get total visits count
+      const { count: totalVisits, error: visitsError } = await supabase
+        .from('visits')
+        .select('*', { count: 'exact', head: true })
+        .eq('auth_id', user.id);
+
+      if (visitsError) throw visitsError;
+
+      // Get total customer demos
+      const { data: demoData, error: demoError } = await supabase
+        .from('visits')
+        .select('customer_demo_count')
+        .eq('auth_id', user.id);
+
+      if (demoError) throw demoError;
+
+      const totalDemos = demoData?.reduce((sum, visit) => sum + (visit.customer_demo_count || 0), 0) || 0;
+
+      return {
+        totalVisits: totalVisits || 0,
+        totalDemos
+      };
+    },
+    enabled: !!user?.id,
+  });
+
+  const isLoading = metricsLoading || visitsLoading;
+
   const stats = [
+    {
+      title: "Total Visits",
+      value: visitStats?.totalVisits || 0,
+      icon: MapPin,
+      description: "Retailer visits recorded"
+    },
+    {
+      title: "Customer Demos",
+      value: visitStats?.totalDemos || 0,
+      icon: UserCheck,
+      description: "Product demonstrations given"
+    },
     {
       title: "Total Game Sessions",
       value: metrics?.total_game_sessions || 0,
@@ -77,8 +123,8 @@ const MyEarnings = () => {
     <PageLayout>
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="flex items-center gap-2 mb-8">
-          <DollarSign className="w-6 h-6" />
-          <h1 className="text-3xl font-bold">My Earnings</h1>
+          <Star className="w-6 h-6" />
+          <h1 className="text-3xl font-bold">My Points</h1>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -110,4 +156,4 @@ const MyEarnings = () => {
   );
 };
 
-export default MyEarnings;
+export default MyPoints;

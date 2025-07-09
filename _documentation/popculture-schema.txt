@@ -1,0 +1,2250 @@
+create table public.profiles (
+  id uuid not null,
+  email text null,
+  username text null,
+  avatar_url text null,
+  created_at timestamp with time zone null default now(),
+  is_over_13 boolean null default true,
+  role text null default 'user'::text,
+  retailers_max integer null default 4,
+  constraint profiles_pkey primary key (id),
+  constraint profiles_email_key unique (email),
+  constraint profiles_id_fkey foreign KEY (id) references auth.users (id)
+) TABLESPACE pg_default;
+
+
+
+
+create table public.ad_campaign_metrics (
+  id uuid not null default gen_random_uuid (),
+  campaign_id uuid not null,
+  platform character varying(50) not null,
+  impressions integer null default 0,
+  clicks integer null default 0,
+  conversions integer null default 0,
+  spend numeric(10, 2) null default 0,
+  revenue numeric(10, 2) null default 0,
+  cpc numeric GENERATED ALWAYS as (
+    case
+      when (clicks > 0) then (spend / (clicks)::numeric)
+      else (0)::numeric
+    end
+  ) STORED (10, 2) null,
+  conversion_rate numeric GENERATED ALWAYS as (
+    case
+      when (clicks > 0) then (
+        ((conversions)::numeric / (clicks)::numeric) * (100)::numeric
+      )
+      else (0)::numeric
+    end
+  ) STORED (5, 2) null,
+  roi numeric GENERATED ALWAYS as (
+    case
+      when (spend > (0)::numeric) then (((revenue - spend) / spend) * (100)::numeric)
+      else (0)::numeric
+    end
+  ) STORED (10, 2) null,
+  date date not null default CURRENT_DATE,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint ad_campaign_metrics_pkey primary key (id),
+  constraint ad_campaign_metrics_campaign_id_fkey foreign KEY (campaign_id) references ad_campaigns (id),
+  constraint valid_platform_type check (((platform)::ad_platform_type is not null))
+) TABLESPACE pg_default;
+
+create trigger set_ad_campaign_metrics_updated_at BEFORE
+update on ad_campaign_metrics for EACH row
+execute FUNCTION update_updated_at_column ();
+
+create table public.ad_campaign_transactions (
+  id uuid not null default gen_random_uuid (),
+  campaign_id uuid not null,
+  amount numeric not null,
+  platform text not null,
+  description text null,
+  transaction_date timestamp with time zone null default now(),
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint ad_campaign_transactions_pkey primary key (id),
+  constraint ad_campaign_transactions_campaign_id_fkey foreign KEY (campaign_id) references ad_campaigns (id)
+) TABLESPACE pg_default;
+
+create trigger set_ad_campaign_transactions_updated_at BEFORE
+update on ad_campaign_transactions for EACH row
+execute FUNCTION update_updated_at_column ();
+
+create table public.ad_campaign_transactions (
+  id uuid not null default gen_random_uuid (),
+  campaign_id uuid not null,
+  amount numeric not null,
+  platform text not null,
+  description text null,
+  transaction_date timestamp with time zone null default now(),
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint ad_campaign_transactions_pkey primary key (id),
+  constraint ad_campaign_transactions_campaign_id_fkey foreign KEY (campaign_id) references ad_campaigns (id)
+) TABLESPACE pg_default;
+
+create trigger set_ad_campaign_transactions_updated_at BEFORE
+update on ad_campaign_transactions for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+
+
+create table public.blog_tags (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  slug text not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint blog_tags_pkey primary key (id),
+  constraint blog_tags_name_key unique (name),
+  constraint blog_tags_slug_key unique (slug)
+) TABLESPACE pg_default;
+
+create trigger set_blog_tags_updated_at BEFORE
+update on blog_tags for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.blog_tags_relation (
+  id uuid not null default gen_random_uuid (),
+  blog_id uuid null,
+  tag_id uuid null,
+  created_at timestamp with time zone not null default now(),
+  constraint blog_tags_relation_pkey primary key (id),
+  constraint blog_tags_relation_blog_id_tag_id_key unique (blog_id, tag_id),
+  constraint blog_tags_relation_blog_id_fkey foreign KEY (blog_id) references blogs (id) on delete CASCADE,
+  constraint blog_tags_relation_tag_id_fkey foreign KEY (tag_id) references blog_tags (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+
+create table public.blogs (
+  id uuid not null default gen_random_uuid (),
+  title text not null,
+  slug text not null,
+  content text not null,
+  excerpt text null,
+  blog_image_url text null,
+  author_id uuid null,
+  status text null default 'draft'::text,
+  published_at timestamp with time zone null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint blogs_pkey primary key (id),
+  constraint blogs_slug_key unique (slug),
+  constraint blogs_author_id_fkey foreign KEY (author_id) references auth.users (id),
+  constraint blogs_status_check check (
+    (
+      status = any (
+        array[
+          'draft'::text,
+          'published'::text,
+          'archived'::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger set_blogs_updated_at BEFORE
+update on blogs for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.book_classes (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint book_classes_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.book_formats (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  size public.book_size not null,
+  created_at timestamp with time zone not null default now(),
+  constraint book_formats_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.book_role_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint book_role_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.book_roles (
+  id uuid not null default gen_random_uuid (),
+  book_id uuid null,
+  player_id uuid null,
+  type_id uuid null,
+  created_at timestamp with time zone not null default now(),
+  constraint book_roles_pkey primary key (id),
+  constraint book_roles_book_id_player_id_type_id_key unique (book_id, player_id, type_id),
+  constraint book_roles_book_id_fkey foreign KEY (book_id) references books (id),
+  constraint book_roles_player_id_fkey foreign KEY (player_id) references players (id),
+  constraint book_roles_type_id_fkey foreign KEY (type_id) references book_role_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.book_section_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  content_json jsonb null,
+  constraint book_section_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.book_sections (
+  id uuid not null default gen_random_uuid (),
+  book_id uuid not null,
+  type_id uuid not null,
+  title text not null,
+  content text null,
+  order_index integer not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  content_json jsonb null,
+  constraint book_sections_pkey primary key (id),
+  constraint book_sections_book_id_fkey foreign KEY (book_id) references books (id) on delete CASCADE,
+  constraint book_sections_type_id_fkey foreign KEY (type_id) references book_section_types (id)
+) TABLESPACE pg_default;
+
+create trigger set_book_sections_updated_at BEFORE
+update on book_sections for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.book_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint book_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.books (
+  id uuid not null default gen_random_uuid (),
+  title text not null,
+  author uuid not null,
+  isbn text null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  content_type text null default 'book'::text,
+  type_id uuid null,
+  class_id uuid null,
+  template_id uuid null,
+  format_id uuid null,
+  constraint books_pkey primary key (id),
+  constraint books_class_id_fkey foreign KEY (class_id) references book_classes (id),
+  constraint books_author_fkey foreign KEY (author) references auth.users (id),
+  constraint books_format_id_fkey foreign KEY (format_id) references book_formats (id),
+  constraint books_type_id_fkey foreign KEY (type_id) references book_types (id),
+  constraint books_template_id_fkey foreign KEY (template_id) references books (id),
+  constraint books_content_type_check check (
+    (
+      content_type = any (
+        array[
+          'book'::text,
+          'novel'::text,
+          'zine'::text,
+          'poster'::text,
+          'flyer'::text,
+          'miniature'::text,
+          'terrain'::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger set_books_updated_at BEFORE
+update on books for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+
+
+create table public.brands (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  parent uuid null,
+  status text null default 'active'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  logo_url text null,
+  map_icon_url text null,
+  constraint brands_pkey primary key (id),
+  constraint brands_parent_fkey foreign KEY (parent) references brands (id)
+) TABLESPACE pg_default;
+
+create trigger set_brands_updated_at BEFORE
+update on brands for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.domains (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  url text null,
+  devurl text null,
+  qaurl text null,
+  uaturl text null,
+  description text null default 'Your online store for the latest products::text'::text,
+  status text not null default 'active'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  keywords text not null default 'products, online store::text'::text,
+  favicon text null,
+  meta - image text null default 'site-ultraman-tcg-com.png'::text,
+  theme_color text not null default '#000000'::text,
+  constraint domains_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create trigger set_domains_updated_at BEFORE
+update on domains for EACH row
+execute FUNCTION update_updated_at_column ();
+
+create table public.c_locations (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  address_line1 text not null,
+  address_line2 text null,
+  city text not null,
+  state_province text null,
+  postal_code text null,
+  country text not null,
+  phone_number text null,
+  tax_id text null,
+  active boolean null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint c_locations_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.c_metadata (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  product_id uuid not null,
+  key text not null,
+  value text null,
+  type text null,
+  display_name text null,
+  sortable boolean null default false,
+  filterable boolean null default false,
+  searchable boolean null default true,
+  visible boolean null default true,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint c_metadata_pkey primary key (id),
+  constraint c_metadata_product_id_key_key unique (product_id, key),
+  constraint c_metadata_product_id_fkey foreign KEY (product_id) references c_products (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists idx_c_metadata_product_id on public.c_metadata using btree (product_id) TABLESPACE pg_default;
+
+create index IF not exists idx_c_metadata_key on public.c_metadata using btree (key) TABLESPACE pg_default;
+
+create index IF not exists idx_c_metadata_searchable on public.c_metadata using btree (searchable) TABLESPACE pg_default
+where
+  (searchable = true);
+
+create trigger update_c_metadata_updated_at BEFORE
+update on c_metadata for EACH row
+execute FUNCTION update_updated_at ();
+
+
+create table public.c_prices (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  product_id uuid not null,
+  stripe_price_id text not null,
+  amount bigint not null,
+  currency text not null default 'usd'::text,
+  is_default boolean null default false,
+  is_active boolean null default true,
+  type text not null default 'one_time'::text,
+  recurring_interval text null,
+  recurring_interval_count integer null,
+  metadata jsonb null default '{}'::jsonb,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint c_prices_pkey primary key (id),
+  constraint c_prices_stripe_price_id_key unique (stripe_price_id),
+  constraint c_prices_product_id_fkey foreign KEY (product_id) references c_products (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists idx_c_prices_product_id on public.c_prices using btree (product_id) TABLESPACE pg_default;
+
+create index IF not exists idx_c_prices_is_default on public.c_prices using btree (is_default) TABLESPACE pg_default
+where
+  (is_default = true);
+
+create trigger update_c_prices_updated_at BEFORE
+update on c_prices for EACH row
+execute FUNCTION update_updated_at ();
+
+
+create table public.c_products (
+  id uuid not null default gen_random_uuid (),
+  stripe_product_id text not null,
+  name text not null,
+  description text null,
+  active boolean null default true,
+  image_url text null,
+  default_price_id uuid null,
+  metadata jsonb null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint c_products_pkey primary key (id),
+  constraint c_products_stripe_product_id_key unique (stripe_product_id)
+) TABLESPACE pg_default;
+
+create index IF not exists c_products_stripe_product_id_idx on public.c_products using btree (stripe_product_id) TABLESPACE pg_default;
+
+
+create table public.c_shipping_rates (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  stripe_id text not null,
+  name text not null,
+  description text null,
+  amount integer not null,
+  currency text not null,
+  active boolean not null default true,
+  metadata jsonb null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint c_shipping_rates_pkey primary key (id),
+  constraint c_shipping_rates_stripe_id_key unique (stripe_id)
+) TABLESPACE pg_default;
+
+
+create table public.c_transaction_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  transaction_id uuid not null,
+  stripe_line_item_id text not null,
+  product_id uuid null,
+  stripe_product_id text null,
+  stripe_price_id text null,
+  quantity integer not null default 1,
+  amount_unit integer not null,
+  amount_total integer not null,
+  amount_tax integer not null default 0,
+  currency text not null,
+  description text null,
+  metadata jsonb null,
+  created_at timestamp with time zone not null default now(),
+  constraint c_transaction_items_pkey primary key (id),
+  constraint c_transaction_items_transaction_id_fkey foreign KEY (transaction_id) references c_transactions (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists idx_c_transaction_items_transaction_id on public.c_transaction_items using btree (transaction_id) TABLESPACE pg_default;
+
+create table public.c_transactions (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  stripe_transaction_id text not null,
+  customer_id text null,
+  customer_email text null,
+  amount_total integer not null,
+  amount_subtotal integer not null,
+  amount_tax integer not null default 0,
+  amount_shipping integer not null default 0,
+  currency text not null,
+  payment_status text not null,
+  shipping_status text not null default 'pending'::text,
+  fulfillment_status text not null default 'unfulfilled'::text,
+  payment_intent text null,
+  payment_method text null,
+  shipping_method text null,
+  shipping_method_id uuid null,
+  status text not null,
+  metadata jsonb null,
+  shipping_address jsonb null,
+  billing_address jsonb null,
+  created_at timestamp with time zone not null default now(),
+  shipping_metadata jsonb null,
+  updated_at timestamp with time zone null default now(),
+  items_count integer null default 0,
+  constraint c_transactions_pkey primary key (id),
+  constraint c_transactions_stripe_transaction_id_key unique (stripe_transaction_id),
+  constraint c_transactions_shipping_method_id_fkey foreign KEY (shipping_method_id) references c_shipping_rates (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_c_transactions_created_at on public.c_transactions using btree (created_at desc) TABLESPACE pg_default;
+
+create index IF not exists idx_c_transactions_shipping_method_id on public.c_transactions using btree (shipping_method_id) TABLESPACE pg_default;
+
+
+create table public.campaign_invitations (
+  id uuid not null default gen_random_uuid (),
+  campaign_id uuid null default gen_random_uuid (),
+  email text null,
+  token text null,
+  status text null,
+  created_at timestamp with time zone not null default now(),
+  expires_at timestamp with time zone null default (now() + '7 days'::interval),
+  constraint campaign_invitations_pkey primary key (id),
+  constraint campaign_invitations_campaign_id_fkey foreign KEY (campaign_id) references campaigns (id)
+) TABLESPACE pg_default;
+
+create trigger check_invitation_expiry
+after INSERT
+or
+update on campaign_invitations for EACH STATEMENT
+execute FUNCTION expire_invitations ();
+
+
+create table public.campaign_players (
+  id uuid not null default gen_random_uuid (),
+  campaign_id uuid not null default gen_random_uuid (),
+  player_id uuid not null default gen_random_uuid (),
+  role_type text not null,
+  status text null default '''active''::text'::text,
+  joined_at timestamp with time zone null default now(),
+  constraint campaign_players_pkey primary key (id),
+  constraint campaign_players_campaign_id_fkey foreign KEY (campaign_id) references campaigns (id),
+  constraint campaign_players_player_id_fkey foreign KEY (player_id) references players (id)
+) TABLESPACE pg_default;
+
+
+create table public.campaign_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint campaign_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.campaigns (
+  id uuid not null default gen_random_uuid (),
+  game_system_id uuid not null default gen_random_uuid (),
+  title text not null,
+  description text null,
+  type text null,
+  min_players integer not null default 1,
+  max_players integer not null default 99,
+  status text null default 'active'::text,
+  price numeric not null default 0.00,
+  created_at timestamp with time zone not null default now(),
+  retailer_id uuid null,
+  type_id uuid not null default '8347b15b-8def-442c-a158-f99f3a986aab'::uuid,
+  auth_id uuid null default auth.uid (),
+  constraint campaigns_pkey primary key (id),
+  constraint campaigns_auth_id_fkey foreign KEY (auth_id) references auth.users (id),
+  constraint campaigns_game_system_id_fkey foreign KEY (game_system_id) references game_systems (id),
+  constraint campaigns_retailer_id_fkey foreign KEY (retailer_id) references retailers (id),
+  constraint campaigns_type_id_fkey foreign KEY (type_id) references campaign_types (id)
+) TABLESPACE pg_default;
+
+
+
+
+create table public.clauses (
+  id uuid not null default gen_random_uuid (),
+  parent_id uuid null,
+  name text null,
+  description text null,
+  version numeric null default '1'::numeric,
+  content text null,
+  explanation text null,
+  created_at timestamp with time zone not null default now(),
+  constraint clause_pkey primary key (id),
+  constraint clause_parent_id_fkey foreign KEY (parent_id) references clauses (id)
+) TABLESPACE pg_default;
+
+
+create table public.condition_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint condition_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.contact_inquiries (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  email text not null,
+  website text null,
+  budget text not null,
+  "templateType" text not null,
+  created_at timestamp with time zone not null default (now() AT TIME ZONE 'utc'::text),
+  constraint contact_inquiries_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.contact_messages (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  email text not null,
+  subject text not null,
+  message text not null,
+  status text null default '''new''::text'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint contact_messages_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.contract_classes (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  parent_id uuid null,
+  version numeric null default '1'::numeric,
+  constraint contract_classes_pkey primary key (id),
+  constraint contract_classes_parent_id_fkey foreign KEY (parent_id) references contract_classes (id)
+) TABLESPACE pg_default;
+
+
+create table public.contract_clauses (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  contract_id uuid null,
+  clause_id uuid null,
+  sortorder numeric null default '9999'::numeric,
+  constraint contract_clauses_pkey primary key (id),
+  constraint contract_clauses_clause_id_fkey foreign KEY (clause_id) references clauses (id),
+  constraint contract_clauses_contract_id_fkey foreign KEY (contract_id) references contracts (id)
+) TABLESPACE pg_default;
+
+
+create table public.contract_metros (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  contract_id uuid null,
+  metro_id uuid null,
+  constraint contract_metros_pkey primary key (id),
+  constraint contract_metros_contract_id_fkey foreign KEY (contract_id) references contracts (id),
+  constraint contract_metros_metro_id_fkey foreign KEY (metro_id) references metros (id)
+) TABLESPACE pg_default;
+
+
+create table public.contract_profiles (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  contract_id uuid null,
+  profile_id uuid null,
+  requested_date timestamp with time zone null,
+  viewed_date timestamp with time zone null,
+  accepted_date timestamp with time zone null,
+  declined_date timestamp with time zone null,
+  sortorder numeric null default '9999'::numeric,
+  signature_id uuid null,
+  constraint contract_counterparties_pkey primary key (id),
+  constraint contract_counterparties_contract_id_fkey foreign KEY (contract_id) references contracts (id),
+  constraint contract_profiles_profile_id_fkey foreign KEY (profile_id) references profiles (id),
+  constraint contract_profiles_signature_id_fkey foreign KEY (signature_id) references signature (id)
+) TABLESPACE pg_default;
+
+
+create table public.contract_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  version numeric null default '1'::numeric,
+  constraint contract_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create trigger set_contract_types_updated_at BEFORE
+update on contract_types for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.contracts (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  type_id uuid not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  class_id uuid null,
+  parent_id uuid null,
+  version numeric null default '1'::numeric,
+  content text null,
+  auth_id uuid not null default auth.uid (),
+  constraint contracts_pkey primary key (id),
+  constraint contracts_contract_class_fkey foreign KEY (class_id) references contract_classes (id),
+  constraint contracts_contract_type_id_fkey foreign KEY (type_id) references contract_types (id),
+  constraint contracts_parent_id_fkey foreign KEY (parent_id) references contracts (id)
+) TABLESPACE pg_default;
+
+create trigger set_contracts_updated_at BEFORE
+update on contracts for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.conventions (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  start_date timestamp with time zone not null,
+  end_date timestamp with time zone not null,
+  location text not null,
+  venue text not null,
+  expected_attendees integer null,
+  image_url text not null,
+  website_url text null,
+  registration_url text null,
+  status public.convention_status null default 'inactive'::convention_status,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone null default now(),
+  is_featured boolean null default false,
+  carousel_image text null,
+  constraint conventions_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.countries (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  iso2 character(2) not null,
+  iso3 character(3) not null,
+  numeric_code integer null,
+  phone_code text null,
+  capital text null,
+  currency text null,
+  currency_name text null,
+  currency_symbol text null,
+  tld text null,
+  region text null,
+  subregion text null,
+  latitude numeric null,
+  longitude numeric null,
+  geometry geography null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint countries_pkey primary key (id),
+  constraint countries_iso2_key unique (iso2),
+  constraint countries_iso3_key unique (iso3)
+) TABLESPACE pg_default;
+
+create index IF not exists countries_geometry_idx on public.countries using gist (geometry) TABLESPACE pg_default;
+
+create index IF not exists countries_iso2_idx on public.countries using btree (iso2) TABLESPACE pg_default;
+
+create index IF not exists countries_iso3_idx on public.countries using btree (iso3) TABLESPACE pg_default;
+
+create trigger set_countries_updated_at BEFORE
+update on countries for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.demo_team_contracts (
+  id uuid not null default gen_random_uuid (),
+  auth_id uuid not null,
+  status text not null default 'pending'::text,
+  contract_signed_at timestamp with time zone null,
+  contract_version text not null default '1.0'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  contract_accepted_at timestamp with time zone null,
+  constraint demo_team_contracts_pkey primary key (id),
+  constraint demo_team_contracts_auth_id_fkey foreign KEY (auth_id) references auth.users (id)
+) TABLESPACE pg_default;
+
+create trigger set_demo_team_contracts_updated_at BEFORE
+update on demo_team_contracts for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.demo_team_territories (
+  id uuid not null default gen_random_uuid (),
+  contract_id uuid not null,
+  metro_id uuid not null,
+  status text not null default 'active'::text,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  auth_id uuid not null default auth.uid (),
+  constraint demo_team_territories_pkey primary key (id),
+  constraint demo_team_territories_contract_id_metro_id_key unique (contract_id, metro_id),
+  constraint demo_team_territories_contract_id_fkey foreign KEY (contract_id) references demo_team_contracts (id),
+  constraint demo_team_territories_metro_id_fkey foreign KEY (metro_id) references metros (id)
+) TABLESPACE pg_default;
+
+create trigger set_demo_team_territories_updated_at BEFORE
+update on demo_team_territories for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.domain_brands (
+  id uuid not null default gen_random_uuid (),
+  domain_id uuid not null,
+  brand_id uuid not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint domain_brands_pkey primary key (id),
+  constraint domain_brands_domain_id_brand_id_key unique (domain_id, brand_id),
+  constraint domain_brands_brand_id_fkey foreign KEY (brand_id) references brands (id) on delete CASCADE,
+  constraint domain_brands_domain_id_fkey foreign KEY (domain_id) references domains (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create trigger set_domain_brands_updated_at BEFORE
+update on domain_brands for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.domain_profiles (
+  id uuid not null default gen_random_uuid (),
+  domain_id uuid not null,
+  profile_id uuid not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint domain_profiles_pkey primary key (id),
+  constraint domain_profiles_domain_id_profile_id_key unique (domain_id, profile_id),
+  constraint domain_profiles_domain_id_fkey foreign KEY (domain_id) references domains (id) on delete CASCADE,
+  constraint domain_profiles_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create trigger set_domain_profiles_updated_at BEFORE
+update on domain_profiles for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.email_tracking (
+  id uuid not null default gen_random_uuid (),
+  order_id text not null,
+  email text not null,
+  event_type public.email_event_type not null,
+  event_timestamp timestamp with time zone null default now(),
+  metadata jsonb null default '{}'::jsonb,
+  created_at timestamp with time zone null default now(),
+  constraint email_tracking_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_email_tracking_order_id on public.email_tracking using btree (order_id) TABLESPACE pg_default;
+
+create index IF not exists idx_email_tracking_email on public.email_tracking using btree (email) TABLESPACE pg_default;
+
+
+create table public.exam_questions (
+  id uuid not null default gen_random_uuid (),
+  exam_id uuid not null,
+  name text not null,
+  weight numeric not null default 1.0,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  url text null,
+  "order" integer null default 9999,
+  constraint exam_questions_pkey primary key (id),
+  constraint exam_questions_exam_id_fkey foreign KEY (exam_id) references exams (id)
+) TABLESPACE pg_default;
+
+
+create table public.exams (
+  id uuid not null default gen_random_uuid (),
+  game_system_id uuid not null,
+  name text not null,
+  weight numeric not null default 1.0,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint exams_pkey primary key (id),
+  constraint exams_game_system_id_fkey foreign KEY (game_system_id) references game_systems (id)
+) TABLESPACE pg_default;
+
+create trigger set_exams_updated_at BEFORE
+update on exams for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.f_invoices (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  po_id uuid null,
+  vendor_id uuid null,
+  amount numeric null,
+  due_date timestamp without time zone null,
+  status text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_invoices_pkey primary key (id),
+  constraint f_invoices_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_invoices_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_invoices_po_id_fkey foreign KEY (po_id) references f_pos (id),
+  constraint f_invoices_updated_by_fkey foreign KEY (updated_by) references profiles (id),
+  constraint f_invoices_vendor_id_fkey foreign KEY (vendor_id) references f_vendors (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_packing_list_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  packing_list_id uuid null,
+  item_id uuid null,
+  quantity integer not null,
+  description text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_packing_list_items_pkey primary key (id),
+  constraint f_packing_list_items_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_packing_list_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_packing_list_items_item_id_fkey foreign KEY (item_id) references f_vendor_items (id),
+  constraint f_packing_list_items_packing_list_id_fkey foreign KEY (packing_list_id) references f_packing_lists (id),
+  constraint f_packing_list_items_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_packing_lists (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  rfq_id uuid null,
+  shipment_date timestamp without time zone null,
+  status text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_packing_lists_pkey primary key (id),
+  constraint f_packing_lists_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_packing_lists_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_packing_lists_rfq_id_fkey foreign KEY (rfq_id) references f_rfq (id),
+  constraint f_packing_lists_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_payments (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  invoice_id uuid null,
+  amount_paid numeric null,
+  payment_date timestamp without time zone null,
+  status text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_payments_pkey primary key (id),
+  constraint f_payments_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_payments_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_payments_invoice_id_fkey foreign KEY (invoice_id) references f_invoices (id),
+  constraint f_payments_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_po_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  po_id uuid null,
+  item_id uuid null,
+  quantity integer not null,
+  unit_price numeric null,
+  total_price numeric null,
+  description text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  requisition_item_id uuid null,
+  msrp_discount numeric(5, 2) null default 0.00,
+  received_quantity integer null default 0,
+  notes text null,
+  sku text null,
+  constraint f_po_items_pkey primary key (id),
+  constraint f_po_items_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_po_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_po_items_item_id_fkey foreign KEY (item_id) references f_vendor_items (id),
+  constraint f_po_items_po_id_fkey foreign KEY (po_id) references f_pos (id),
+  constraint f_po_items_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+create trigger trigger_propagate_sku_po_items BEFORE INSERT
+or
+update on f_po_items for EACH row
+execute FUNCTION propagate_sku_on_item_creation ();
+
+
+create table public.f_po_logs (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  po_id uuid null,
+  profile_id uuid null default auth.uid (),
+  message text not null,
+  created_at timestamp with time zone null default now(),
+  metadata jsonb null,
+  constraint po_logs_pkey primary key (id),
+  constraint po_logs_po_id_fkey foreign KEY (po_id) references f_pos (id),
+  constraint po_logs_profile_id_fkey foreign KEY (profile_id) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_pos (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  vendor_id uuid null,
+  requisition_id uuid null,
+  order_date timestamp without time zone null default CURRENT_TIMESTAMP,
+  status text null default 'draft'::text,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  description text null,
+  po_date date null default CURRENT_DATE,
+  po_number text null,
+  payment_terms text null default 'Net 30'::text,
+  shipping_address text null,
+  shipping_city text null,
+  shipping_state text null,
+  shipping_zip text null,
+  shipping_country text null default 'USA'::text,
+  contact_name text null,
+  contact_email text null,
+  contact_phone text null,
+  approved_at timestamp with time zone null,
+  total_amount numeric(10, 2) null default 0.00,
+  constraint f_po_pkey primary key (id),
+  constraint f_po_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_po_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_po_requisition_id_fkey foreign KEY (requisition_id) references f_requisitions (id),
+  constraint f_po_updated_by_fkey foreign KEY (updated_by) references profiles (id),
+  constraint f_po_vendor_id_fkey foreign KEY (vendor_id) references f_vendors (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_receipts (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  payment_id uuid null,
+  receipt_number text null,
+  status text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_receipts_pkey primary key (id),
+  constraint f_receipts_receipt_number_key unique (receipt_number),
+  constraint f_receipts_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_receipts_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_receipts_payment_id_fkey foreign KEY (payment_id) references f_payments (id),
+  constraint f_receipts_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_receiving (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  packing_list_id uuid null,
+  received_date timestamp without time zone null,
+  quantity_received integer null,
+  quantity_unreceived integer null,
+  quantity_damaged integer null,
+  status text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_receiving_pkey primary key (id),
+  constraint f_receiving_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_receiving_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_receiving_packing_list_id_fkey foreign KEY (packing_list_id) references f_packing_lists (id),
+  constraint f_receiving_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_receiving_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  receiving_id uuid null,
+  item_id uuid null,
+  quantity_received integer null,
+  quantity_unreceived integer null,
+  quantity_damaged integer null,
+  description text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_receiving_items_pkey primary key (id),
+  constraint f_receiving_items_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_receiving_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_receiving_items_item_id_fkey foreign KEY (item_id) references f_vendor_items (id),
+  constraint f_receiving_items_receiving_id_fkey foreign KEY (receiving_id) references f_receiving (id),
+  constraint f_receiving_items_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_requisition_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  requisition_id uuid null,
+  item_id uuid null,
+  quantity integer not null,
+  unit_price numeric null,
+  total_price numeric null,
+  description text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  msrp_discount numeric null,
+  sku text null,
+  constraint f_requisition_items_pkey primary key (id),
+  constraint f_requisition_items_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_requisition_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_requisition_items_item_id_fkey foreign KEY (item_id) references f_vendor_items (id),
+  constraint f_requisition_items_requisition_id_fkey foreign KEY (requisition_id) references f_requisitions (id),
+  constraint f_requisition_items_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+create trigger trigger_propagate_sku_requisition_items BEFORE INSERT
+or
+update on f_requisition_items for EACH row
+execute FUNCTION propagate_sku_on_item_creation ();
+
+
+create table public.f_requisition_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  requisition_id uuid null,
+  item_id uuid null,
+  quantity integer not null,
+  unit_price numeric null,
+  total_price numeric null,
+  description text null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  msrp_discount numeric null,
+  sku text null,
+  constraint f_requisition_items_pkey primary key (id),
+  constraint f_requisition_items_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_requisition_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_requisition_items_item_id_fkey foreign KEY (item_id) references f_vendor_items (id),
+  constraint f_requisition_items_requisition_id_fkey foreign KEY (requisition_id) references f_requisitions (id),
+  constraint f_requisition_items_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+create trigger trigger_propagate_sku_requisition_items BEFORE INSERT
+or
+update on f_requisition_items for EACH row
+execute FUNCTION propagate_sku_on_item_creation ();
+
+
+create table public.f_requisitions (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  requisition_number text not null,
+  requested_by uuid null default auth.uid (),
+  department text null,
+  requisition_date timestamp without time zone null default CURRENT_TIMESTAMP,
+  description text null,
+  status text null default 'draft'::text,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  vendor_id uuid null,
+  constraint f_requisitions_pkey primary key (id),
+  constraint f_requisitions_requisition_number_key unique (requisition_number),
+  constraint f_requisitions_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_requisitions_updated_by_fkey foreign KEY (updated_by) references profiles (id),
+  constraint f_requisitions_vendor_id_fkey foreign KEY (vendor_id) references f_vendors (id),
+  constraint f_requisitions_requested_by_fkey foreign KEY (requested_by) references profiles (id),
+  constraint f_requisitions_created_by_fkey foreign KEY (created_by) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_rfq (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  po_id uuid null,
+  vendor_id uuid null,
+  status text null default 'pending'::text,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint f_rfq_pkey primary key (id),
+  constraint f_rfq_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_rfq_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_rfq_po_id_fkey foreign KEY (po_id) references f_pos (id),
+  constraint f_rfq_updated_by_fkey foreign KEY (updated_by) references profiles (id),
+  constraint f_rfq_vendor_id_fkey foreign KEY (vendor_id) references f_vendors (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_rfq_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  rfq_id uuid null,
+  requisition_item_id uuid null,
+  item_id uuid null,
+  description text null,
+  quantity integer null default 1,
+  unit_price numeric(10, 2) null default null::numeric,
+  msrp_discount numeric(5, 2) null default null::numeric,
+  total_price numeric(10, 2) null default null::numeric,
+  vendor_notes text null,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_by uuid null,
+  updated_at timestamp with time zone null default now(),
+  sku text null,
+  constraint f_rfq_items_pkey primary key (id),
+  constraint f_rfq_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_rfq_items_item_id_fkey foreign KEY (item_id) references f_vendor_items (id),
+  constraint f_rfq_items_requisition_item_id_fkey foreign KEY (requisition_item_id) references f_requisition_items (id),
+  constraint f_rfq_items_rfq_id_fkey foreign KEY (rfq_id) references f_rfqs (id),
+  constraint f_rfq_items_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+create trigger trigger_propagate_sku_rfq_items BEFORE INSERT
+or
+update on f_rfq_items for EACH row
+execute FUNCTION propagate_sku_on_item_creation ();
+
+create table public.f_rfq_logs (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  rfq_id uuid null,
+  profile_id uuid null default auth.uid (),
+  message text not null,
+  created_at timestamp with time zone null default now(),
+  metadata jsonb null,
+  constraint f_rfq_logs_pkey primary key (id),
+  constraint f_rfq_logs_profile_id_fkey foreign KEY (profile_id) references profiles (id),
+  constraint f_rfq_logs_rfq_id_fkey foreign KEY (rfq_id) references f_rfqs (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_rfqs (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  request_id uuid null default extensions.uuid_generate_v4 (),
+  requisition_id uuid null,
+  vendor_id uuid null,
+  rfq_number text null,
+  rfq_date date null,
+  status text null default 'draft'::text,
+  description text null,
+  created_by uuid null,
+  created_at timestamp with time zone null default now(),
+  updated_by uuid null,
+  updated_at timestamp with time zone null default now(),
+  due_date date null,
+  shipping_amount numeric(10, 2) null default 0.00,
+  handling_amount numeric(10, 2) null default 0.00,
+  tax_amount numeric(10, 2) null default 0.00,
+  packaging_amount numeric(10, 2) null default 0.00,
+  additional_fees numeric(10, 2) null default 0.00,
+  additional_fees_description text null,
+  total_amount numeric(10, 2) null default 0.00,
+  notes text null,
+  shipping_address text null,
+  shipping_city text null,
+  shipping_state text null,
+  shipping_zip text null,
+  shipping_country text null,
+  contact_name text null,
+  contact_email text null,
+  contact_phone text null,
+  vendor_notes text null,
+  vendor_response_date timestamp with time zone null,
+  constraint f_rfqs_pkey primary key (id),
+  constraint f_rfqs_rfq_number_key unique (rfq_number),
+  constraint f_rfqs_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_rfqs_requisition_id_fkey foreign KEY (requisition_id) references f_requisitions (id),
+  constraint f_rfqs_updated_by_fkey foreign KEY (updated_by) references profiles (id),
+  constraint f_rfqs_vendor_id_fkey foreign KEY (vendor_id) references f_vendors (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_vendor_items (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  vendor_id uuid null,
+  name text not null,
+  description text null,
+  price numeric null,
+  active boolean null default true,
+  image_url text null,
+  metadata jsonb null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  sku text null,
+  constraint f_vendor_items_pkey primary key (id),
+  constraint f_vendor_items_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_vendor_items_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_vendor_items_updated_by_fkey foreign KEY (updated_by) references profiles (id),
+  constraint f_vendor_items_vendor_id_fkey foreign KEY (vendor_id) references f_vendors (id)
+) TABLESPACE pg_default;
+
+
+create table public.f_vendors (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  name text not null,
+  contact_info jsonb null,
+  created_by uuid null default auth.uid (),
+  updated_by uuid null default auth.uid (),
+  approved_by uuid null,
+  cell text null,
+  email text null,
+  website text null,
+  slack text null,
+  facebook text null,
+  instagram text null,
+  x text null,
+  whatsapp text null,
+  discord text null,
+  twitch text null,
+  youtube text null,
+  deviantart text null,
+  bluesky text null,
+  snapchat text null,
+  status text null default 'draft'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  address jsonb null,
+  ein text null,
+  contact_name text null,
+  contact_phone text null,
+  constraint f_vendors_pkey primary key (id),
+  constraint f_vendors_approved_by_fkey foreign KEY (approved_by) references profiles (id),
+  constraint f_vendors_created_by_fkey foreign KEY (created_by) references profiles (id),
+  constraint f_vendors_updated_by_fkey foreign KEY (updated_by) references profiles (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_vendors_email on public.f_vendors using btree (email) TABLESPACE pg_default;
+
+
+create table public.fundraiser_graphs (
+  id uuid not null default gen_random_uuid (),
+  auth_id uuid not null default auth.uid (),
+  fundraiser_id uuid not null,
+  graph_json jsonb not null,
+  version numeric not null default 1,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint fundraiser_graphs_pkey primary key (id),
+  constraint fundraiser_graphs_fundraiser_id_fkey foreign KEY (fundraiser_id) references fundraisers (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists fundraiser_graphs_fundraiser_id_version_idx on public.fundraiser_graphs using btree (fundraiser_id, version desc) TABLESPACE pg_default;
+
+create trigger set_fundraiser_graphs_updated_at BEFORE
+update on fundraiser_graphs for EACH row
+execute FUNCTION update_updated_at_column ();
+
+create trigger update_fundraiser_graphs_updated_at BEFORE
+update on fundraiser_graphs for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.fundraiser_surveys (
+  id uuid not null default gen_random_uuid (),
+  fundraiser_id uuid not null,
+  auth_id uuid null default auth.uid (),
+  age integer null,
+  business_name text null,
+  questions_description text null,
+  past_fundraising_experience text null,
+  prelaunch_date timestamp with time zone null,
+  launch_date timestamp with time zone null,
+  funding_date timestamp with time zone null,
+  delivery_date timestamp with time zone null,
+  unique_project_description text null,
+  concerns_description text null,
+  preferred_platform text null,
+  completed_design_percentage integer null,
+  portions_complete_description text null,
+  intended_audience text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint fundraiser_surveys_pkey primary key (id),
+  constraint fundraiser_surveys_fundraiser_id_key unique (fundraiser_id),
+  constraint fundraiser_surveys_fundraiser_id_fkey foreign KEY (fundraiser_id) references fundraisers (id) on delete CASCADE,
+  constraint fundraiser_surveys_completed_design_percentage_check check (
+    (
+      (completed_design_percentage >= 0)
+      and (completed_design_percentage <= 100)
+    )
+  ),
+  constraint fundraiser_surveys_preferred_platform_check check (
+    (
+      preferred_platform = any (
+        array[
+          'kickstarter'::text,
+          'indiegogo'::text,
+          'backerkit'::text,
+          'gamefound'::text,
+          'internal'::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger set_fundraiser_surveys_updated_at BEFORE
+update on fundraiser_surveys for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.fundraisers (
+  id uuid not null default gen_random_uuid (),
+  auth_id uuid not null default auth.uid (),
+  name text not null,
+  description text null,
+  budget numeric null default 0.00,
+  start_date timestamp with time zone null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint fundraisers_pkey primary key (id),
+  constraint fundraisers_auth_id_fkey foreign KEY (auth_id) references auth.users (id)
+) TABLESPACE pg_default;
+
+create trigger set_fundraisers_updated_at BEFORE
+update on fundraisers for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.game_system_links (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  url text null,
+  hash_tag text null,
+  at_tag text null,
+  game_system_id uuid null default gen_random_uuid (),
+  link_type_id uuid null default gen_random_uuid (),
+  name text null,
+  constraint game_system_links_pkey primary key (id),
+  constraint game_system_links_link_type_id_fkey foreign KEY (link_type_id) references link_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.game_system_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint game_system_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.game_systems (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  type text null,
+  description text null,
+  status text null default '''active''::text'::text,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone null default now(),
+  logo_image_url text null,
+  video_url text null,
+  "order" integer null default 9999,
+  type_id uuid not null default 'd657b2fc-351e-4143-a62d-7351dccaca73'::uuid,
+  map_icon_url text null,
+  constraint game_systems_pkey primary key (id),
+  constraint game_systems_name_key unique (name),
+  constraint game_systems_type_id_fkey foreign KEY (type_id) references game_system_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.investor_surveys (
+  id uuid not null default gen_random_uuid (),
+  auth_id uuid not null default auth.uid (),
+  business_name text null,
+  business_description text null,
+  years_in_business integer null,
+  annual_revenue numeric null,
+  funding_amount numeric null,
+  funding_purpose text null,
+  current_investors text null,
+  exit_strategy text null,
+  financial_projections text null,
+  market_size text null,
+  competitive_advantage text null,
+  team_description text null,
+  risks_and_challenges text null,
+  intellectual_property text null,
+  use_of_funds text null,
+  preferred_investment_type text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint investor_surveys_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create trigger set_investor_surveys_updated_at BEFORE
+update on investor_surveys for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.invites (
+  id uuid not null default gen_random_uuid (),
+  email text not null,
+  status text not null default '''sent''::text'::text,
+  first_name text null,
+  last_name text null,
+  cell text null,
+  date_sent timestamp with time zone null,
+  date_read timestamp with time zone null,
+  date_decided timestamp with time zone null,
+  is_opt_out boolean null default false,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  user_id uuid not null default auth.uid (),
+  token uuid null default gen_random_uuid (),
+  accepted_at timestamp with time zone null,
+  accepted_by_player_id uuid null,
+  decision text null,
+  constraint invites_pkey primary key (id),
+  constraint invites_accepted_by_player_id_fkey foreign KEY (accepted_by_player_id) references players (id),
+  constraint invites_user_id_fkey foreign KEY (user_id) references auth.users (id),
+  constraint valid_status check (
+    (
+      status = any (
+        array[
+          'unsent'::text,
+          'sent'::text,
+          'read'::text,
+          'clicked'::text,
+          'accepted'::text,
+          'declined'::text,
+          'canceled'::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger set_invites_updated_at BEFORE
+update on invites for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.job_bid_statuses (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint job_bid_statuses_pkey primary key (id),
+  constraint job_bid_statuses_name_key unique (name)
+) TABLESPACE pg_default;
+
+
+create table public.job_bids (
+  id uuid not null default gen_random_uuid (),
+  job_id uuid not null,
+  bidder_id uuid not null,
+  amount numeric not null,
+  proposal text null,
+  estimated_days integer null,
+  status_id uuid not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint job_bids_pkey primary key (id),
+  constraint job_bids_bidder_id_fkey foreign KEY (bidder_id) references players (id),
+  constraint job_bids_job_id_fkey foreign KEY (job_id) references jobs (id),
+  constraint job_bids_status_id_fkey foreign KEY (status_id) references job_bid_statuses (id)
+) TABLESPACE pg_default;
+
+create trigger set_job_bids_updated_at BEFORE
+update on job_bids for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.job_classes (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint job_classes_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.job_statuses (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint job_statuses_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.job_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint job_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+
+create table public.jobs (
+  id uuid not null default gen_random_uuid (),
+  title text not null,
+  description text null,
+  budget numeric null,
+  requestor_id uuid not null,
+  type_id uuid not null,
+  status_id uuid not null,
+  class_id uuid not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint jobs_pkey primary key (id),
+  constraint jobs_class_id_fkey foreign KEY (class_id) references job_classes (id),
+  constraint jobs_requestor_id_fkey foreign KEY (requestor_id) references players (id),
+  constraint jobs_status_id_fkey foreign KEY (status_id) references job_statuses (id),
+  constraint jobs_type_id_fkey foreign KEY (type_id) references job_types (id)
+) TABLESPACE pg_default;
+
+create trigger set_jobs_updated_at BEFORE
+update on jobs for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.link_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint retailer_link_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.location_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint location_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.locations (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  type_id uuid null,
+  lat numeric null,
+  lng numeric null,
+  created_at timestamp with time zone not null default now(),
+  address text null,
+  city text null,
+  state text null,
+  postal_code text null,
+  square_feet numeric null,
+  constraint locations_pkey primary key (id),
+  constraint locations_type_id_fkey foreign KEY (type_id) references location_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.metro (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint metro_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.metros (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  state text null,
+  created_at timestamp with time zone not null default now(),
+  constraint metros_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.notifications (
+  id uuid not null default gen_random_uuid (),
+  recipient text not null,
+  type text not null,
+  status text not null default '''pending''::text'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint notifications_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.offer_statuses (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint offer_statuses_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.offer_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint offer_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.offers (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  date_posted timestamp with time zone null default now(),
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  user_id uuid not null default auth.uid (),
+  type_id uuid not null,
+  date_expiration timestamp with time zone null,
+  amount numeric null default '0'::numeric,
+  max_uses integer null default 1,
+  renewal_months integer null default 1,
+  status_id uuid not null,
+  constraint offers_pkey primary key (id),
+  constraint offers_status_id_fkey foreign KEY (status_id) references offer_statuses (id),
+  constraint offers_type_fkey foreign KEY (type_id) references offer_types (id),
+  constraint offers_user_id_fkey foreign KEY (user_id) references auth.users (id)
+) TABLESPACE pg_default;
+
+
+create table public.orders (
+  id uuid not null default gen_random_uuid (),
+  user_id uuid null,
+  session_id text not null,
+  amount_total bigint not null,
+  shipping_cost bigint not null,
+  shipping_details jsonb not null,
+  order_items jsonb not null,
+  status text not null default 'completed'::text,
+  created_at timestamp with time zone not null default timezone ('utc'::text, now()),
+  updated_at timestamp with time zone not null default timezone ('utc'::text, now()),
+  metadata jsonb null,
+  constraint orders_pkey primary key (id),
+  constraint orders_user_id_fkey foreign KEY (user_id) references auth.users (id)
+) TABLESPACE pg_default;
+
+create index IF not exists orders_user_id_idx on public.orders using btree (user_id) TABLESPACE pg_default;
+
+create index IF not exists orders_session_id_idx on public.orders using btree (session_id) TABLESPACE pg_default;
+
+create index IF not exists orders_referral_id_idx on public.orders using btree (((metadata ->> 'referral_id'::text))) TABLESPACE pg_default;
+
+create trigger handle_updated_at BEFORE
+update on orders for EACH row
+execute FUNCTION handle_updated_at ();
+
+
+create table public.persons (
+  id uuid not null default gen_random_uuid (),
+  first_name text null,
+  last_name text null,
+  cell text null,
+  email text null,
+  created_at timestamp with time zone not null default now(),
+  profile_id uuid null,
+  constraint person_pkey primary key (id),
+  constraint person_profile_id_fkey foreign KEY (profile_id) references profiles (id)
+) TABLESPACE pg_default;
+
+
+create table public.player_exam_answers (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid not null,
+  exam_id uuid not null,
+  exam_question_id uuid not null,
+  text_answer text null,
+  date_answer timestamp with time zone null,
+  boolean_answer boolean null,
+  uuid_answer uuid null,
+  numeric_answer numeric null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint player_exam_answers_pkey primary key (id),
+  constraint player_exam_answers_player_id_exam_question_id_key unique (player_id, exam_question_id),
+  constraint player_exam_answers_exam_id_fkey foreign KEY (exam_id) references exams (id),
+  constraint player_exam_answers_exam_question_id_fkey foreign KEY (exam_question_id) references exam_questions (id),
+  constraint player_exam_answers_player_id_fkey foreign KEY (player_id) references players (id)
+) TABLESPACE pg_default;
+
+create trigger set_player_exam_answers_updated_at BEFORE
+update on player_exam_answers for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.player_exams (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid not null,
+  exam_id uuid not null,
+  score numeric null,
+  approval_player_id uuid null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint player_exams_pkey primary key (id),
+  constraint player_exams_approval_player_id_fkey foreign KEY (approval_player_id) references players (id),
+  constraint player_exams_exam_id_fkey foreign KEY (exam_id) references exams (id),
+  constraint player_exams_player_id_fkey foreign KEY (player_id) references players (id)
+) TABLESPACE pg_default;
+
+create trigger set_player_exams_updated_at BEFORE
+update on player_exams for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.player_game_accounts (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid not null,
+  game_system_id uuid not null,
+  account_id text not null default gen_random_uuid (),
+  status text null default '''active''::text'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint player_game_accounts_pkey primary key (id),
+  constraint player_game_accounts_game_system_id_fkey foreign KEY (game_system_id) references game_systems (id),
+  constraint player_game_accounts_player_id_fkey foreign KEY (player_id) references players (id)
+) TABLESPACE pg_default;
+
+
+create table public.player_ratings (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid not null,
+  rating_player_id uuid not null,
+  rating integer not null,
+  comment text null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint player_ratings_pkey primary key (id),
+  constraint player_ratings_player_id_fkey foreign KEY (player_id) references players (id),
+  constraint player_ratings_rating_player_id_fkey foreign KEY (rating_player_id) references players (id),
+  constraint player_ratings_rating_check check (
+    (
+      (rating >= 1)
+      and (rating <= 5)
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger set_player_ratings_updated_at BEFORE
+update on player_ratings for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.player_relationships (
+  id uuid not null default gen_random_uuid (),
+  upline_id uuid not null,
+  downline_id uuid not null,
+  status text null default 'pending'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  type text not null default 'requested sponsor of'::text,
+  constraint player_relationships_pkey primary key (id),
+  constraint unique_relationship unique (upline_id, downline_id),
+  constraint player_relationships_downline_id_fkey foreign KEY (downline_id) references players (id),
+  constraint player_relationships_upline_id_fkey foreign KEY (upline_id) references players (id),
+  constraint no_self_referential check ((upline_id <> downline_id))
+) TABLESPACE pg_default;
+
+create trigger set_player_relationships_updated_at BEFORE
+update on player_relationships for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.player_retailers (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid not null,
+  retailer_id uuid not null,
+  status text null default 'active'::text,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint player_retailers_pkey primary key (id),
+  constraint player_retailers_player_id_retailer_id_key unique (player_id, retailer_id),
+  constraint player_retailers_player_id_fkey foreign KEY (player_id) references players (id) on delete CASCADE,
+  constraint player_retailers_retailer_id_fkey foreign KEY (retailer_id) references retailers (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create trigger set_player_retailers_updated_at BEFORE
+update on player_retailers for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.player_sessions (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid not null,
+  session_id uuid not null,
+  payment_status text not null default 'auto'::text,
+  attendance_status text not null default 'unconfirmed'::text,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint player_sessions_pkey primary key (id),
+  constraint player_sessions_player_id_session_id_key unique (player_id, session_id),
+  constraint player_sessions_player_id_fkey foreign KEY (player_id) references players (id),
+  constraint player_sessions_session_id_fkey foreign KEY (session_id) references sessions (id)
+) TABLESPACE pg_default;
+
+create table public.player_skills (
+  id uuid not null default gen_random_uuid (),
+  player_id uuid null,
+  skill_id uuid null,
+  name text not null,
+  description text null,
+  rating numeric not null default 0,
+  created_at timestamp with time zone not null default now(),
+  constraint player_skills_pkey primary key (id),
+  constraint player_skills_player_id_fkey foreign KEY (player_id) references players (id),
+  constraint player_skills_skill_id_fkey foreign KEY (skill_id) references skills (id)
+) TABLESPACE pg_default;
+
+
+create table public.players (
+  id uuid not null default gen_random_uuid (),
+  alias text not null,
+  email text null,
+  city text null,
+  state text null,
+  status text null,
+  auth_id uuid null default auth.uid (),
+  alias_image_url text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint players_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.prize_cards (
+  id uuid not null default gen_random_uuid (),
+  prize_id uuid not null default gen_random_uuid (),
+  card_name text not null,
+  card_image_url text not null,
+  sort_order integer not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  created_by uuid null default gen_random_uuid (),
+  constraint prize_cards_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.products (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  stripe_id text not null,
+  name text not null,
+  description text null,
+  active boolean null default true,
+  images text[] null,
+  metadata jsonb null default '{}'::jsonb,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint products_pkey primary key (id),
+  constraint products_stripe_id_key unique (stripe_id)
+) TABLESPACE pg_default;
+
+create trigger update_product_updated_at BEFORE
+update on products for EACH row
+execute FUNCTION update_updated_at ();
+
+
+create table public.profile_links (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  url text null,
+  hash_tag text null,
+  at_tag text null,
+  profile_id uuid null,
+  link_type_id uuid null,
+  name text null,
+  constraint profile_links_pkey primary key (id),
+  constraint profile_links_link_type_id_fkey foreign KEY (link_type_id) references link_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.referrals (
+  id uuid not null default gen_random_uuid (),
+  referrer_id uuid not null,
+  referral_code text not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint referrals_pkey primary key (id),
+  constraint referrals_referral_code_key unique (referral_code),
+  constraint referrals_referrer_id_fkey foreign KEY (referrer_id) references auth.users (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create trigger set_referrals_updated_at BEFORE
+update on referrals for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.retailer_brands (
+  id uuid not null default gen_random_uuid (),
+  retailer_id uuid not null,
+  brand_id uuid not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint retailer_brands_pkey primary key (id),
+  constraint unique_retailer_brand unique (retailer_id, brand_id),
+  constraint retailer_brands_brand_id_fkey foreign KEY (brand_id) references brands (id) on delete CASCADE,
+  constraint retailer_brands_retailer_id_fkey foreign KEY (retailer_id) references retailers (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create trigger set_retailer_brands_updated_at BEFORE
+update on retailer_brands for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.retailer_person_roles (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  created_at timestamp with time zone not null default now(),
+  constraint retailer_person_roles_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.retailer_persons (
+  id uuid not null default gen_random_uuid (),
+  retailer_id uuid null,
+  person_id uuid null,
+  role_id uuid null,
+  created_at timestamp with time zone not null default now(),
+  constraint retailer_roles_pkey primary key (id),
+  constraint retailer_persons_person_id_fkey foreign KEY (person_id) references persons (id),
+  constraint retailer_persons_retailer_id_fkey foreign KEY (retailer_id) references retailers (id),
+  constraint retailer_persons_role_id_fkey foreign KEY (role_id) references retailer_person_roles (id)
+) TABLESPACE pg_default;
+
+
+create table public.retailer_types (
+  id uuid not null default gen_random_uuid (),
+  name text null,
+  source text null,
+  created_at timestamp with time zone not null default now(),
+  constraint retailer_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.retailers (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  address text not null,
+  city text not null,
+  state text not null,
+  zip text not null,
+  phone text null,
+  email text null,
+  website_url text null,
+  lat numeric not null,
+  lng numeric not null,
+  hours_of_operation jsonb null,
+  status text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  store_photo text null,
+  is_featured boolean null default false,
+  carousel_image text null,
+  metro_id uuid null,
+  import_first_name text null,
+  import_last_name text null,
+  import_gama_id text null,
+  import_opt_in_email text null,
+  import_opt_in_sms text null,
+  address_1 text null,
+  import_has_purchased_amount numeric null,
+  import_is_tax_exempt text null,
+  type_id uuid null,
+  import_order_count integer null,
+  country_id uuid not null default '62e4660f-9f38-4af6-97c0-d1fb4f7366ce'::uuid,
+  constraint retailers_pkey primary key (id),
+  constraint retailers_country_id_fkey foreign KEY (country_id) references countries (id),
+  constraint retailers_metro_id_fkey foreign KEY (metro_id) references metro (id),
+  constraint retailers_type_id_fkey foreign KEY (type_id) references retailer_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.service_order_status_dependencies (
+  id uuid not null default gen_random_uuid (),
+  precedent_id uuid not null,
+  dependent_id uuid not null,
+  type_id uuid not null default 'c3a4edf0-8f89-4d0b-93f0-dcde8b6aa7db'::uuid,
+  created_at timestamp with time zone not null default now(),
+  constraint service_order_status_dependencies_pkey primary key (id),
+  constraint unique_dependency unique (precedent_id, dependent_id),
+  constraint service_order_status_dependencies_dependent_id_fkey foreign KEY (dependent_id) references service_order_statuses (id),
+  constraint service_order_status_dependencies_precedent_id_fkey foreign KEY (precedent_id) references service_order_statuses (id),
+  constraint service_order_status_dependencies_type_id_fkey foreign KEY (type_id) references service_order_status_dependency_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.service_order_status_dependency_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint service_order_status_dependency_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.service_order_statuses (
+  id uuid not null default gen_random_uuid (),
+  service_order_id uuid not null,
+  name text not null,
+  description text null,
+  percent_completed numeric not null default 0,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint service_order_statuses_pkey primary key (id),
+  constraint service_order_statuses_service_order_id_fkey foreign KEY (service_order_id) references service_orders (id)
+) TABLESPACE pg_default;
+
+create trigger set_service_order_statuses_updated_at BEFORE
+update on service_order_statuses for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.service_orders (
+  id uuid not null default gen_random_uuid (),
+  job_id uuid not null,
+  provider_id uuid null,
+  amount numeric not null,
+  status text not null default 'pending'::text,
+  start_date timestamp with time zone not null default now(),
+  end_date timestamp with time zone not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  name text not null default ''::text,
+  description text null,
+  constraint service_orders_pkey primary key (id),
+  constraint service_orders_job_id_fkey foreign KEY (job_id) references jobs (id),
+  constraint service_orders_provider_id_fkey foreign KEY (provider_id) references players (id)
+) TABLESPACE pg_default;
+
+create trigger set_service_orders_updated_at BEFORE
+update on service_orders for EACH row
+execute FUNCTION update_updated_at_column ();
+
+
+create table public.sessions (
+  id uuid not null default gen_random_uuid (),
+  campaign_id uuid not null default gen_random_uuid (),
+  session_number integer not null,
+  start_date timestamp with time zone not null,
+  description text null,
+  status text null,
+  created_at timestamp with time zone null default now(),
+  price numeric not null,
+  end_date timestamp with time zone null,
+  constraint sessions_pkey primary key (id),
+  constraint sessions_campaign_id_fkey foreign KEY (campaign_id) references campaigns (id)
+) TABLESPACE pg_default;
+
+
+create table public.signature (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  image_url text null,
+  constraint contract_classes_duplicate_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.skill_types (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  created_at timestamp with time zone not null default now(),
+  constraint skill_types_pkey primary key (id)
+) TABLESPACE pg_default;
+
+
+create table public.skills (
+  id uuid not null default gen_random_uuid (),
+  name text not null,
+  description text null,
+  type_id uuid null,
+  created_at timestamp with time zone not null default now(),
+  constraint skills_pkey primary key (id),
+  constraint skills_type_id_fkey foreign KEY (type_id) references skill_types (id)
+) TABLESPACE pg_default;
+
+
+create table public.spatial_ref_sys (
+  srid integer not null,
+  auth_name character varying(256) null,
+  auth_srid integer null,
+  srtext character varying(2048) null,
+  proj4text character varying(2048) null,
+  constraint spatial_ref_sys_pkey primary key (srid),
+  constraint spatial_ref_sys_srid_check check (
+    (
+      (srid > 0)
+      and (srid <= 998999)
+    )
+  )
+) TABLESPACE pg_default;
+
+
+create table public.tournament_entries (
+  id uuid not null default gen_random_uuid (),
+  tournament_id uuid not null default gen_random_uuid (),
+  player_id uuid not null default gen_random_uuid (),
+  registration_date timestamp with time zone null default now(),
+  status text null default '''registered''::text'::text,
+  final_rank integer null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint tournament_entries_pkey primary key (id),
+  constraint unique_tournament_player unique (tournament_id, player_id),
+  constraint tournament_entries_player_id_fkey foreign KEY (player_id) references players (id),
+  constraint tournament_entries_tournament_id_fkey foreign KEY (tournament_id) references tournaments (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+
+create table public.tournament_prizes (
+  id uuid not null default gen_random_uuid (),
+  tournament_id uuid not null default gen_random_uuid (),
+  placement integer not null,
+  description text not null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint tournament_prizes_pkey primary key (id),
+  constraint tournament_prizes_tournament_id_fkey foreign KEY (tournament_id) references tournaments (id)
+) TABLESPACE pg_default;
+
+
+create table public.tournaments (
+  id uuid not null default gen_random_uuid (),
+  game_system_id uuid null default gen_random_uuid (),
+  title text not null,
+  description text null,
+  start_date timestamp with time zone not null,
+  end_date timestamp with time zone not null,
+  location text not null,
+  venue text not null,
+  prize_pool numeric null,
+  max_participants integer null,
+  registration_deadline timestamp with time zone null,
+  image_url text null,
+  is_featured boolean null,
+  tournament_type text null,
+  status text null,
+  registration_url text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  carousel_image text null,
+  created_by uuid null default auth.uid (),
+  constraint tournaments_pkey primary key (id),
+  constraint tournaments_created_by_fkey foreign KEY (created_by) references auth.users (id),
+  constraint tournaments_game_system_id_fkey foreign KEY (game_system_id) references game_systems (id)
+) TABLESPACE pg_default;
+
