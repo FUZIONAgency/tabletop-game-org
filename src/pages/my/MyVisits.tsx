@@ -46,6 +46,7 @@ export default function MyVisits() {
   const [nearbyRetailers, setNearbyRetailers] = useState<any[]>([]);
   const [experienceStates, setExperienceStates] = useState<Record<string, boolean | null>>({});
   const [updatingDemoCount, setUpdatingDemoCount] = useState<string | null>(null);
+  const [checkingPermission, setCheckingPermission] = useState(false);
 
   // Check location permission on mount
   useEffect(() => {
@@ -252,9 +253,13 @@ export default function MyVisits() {
 
   // Record visit mutation
   const recordVisit = useMutation({
-    mutationFn: async ({ lat, lng }: { lat: number; lng: number }) => {
+    mutationFn: async ({ lat, lng }: { lat: number | null; lng: number | null }) => {
       // Show progress toast
       const toastId = toast.loading('Recording your visit...');
+      
+      // If no location, prompt user to add retailer info in comments
+      const comments = !lat || !lng ? 'Please add retailer location details here' : null;
+      
       // First, create the visit
       const { data: visit, error: visitError } = await supabase
         .from('visits')
@@ -264,7 +269,7 @@ export default function MyVisits() {
           lng,
           recorded_at: new Date().toISOString(),
           customer_demo_count: 0,
-          comments: null,
+          comments,
           is_positive_experience: null,
         })
         .select()
@@ -275,28 +280,29 @@ export default function MyVisits() {
         throw visitError;
       }
       
-      // Update toast and state
-      toast.loading('Finding nearby retailers...', { id: toastId });
-      setRecordingStep('scanning');
+      // Only try to find retailers if we have coordinates
+      let nearbyRetailers = [];
+      if (lat && lng) {
+        // Update toast and state
+        toast.loading('Finding nearby retailers...', { id: toastId });
+        setRecordingStep('scanning');
 
-      // Find nearby retailers using the database function
-      const { data: nearbyRetailers, error: nearbyError } = await supabase
-        .rpc('find_nearby_retailers', {
-          p_lat: lat,
-          p_lng: lng,
-          p_max_distance_feet: 1000,
-        });
+        // Find nearby retailers using the database function
+        const { data: retailers, error: nearbyError } = await supabase
+          .rpc('find_nearby_retailers', {
+            p_lat: lat,
+            p_lng: lng,
+            p_max_distance_feet: 1000,
+          });
+          
+        if (!nearbyError && retailers) {
+          nearbyRetailers = retailers;
+        }
 
-      if (nearbyError) {
-        toast.dismiss(toastId);
-        // Don't fail the whole visit if retailer search fails
-        console.error('Failed to find nearby retailers:', nearbyError);
-        toast.success('Visit recorded!', { id: toastId });
-        return { visit, nearbyRetailers: [] };
       }
 
       // Link visit to nearby retailers
-      if (nearbyRetailers && nearbyRetailers.length > 0) {
+      if (nearbyRetailers.length > 0) {
         const visitRetailers = nearbyRetailers.map((retailer: NearbyRetailer) => ({
           visit_id: visit.id,
           retailer_id: retailer.retailer_id,
@@ -319,7 +325,15 @@ export default function MyVisits() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['visits', user?.id] });
       const retailerCount = data.nearbyRetailers?.length || 0;
-      if (retailerCount > 0) {
+      
+      // If we didn't have location data, prompt to edit comments
+      if (!data.visit.lat || !data.visit.lng) {
+        toast.success('Visit recorded! Please add the retailer location in the comments.');
+        // Automatically open the comments editor for this visit
+        setTimeout(() => {
+          setEditingComments(data.visit.id);
+        }, 500);
+      } else if (retailerCount > 0) {
         toast.success(`Visit recorded! Found ${retailerCount} nearby retailer${retailerCount > 1 ? 's' : ''}.`);
       } else {
         toast.success('Visit recorded!');
@@ -371,11 +385,51 @@ export default function MyVisits() {
   };
 
   const checkLocationPermission = async () => {
-    if (!navigator.permissions) {
-      setLocationPermission('prompt');
+    setCheckingPermission(true);
+    
+    // iOS Safari doesn't support navigator.permissions properly
+    // So we'll use a different approach
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    if (!navigator.permissions || isIOS) {
+      // For iOS or browsers without permissions API, we'll try to get location directly
+      // to determine the permission state
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Timeout'));
+          }, 5000);
+          
+          navigator.geolocation.getCurrentPosition(
+            () => {
+              clearTimeout(timeout);
+              setLocationPermission('granted');
+              resolve();
+            },
+            (error) => {
+              clearTimeout(timeout);
+              if (error.code === error.PERMISSION_DENIED) {
+                setLocationPermission('denied');
+              } else {
+                setLocationPermission('prompt');
+              }
+              resolve();
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 5000,
+              maximumAge: 0
+            }
+          );
+        });
+      } catch {
+        setLocationPermission('prompt');
+      }
+      setCheckingPermission(false);
       return;
     }
 
+    // For browsers that support permissions API
     try {
       const result = await navigator.permissions.query({ name: 'geolocation' });
       setLocationPermission(result.state as LocationPermissionStatus);
@@ -387,28 +441,137 @@ export default function MyVisits() {
       console.error('Error checking location permission:', error);
       setLocationPermission('prompt');
     }
+    
+    setCheckingPermission(false);
   };
 
   const requestLocationPermission = async () => {
     setShowLocationDialog(false);
     
+    // Show loading state
+    const toastId = toast.loading('Requesting location permission...');
+    
     navigator.geolocation.getCurrentPosition(
-      () => {
+      async () => {
         setLocationPermission('granted');
-        toast.success('Location permission granted!');
+        toast.success('Location permission granted!', { id: toastId });
+        
+        // Immediately try to record the visit after permission is granted
+        setIsRecording(true);
+        setRecordingStep('recording');
+        
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            await recordVisit.mutateAsync({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+            setIsRecording(false);
+            setRecordingStep('idle');
+          },
+          async (error) => {
+            console.error('Failed to get location after permission:', error);
+            toast.warning('Location unavailable. Recording visit without coordinates.');
+            
+            await recordVisit.mutateAsync({
+              lat: null,
+              lng: null,
+            });
+            
+            setIsRecording(false);
+            setRecordingStep('idle');
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
       },
       (error) => {
+        toast.dismiss(toastId);
         if (error.code === error.PERMISSION_DENIED) {
           setLocationPermission('denied');
-          toast.error('Location permission denied. Please enable it in your browser settings.');
+          toast.error('Location permission denied. You can still record visits without location.');
         } else {
+          // On iOS, sometimes the error isn't PERMISSION_DENIED even when denied
+          // So we'll check again
+          checkLocationPermission();
           toast.error('Failed to get location. Please try again.');
         }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
       }
     );
   };
 
   const handleRecordVisit = async () => {
+    // For iOS, we need to handle this differently
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    // If permission is denied, still allow recording with null coordinates
+    if (locationPermission === 'denied') {
+      setIsRecording(true);
+      setRecordingStep('recording');
+      
+      // Record visit without location
+      await recordVisit.mutateAsync({
+        lat: null,
+        lng: null,
+      });
+      
+      setIsRecording(false);
+      setRecordingStep('idle');
+      return;
+    }
+    
+    // For iOS or when permission is not clearly granted, try to get location directly
+    if (isIOS || locationPermission === 'prompt') {
+      // Don't show dialog for iOS, just try to get location
+      setIsRecording(true);
+      setRecordingStep('recording');
+      
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          setLocationPermission('granted');
+          await recordVisit.mutateAsync({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setIsRecording(false);
+          setRecordingStep('idle');
+        },
+        async (error) => {
+          console.error('Failed to get location:', error);
+          
+          if (error.code === error.PERMISSION_DENIED) {
+            setLocationPermission('denied');
+            toast.error('Location permission denied. Recording visit without coordinates.');
+          } else {
+            toast.warning('Location unavailable. Recording visit without coordinates.');
+          }
+          
+          await recordVisit.mutateAsync({
+            lat: null,
+            lng: null,
+          });
+          
+          setIsRecording(false);
+          setRecordingStep('idle');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+      return;
+    }
+    
+    // For non-iOS browsers with clear permission state
     if (locationPermission !== 'granted') {
       setShowLocationDialog(true);
       return;
@@ -426,9 +589,17 @@ export default function MyVisits() {
         setIsRecording(false);
         setRecordingStep('idle');
       },
-      (error) => {
+      async (error) => {
         console.error('Failed to get location:', error);
-        toast.error('Failed to get your current location. Please try again.');
+        
+        // Instead of showing error, save visit with null coordinates
+        toast.warning('Location unavailable. Recording visit without coordinates.');
+        
+        await recordVisit.mutateAsync({
+          lat: null,
+          lng: null,
+        });
+        
         setIsRecording(false);
         setRecordingStep('idle');
       },
@@ -447,10 +618,28 @@ export default function MyVisits() {
 
         {/* Location Permission Alert */}
         {locationPermission === 'denied' && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert className="mb-6">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Location permission is denied. Please enable it in your browser settings to record visits.
+            <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <span>Location permission is denied. You can still record visits, but you'll need to manually add the retailer location in the comments.</span>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  setLocationPermission('prompt');
+                  checkLocationPermission();
+                }}
+                disabled={checkingPermission}
+              >
+                {checkingPermission ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  'Check Again'
+                )}
+              </Button>
             </AlertDescription>
           </Alert>
         )}
@@ -467,7 +656,7 @@ export default function MyVisits() {
             <div className="flex gap-2 flex-wrap">
               <Button
                 onClick={handleRecordVisit}
-                disabled={isRecording || locationPermission === 'denied'}
+                disabled={isRecording}
                 className="w-full sm:w-auto"
               >
                 {recordingStep === 'scanning' ? (
@@ -479,6 +668,11 @@ export default function MyVisits() {
                   <>
                     <MapPin className="mr-2 h-4 w-4 animate-pulse" />
                     Recording Visit...
+                  </>
+                ) : locationPermission === 'denied' ? (
+                  <>
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Record Visit (No Location)
                   </>
                 ) : (
                   <>
@@ -523,7 +717,7 @@ export default function MyVisits() {
                           {format(new Date(visit.recorded_at), 'PPpp')}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Location: {visit.lat.toFixed(6)}, {visit.lng.toFixed(6)}
+                          Location: {visit.lat && visit.lng ? `${visit.lat.toFixed(6)}, ${visit.lng.toFixed(6)}` : 'No location recorded'}
                         </p>
                         {visit.visit_retailers && visit.visit_retailers.length > 0 && (
                           <div className="mt-2">
@@ -739,11 +933,28 @@ export default function MyVisits() {
                 detect nearby retailers and track your visits.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowLocationDialog(false)}>
-                Cancel
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button 
+                variant="outline" 
+                onClick={async () => {
+                  setShowLocationDialog(false);
+                  setIsRecording(true);
+                  setRecordingStep('recording');
+                  
+                  // Record visit without location
+                  await recordVisit.mutateAsync({
+                    lat: null,
+                    lng: null,
+                  });
+                  
+                  setIsRecording(false);
+                  setRecordingStep('idle');
+                }}
+                className="w-full sm:w-auto"
+              >
+                Continue without location
               </Button>
-              <Button onClick={requestLocationPermission}>
+              <Button onClick={requestLocationPermission} className="w-full sm:w-auto">
                 Enable Location
               </Button>
             </DialogFooter>
