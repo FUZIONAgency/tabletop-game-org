@@ -8,6 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { RetailerCard } from "@/components/retailers/RetailerCard";
 import { RetailerSearchControls } from "@/components/retailers/RetailerSearchControls";
 import { calculateDistance } from "@/utils/distance";
+import { useLocationPermission, handleLocationPermissionRequest } from "@/utils/locationPermissions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { MapPin, RefreshCw, Loader2 } from "lucide-react";
 
 const RetailerSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,27 +21,31 @@ const RetailerSearch = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { status: locationPermission, isChecking, requestPermission, recheckPermission, showInstructions } = useLocationPermission();
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
+    // Only auto-request location if permission is granted
+    if (locationPermission === 'granted') {
+      handleLocationPermissionRequest().then(result => {
+        if (result.coords) {
           setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          toast({
-            title: "Location Access Required",
-            description: "Please enable location access to see nearby retailers",
-            variant: "destructive",
+            lat: result.coords.latitude,
+            lng: result.coords.longitude
           });
         }
-      );
+      });
     }
-  }, [toast]);
+  }, [locationPermission]);
+
+  const handleGetLocation = async () => {
+    const result = await requestPermission();
+    if (result.coords) {
+      setUserLocation({
+        lat: result.coords.latitude,
+        lng: result.coords.longitude
+      });
+    }
+  };
 
   // Fetch user's linked retailers
   const { data: linkedRetailers = [] } = useQuery({
@@ -188,6 +197,68 @@ const RetailerSearch = () => {
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="flex flex-col space-y-6">
           <h1 className="text-3xl font-bold">Search Retailers</h1>
+          
+          {/* Location Permission Alert */}
+          {locationPermission === 'denied' && (
+            <Alert>
+              <MapPin className="h-4 w-4" />
+              <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <span>Location access is disabled. Enable it to see retailers sorted by distance.</span>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={showInstructions}
+                  >
+                    Show Instructions
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={recheckPermission}
+                    disabled={isChecking}
+                  >
+                    {isChecking ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Checking...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Check Again
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Show button to enable location if not granted */}
+          {locationPermission === 'prompt' && !userLocation && (
+            <Card className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold">Enable Location</h3>
+                  <p className="text-sm text-muted-foreground">Allow location access to find retailers near you</p>
+                </div>
+                <Button onClick={handleGetLocation} disabled={isChecking}>
+                  {isChecking ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Getting Location...
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="mr-2 h-4 w-4" />
+                      Enable Location
+                    </>
+                  )}
+                </Button>
+              </div>
+            </Card>
+          )}
           
           <RetailerSearchControls
             searchQuery={searchQuery}
